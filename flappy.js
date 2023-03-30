@@ -1,4 +1,4 @@
-// Flappy Bird Clone
+// Flappy Bird Clone JS
 // Version 1.0.0 build 3/27/2023
 // Written by Dan Andersen
 //
@@ -38,7 +38,7 @@ const game_objects = {
 		x : 0, 
 		y : 0, 
 		scored : false, 
-		moveable : false,
+		movable : false,
 		inverse_y : 0
 	},
 
@@ -92,6 +92,7 @@ const game_objects = {
 		LastSpawn : 0,
 		
 		speed : 0
+
 	},
 
 	game : {
@@ -130,7 +131,7 @@ game_objects.background.speed = game_objects.game.speed / 5;
 game_objects.background.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]);
 
 game_objects.ground.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]) + 1;
-game_objects.ground.collision = SCREEN_SIZE[1] - game_objects.ground.size[1];
+game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] / 1.5);
 
 game_objects.pipe.start_position = SCREEN_SIZE[0] + game_objects.pipe.pipeGap[0] + game_objects.pipe.draw_size[0];
 game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pipe.pipe_size[0] + game_objects.pipe.pipeGap[0])) + 1;
@@ -141,6 +142,7 @@ game_objects.ufo.speed = game_objects.game.speed * 2.5;
 const logoScaling = 0.90;
 
 const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
+
 const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 1.75);
 
 //if portrait mode then adjust player to the left side of the screen
@@ -153,13 +155,15 @@ const soundFX = new Audio('assets/bloop.ogg')
 function isTouchDevice(){ return (window.ontouchstart !== undefined); }
 const __touch_device__ = isTouchDevice();
 
+
+
 // All variables are initialized
 
 /////////////////////////////////////////////////////
 
 let game_tick = 0;
-let pipes = [];
 let game = game_objects;
+let pipes = [];
 
 function InvertPosition(y, canvas_size) {
 	var x,z;
@@ -172,7 +176,7 @@ function InvertPosition(y, canvas_size) {
 //formulas for randomizing pipe and ufo position
 const ufoElevation = () => (InvertPosition(Math.abs(game.player.flyHeight), game.ground.collision - game.ufo.draw_size[1])); 
 
-function pipeLoc() { return (Math.random() * (game.ground.collision / 2)) + game.pipe.draw_size[1]; }
+function pipeLoc() { return ( Math.random() * ((game.ground.collision / 2) - game.pipe.draw_size[1]) + game.pipe.draw_size[1]); }
 
 function set_scaling() {
 
@@ -185,15 +189,15 @@ function set_scaling() {
 	game_objects.pipe.pipeGap[0] *= Y_Scaling;
 	game_objects.pipe.pipeGap[1] *= Y_Scaling;
 	
-	game_objects.pipe.draw_size[0] *= Y_Scaling;
-	game_objects.pipe.draw_size[1] *= Y_Scaling;
+	game_objects.pipe.draw_size[0] = game_objects.pipe.pipe_size[0] * Y_Scaling;
+	game_objects.pipe.draw_size[1] = game_objects.pipe.pipe_size[1] * Y_Scaling;
 	
 	game_objects.game.gravity *= Y_Scaling;
 	game_objects.game.speed *= Y_Scaling;
 }
 
 function start() {
-	
+
 	run_game();
 }
 
@@ -227,10 +231,16 @@ function run_game() {
 
 	// pipe display
 	if (game.game.gamePlaying) {
-		draw_pipes();
+		
+		pipes.forEach(draw_pipes);
+		pipes = spawn_pipes(pipes);
+			
 		draw_UFO();
+	
 	} else {
+	
 		start_screen();
+
 	}
 
 	draw_player();
@@ -241,6 +251,7 @@ function run_game() {
 	update_score();
 	
 	window.requestAnimationFrame(run_game);
+	
 }
 
 function game_over() {
@@ -281,8 +292,8 @@ function random_UFO_size() {
 		y = x - game.ufo.scale_max;
 		x = game.ufo.scale_min + y;
 	}
-	console.log(x);
-	return x;	
+	return x;
+	
 }
 
 
@@ -295,7 +306,7 @@ function draw_UFO() {
 				&& (game.game.currentScore % game.ufo.interval == 0) //score trigger spawn interval
 					&& (game.ufo.LastSpawn != game.game.currentScore)) //make sure not spawn more than once per interval
 		{ 
-		console.log("new ufo");
+		console.log("UFO SPAWNED!");
 		//reset UFO when it's off screen and every 5 points
 		game.ufo.currentPOS[0] = game.ufo.startPOS;
 		game.ufo.currentPOS[1] = ufoElevation();
@@ -308,6 +319,7 @@ function draw_UFO() {
 }
 
 function ufo_collision() {
+	
 	if  (
 		(game.ufo.currentPOS[0] <= game.player.x_adjustment + game.player.draw_size[0]) && 
 		(game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale) >= game.player.x_adjustment) &&
@@ -315,7 +327,7 @@ function ufo_collision() {
 		(game.player.flyHeight <= game.ufo.currentPOS[1] + (game.ufo.draw_size[1] * game.ufo.sprite_scale))	
 	) {
 		return 1;
-		console.log("HIT!~!!!");
+		console.log("HIT UFO!");
 	} else {
 		return 0;
 	}
@@ -335,13 +347,11 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.scored = false;	
-		temp.moveable = false;	// move up and side, not side to side.
-		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]); //metric for moveable pipe
+		temp.movable = false;	// move up and side, not side to side.
+		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]); //metric for movable pipe
 		
 		pipes_array.push(temp);
 	}
-	
-	console.log(pipes_array)
 	
 	return pipes_array;
 }
@@ -353,7 +363,7 @@ function spawn_pipes(pipes_array) {
 	
 	if (pipes_array[0].x <= -game.pipe.draw_size[0]) {
 		
-		console.log("SPAWN!");
+		console.log("NEW PIPE!");
 			
 		// shift data
 		
@@ -369,57 +379,62 @@ function spawn_pipes(pipes_array) {
 		temp.y = pipeLoc();
 		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]);
 		temp.scored = false;
-		temp.moveable = false;	
+		temp.movable = Math.round(Math.random()) == 1;	
 		
 		new_pipes.push(temp);
 
 		return new_pipes;
+		
 	} else {
+		
 		return pipes_array;
 	}
 
 }
 
 
-function draw_pipes() {
+function draw_pipes(pipe) {
 
 	// pipe moving	
+
+	var x,y;						
+									
+	pipe.x -= game.game.increased_speed;
 	
-	for(let i = 0; i < pipes.length; i++) {
-		
-		var x,y;
-													
-		pipes[i].x -= game.game.increased_speed;				
-		//top pipe_stem
-		y = 0;
-		x = pipes[i].y - game.pipe.draw_size[1];
-		//draw_pipe_stems(y, x, pipes[i]);
-				
-		//bottom pipe_stem
-		y = pipes[i].y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
-		x = game.ground.collision - y;
-		//draw_pipe_stems(y, x, pipes[i]);
+	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) && !pipe.scored) {
+		if (pipe.inverse_y > pipe.y) {
+			pipe.y++;
+		} else {
+			pipe.y--;
 
-		//top_pipe
-		ctx.drawImage(sprites, game.pipe.top_pipe[0], game.pipe.top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
-			pipes[i].x, pipes[i].y - game.pipe.draw_size[1] - 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
-			
-		//bottom_pipe
-		ctx.drawImage(sprites, game.pipe.btm_pipe[0], game.pipe.btm_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
-			pipes[i].x, pipes[i].y + game.pipe.pipeGap[1] + 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
-			
-		pipe_logic(pipes[i]); //collision and scoring detection	
-		
+		}
 	}
-
-	pipes = spawn_pipes(pipes);
-
+	
+	//top pipe_stem
+	x = 0;
+	y = pipe.y - game.pipe.draw_size[1];
+	draw_pipe_stems(x, y, pipe);
+			
+	//bottom pipe_stem
+	y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
+	x = game.ground.collision - y;
+	draw_pipe_stems(y, x, pipe);
+	
+	//top_pipe
+	ctx.drawImage(sprites, game.pipe.top_pipe[0], game.pipe.top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
+		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
+		
+	//bottom_pipe
+	ctx.drawImage(sprites, game.pipe.btm_pipe[0], game.pipe.btm_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
+		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
+		
+	pipe_logic(pipe); //collision and scoring detection	
+	
 }
 
-function draw_pipe_stems(y, stem_, pipe) {
+function draw_pipe_stems(y, stem_size, pipe) {
 	
 	var x, z;
-	stem_size = stem_;
 	
 	while (stem_size > 0) {
 		if (stem_size > game.pipe.max_stem_size) { 
@@ -431,27 +446,25 @@ function draw_pipe_stems(y, stem_, pipe) {
 			pipe.x, y, game.pipe.draw_size[0], stem_size); 
 
 		y += x;
-		stem_size -= game.pipe.max_stem_size;	
+		stem_size -= game.pipe.max_stem_size;
 	}
+
 }
 
 function pipe_logic(pipe) {
 	
-	console.log(pipe);
-
 		// if hit the pipe, end
 	if ([
 		pipe.x <= game.player.x_adjustment + game.player.draw_size[0], 
 		pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment, 
 		pipe.y > game.player.flyHeight || game.pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1]
 	].every(elem => elem)) {
-		console.log("hit pipe");
-		//game.gamePlaying = false;
+		console.log("HIT PIPE!");
+		game.game.gamePlaying = false;
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
 	//check to see if pipe moves past theshold for the first time.
-		
 		pipe.scored = true; // flag so we don't count the same pipe more than once
-		console.log("score!");
+		console.log("SCORE!");
 		game.game.currentScore++; // score!
 		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); //high score
 	}
@@ -497,6 +510,7 @@ function start_screen()
 
 
 function update_score() {
+	
 	document.getElementById('bestScore').innerHTML = `Best : ${game.game.bestScore}`;
 	document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
