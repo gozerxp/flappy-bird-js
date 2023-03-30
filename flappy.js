@@ -3,6 +3,7 @@
 // Written by Dan Andersen
 //
 
+
 const _VERSION_ = "1.0a";
 
 const canvas = document.getElementById('canvas');
