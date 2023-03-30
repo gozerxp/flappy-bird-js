@@ -88,7 +88,7 @@ const game_objects = {
 		
 		startPOS : 0,
 		currentPOS : [0,0],
-		interval : 5, //spawn new ufo when score % interval = 0
+		interval : 7, //spawn new ufo when score % interval = 0
 		LastSpawn : 0,
 		
 		speed : 0
@@ -131,7 +131,7 @@ game_objects.background.speed = game_objects.game.speed / 5;
 game_objects.background.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]);
 
 game_objects.ground.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]) + 1;
-game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] / 1.5);
+game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] * (Y_Scaling / 1.5));
 
 game_objects.pipe.start_position = SCREEN_SIZE[0] + game_objects.pipe.pipeGap[0] + game_objects.pipe.draw_size[0];
 game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pipe.pipe_size[0] + game_objects.pipe.pipeGap[0])) + 1;
@@ -347,8 +347,8 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.scored = false;	
-		temp.movable = false;	// move up and side, not side to side.
-		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]); //metric for movable pipe
+		temp.movable = Math.round(Math.random()) == 1;	//randomize which pipes can move 
+		temp.inverse_y = moving_pipe(temp.y); //metric for movable pipe
 		
 		pipes_array.push(temp);
 	}
@@ -377,9 +377,9 @@ function spawn_pipes(pipes_array) {
 		temp = {...game.pipe_array_data};
 		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
-		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]);
+		temp.inverse_y = moving_pipe(temp.y);
 		temp.scored = false;
-		temp.movable = Math.round(Math.random()) == 1;	
+		temp.movable = Math.round(Math.random()) == 1;	//randomize which pipes can move
 		
 		new_pipes.push(temp);
 
@@ -389,7 +389,21 @@ function spawn_pipes(pipes_array) {
 		
 		return pipes_array;
 	}
+}
 
+function moving_pipe(y) {
+	
+	let x = InvertPosition(y, game.ground.collision - game.pipe.draw_size[1]);
+	
+	if (Math.abs(x - y) < game.pipe.pipeGap[1]) { 
+		if (x > y) {
+			x = y - game.pipe.pipeGap[1];
+		} else {
+			x = y + game.pipe.pipeGap[1]; 
+		}
+	}
+	
+	return x;
 }
 
 
@@ -401,7 +415,9 @@ function draw_pipes(pipe) {
 									
 	pipe.x -= game.game.increased_speed;
 	
-	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) && !pipe.scored) {
+	//movable pipes
+	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) 
+			&& !pipe.scored && game.game.currentScore > 5) {
 		if (pipe.inverse_y > pipe.y) {
 			pipe.y++;
 		} else {
