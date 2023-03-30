@@ -354,9 +354,7 @@ function spawn_pipes(pipes_array) {
 	if (pipes_array[0].x <= -game.pipe.draw_size[0]) {
 		
 		console.log("SPAWN!");
-		
-		//let i = pipe_array[pipe_array.length - 1].x;
-		
+			
 		// shift data
 		
 		for (let i = 1; i < pipes.length; i++) {
@@ -395,12 +393,12 @@ function draw_pipes() {
 		//top pipe_stem
 		y = 0;
 		x = pipes[i].y - game.pipe.draw_size[1];
-		draw_pipe_stems(y, x, pipes[i]);
+		//draw_pipe_stems(y, x, pipes[i]);
 				
 		//bottom pipe_stem
 		y = pipes[i].y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
 		x = game.ground.collision - y;
-		draw_pipe_stems(y, x, pipes[i]);
+		//draw_pipe_stems(y, x, pipes[i]);
 
 		//top_pipe
 		ctx.drawImage(sprites, game.pipe.top_pipe[0], game.pipe.top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
@@ -438,6 +436,8 @@ function draw_pipe_stems(y, stem_, pipe) {
 }
 
 function pipe_logic(pipe) {
+	
+	console.log(pipe);
 
 		// if hit the pipe, end
 	if ([
@@ -447,7 +447,7 @@ function pipe_logic(pipe) {
 	].every(elem => elem)) {
 		console.log("hit pipe");
 		//game.gamePlaying = false;
-	} else if ((pipe.y + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
+	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
 	//check to see if pipe moves past theshold for the first time.
 		
 		pipe.scored = true; // flag so we don't count the same pipe more than once
