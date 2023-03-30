@@ -346,37 +346,40 @@ function IntializePipes() {
 	return pipes_array;
 }
 
-function spawn_pipes() {
+function spawn_pipes(pipes_array) {
 
 	// create new pipe when pipe[0].x goes offscreen
+	let new_pipes = [];
 	
-	pipe_array = {...pipes};
-	
-	if (pipe_array[0].x <= -game.pipe.draw_size[0]) {
+	if (pipes_array[0].x <= -game.pipe.draw_size[0]) {
 		
 		console.log("SPAWN!");
 		
 		//let i = pipe_array[pipe_array.length - 1].x;
-						
-		const temp = {...game.pipe_array_data};
-		temp.x = pipe_array[(pipe_array.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.pipe_size[0]);
+		
+		// shift data
+		
+		for (let i = 1; i < pipes.length; i++) {
+			let temp = {...game.pipe_array_data};
+			temp = {...pipes_array[i]};
+			new_pipes.push(temp);		
+		}
+		
+		//new pipe		
+		temp = {...game.pipe_array_data};
+		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
-		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.pipe_size[1]);
+		temp.inverse_y = InvertPosition(temp.y, game.ground.collision - game.pipe.draw_size[1]);
 		temp.scored = false;
 		temp.moveable = false;	
 		
-		// shift data
-		for (let i = 0; i < pipe_array.length - 1; i++) {
-			pipe_array[i] = pipe_array[(i + 1)];	
-		}
-		
-		pipe_array[pipe_array.length - 1] = {...temp};
-		
-		console.log(pipe_array);
-		
+		new_pipes.push(temp);
+
+		return new_pipes;
+	} else {
+		return pipes_array;
 	}
-	
-	return {...pipe_array};
+
 }
 
 
@@ -410,9 +413,8 @@ function draw_pipes() {
 		pipe_logic(pipes[i]); //collision and scoring detection	
 		
 	}
-	
-	pipes = spawn_pipes(pipes);
 
+	pipes = spawn_pipes(pipes);
 
 }
 
@@ -449,6 +451,7 @@ function pipe_logic(pipe) {
 	//check to see if pipe moves past theshold for the first time.
 		
 		pipe.scored = true; // flag so we don't count the same pipe more than once
+		console.log("score!");
 		game.game.currentScore++; // score!
 		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); //high score
 	}
