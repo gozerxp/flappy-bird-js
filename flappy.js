@@ -4,7 +4,7 @@
 //
 
 
-const _VERSION_ = "1.0a";
+const _VERSION_ = "1.0b";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -16,7 +16,9 @@ const logo = new Image();
 logo.src = "assets/fb-logo.png";
 const ufo_sprite = new Image();
 ufo_sprite.src = "assets/airplane.png";
-
+//load media
+const jump_fx = new Audio('assets/bloop.ogg');
+const airplane_fx = new Audio('assets/airplane.ogg');
 
 const game_objects = {
 // background 
@@ -99,7 +101,7 @@ const game_objects = {
 		
 		startPOS : 0,
 		currentPOS : [0,0],
-		interval : 7, //spawn new ufo when score % interval = 0
+		interval : 5, //spawn new ufo when score % interval = 0
 		LastSpawn : 0,
 		
 		speed : 0
@@ -159,8 +161,6 @@ const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 
 //if portrait mode then adjust player to the left side of the screen
 if (playerAdjustment) {	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 5;
 } else { game_objects.player.x_adjustment = cTenth; }
-
-const soundFX = new Audio('assets/bloop.ogg')
 
 //  mobile or desktop device
 function isTouchDevice(){ return (window.ontouchstart !== undefined); }
@@ -304,9 +304,7 @@ function random_UFO_size() {
 		x = game.ufo.scale_min + y;
 	}
 	return x;
-	
 }
-
 
 function draw_UFO() {
 	
@@ -318,6 +316,7 @@ function draw_UFO() {
 					&& (game.ufo.LastSpawn != game.game.currentScore)) //make sure not spawn more than once per interval
 		{ 
 		console.log("UFO SPAWNED!");
+		airplane_fx.play();
 		//reset UFO when it's off screen and every 5 points
 		game.ufo.currentPOS[0] = game.ufo.startPOS;
 		game.ufo.currentPOS[1] = ufoElevation();
@@ -565,7 +564,7 @@ function update_score() {
 function user_input() {
 	if (game.player.flyHeight > -game.player.size[1]) { //makes sure player doesnt fly off the screen
 		game.player.flight = game.player.jump;
-		soundFX.play();
+		jump_fx.play();
 	}
 	if (!game.game.gamePlaying) {
 		game.game.attempts++;
