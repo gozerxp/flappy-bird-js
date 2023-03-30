@@ -44,11 +44,19 @@ const game_objects = {
 
 	pipe : {
 		//sprite dimensions
+		green	: {
+			top_pipe : [432,511],
+			btm_pipe : [510,108],
+			stem_pipe : [432,110]
+		},
+		
+		blue : {
+			top_pipe : [588,511],
+			btm_pipe : [666,108],
+			stem_pipe : [588,110]
+		},
+		
 		pipe_size : [78,77],
-		top_pipe : [432,511],
-		btm_pipe : [510,108],
-		// pipe stems
-		stem_pipe : [432,110],
 		stem_size : [78, 0],
 		max_stem_size : 400,
 		
@@ -60,6 +68,9 @@ const game_objects = {
 		
 		start_position : 0,
 		max_num_of_pipes : 0
+		
+		
+		
 	},
 
 // player
@@ -347,7 +358,7 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.scored = false;	
-		temp.movable = Math.round(Math.random()) == 1;	//randomize which pipes can move 
+		temp.movable = false; //Math.round(Math.random()) == 1;	//randomize which pipes can move 
 		temp.inverse_y = moving_pipe(temp.y); //metric for movable pipe
 		
 		pipes_array.push(temp);
@@ -417,11 +428,11 @@ function draw_pipes(pipe) {
 	
 	//movable pipes
 	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) 
-			&& !pipe.scored && game.game.currentScore > 5) {
+			&& !pipe.scored) {
 		if (pipe.inverse_y > pipe.y) {
-			pipe.y++;
+			pipe.y += (1 * Y_Scaling);
 		} else {
-			pipe.y--;
+			pipe.y -= (1 * Y_Scaling);
 
 		}
 	}
@@ -436,12 +447,22 @@ function draw_pipes(pipe) {
 	x = game.ground.collision - y;
 	draw_pipe_stems(y, x, pipe);
 	
+	var top_pipe, btm_pipe;
+	
+	if(pipe.movable) {
+		top_pipe = [game.pipe.blue.top_pipe[0], game.pipe.blue.top_pipe[1]];
+		btm_pipe = [game.pipe.blue.btm_pipe[0], game.pipe.blue.btm_pipe[1]];
+	} else {
+		top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
+		btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
+	}
+	
 	//top_pipe
-	ctx.drawImage(sprites, game.pipe.top_pipe[0], game.pipe.top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
+	ctx.drawImage(sprites, top_pipe[0], top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
 		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
 		
 	//bottom_pipe
-	ctx.drawImage(sprites, game.pipe.btm_pipe[0], game.pipe.btm_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
+	ctx.drawImage(sprites, btm_pipe[0], btm_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
 		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
 		
 	pipe_logic(pipe); //collision and scoring detection	
@@ -452,13 +473,21 @@ function draw_pipe_stems(y, stem_size, pipe) {
 	
 	var x, z;
 	
+	var top_pipe, btm_pipe;
+	
+	if(pipe.movable) {
+		stem_pipe = [game.pipe.blue.stem_pipe[0], game.pipe.blue.stem_pipe[1]];
+	} else {
+		stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
+	}
+	
 	while (stem_size > 0) {
 		if (stem_size > game.pipe.max_stem_size) { 
 			x = game.pipe.max_stem_size;
 		} else {
 			x = stem_size;
 		}
-		ctx.drawImage(sprites, game.pipe.stem_pipe[0], game.pipe.stem_pipe[1], game.pipe.stem_size[0], x, 
+		ctx.drawImage(sprites, stem_pipe[0], stem_pipe[1], game.pipe.stem_size[0], x, 
 			pipe.x, y, game.pipe.draw_size[0], stem_size); 
 
 		y += x;
