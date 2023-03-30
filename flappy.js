@@ -166,7 +166,7 @@ let game = game_objects;
 let pipes = [];
 
 function InvertPosition(y, canvas_size) {
-	var x,z;
+	var x, z;
 	x = canvas_size / 2;
 	z = (x - y);
 	z += x;
@@ -457,8 +457,8 @@ function pipe_logic(pipe) {
 	if ([
 		pipe.x <= game.player.x_adjustment + game.player.draw_size[0], 
 		pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment, 
-		pipe.y > game.player.flyHeight || game.pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1]
-	].every(elem => elem)) {
+		pipe.y > game.player.flyHeight || pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1]
+	].every((elem) => elem)) {
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
