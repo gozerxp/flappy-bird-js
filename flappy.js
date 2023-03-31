@@ -53,22 +53,23 @@ const game_objects = {
 
 	pipe : {
 		//sprite dimensions
-		green	: {
+		green	: { //classic pipe
 			top_pipe : [432,511],
 			btm_pipe : [510,108],
 			stem_pipe : [432,110]
 		},
 		
-		blue : {
+		blue : { //moving pipe
 			top_pipe : [588,511],
 			btm_pipe : [666,108],
 			stem_pipe : [588,110]
 		},
 		
-		red : {
-			top_pipe : [588,511],
-			btm_pipe : [666,108],
-			stem_pipe : [588,110]
+		red : { //cannonball pipe
+			top_pipe : [744,511],
+			btm_pipe : [822,108],
+			stem_pipe : [744,110],
+			cannonball : [0, 0]
 		},
 		
 		pipe_size : [78,77],
