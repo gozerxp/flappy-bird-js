@@ -46,6 +46,7 @@ const game_objects = {
 		y : 0, 
 		scored : false, 
 		movable : false,
+		type : ["green","blue","red"],
 		inverse_y : 0
 	},
 
@@ -58,6 +59,12 @@ const game_objects = {
 		},
 		
 		blue : {
+			top_pipe : [588,511],
+			btm_pipe : [666,108],
+			stem_pipe : [588,110]
+		},
+		
+		red : {
 			top_pipe : [588,511],
 			btm_pipe : [666,108],
 			stem_pipe : [588,110]
@@ -436,8 +443,7 @@ function level_up() {
 			}
 		}
 		
-		return x;
-		
+		return x;		
 }
 
 
@@ -590,7 +596,7 @@ function start_screen()
 	
 	txt = "Version : " + _VERSION_;
 	ctx.font = "bold 24px courier new";
-	ctx.fillText(txt, 10, 25)
+	ctx.fillText(txt, 10, game.ground.collision - 12)
 }
 
 
@@ -603,11 +609,11 @@ function update_score() {
 	
 	if (game.game.gamePlaying) {
 		let txt = game.game.currentScore;
-		ctx.font = "bold 200px courier new";
+		ctx.font = "bold 150px courier new";
 		ctx.fillStyle = "#553847";
-		ctx.fillText(txt, 40, 175);
+		ctx.fillText(txt, 30, 125);
 		ctx.fillStyle = "#e9fcd9";
-		ctx.fillText(txt, 45, 180);
+		ctx.fillText(txt, 35, 130);
 	}
 	
 }
