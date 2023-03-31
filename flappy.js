@@ -1,7 +1,8 @@
 // Flappy Bird Clone JS
 // Version 1.0.0 build 3/27/2023
 // Written by Dan Andersen
-//
+// Original code base provided by Codepen.com
+// https://codepen.io/ju-az/pen/eYJQwLx
 
 
 const _VERSION_ = "1.0b";
