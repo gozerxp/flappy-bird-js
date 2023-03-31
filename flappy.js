@@ -96,7 +96,7 @@ const game_objects = {
 		
 		// draw scaling constrants
 		scale_min : .55,
-		scale_max : .9,
+		scale_max : .7,
 		draw_size : [0, 0], //draw scaling
 		
 		startPOS : 0,
@@ -159,7 +159,7 @@ const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
 const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 1.75);
 
 //if portrait mode then adjust player to the left side of the screen
-if (playerAdjustment) {	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 5;
+if (playerAdjustment) {	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 8;
 } else { game_objects.player.x_adjustment = cTenth; }
 
 //  mobile or desktop device
@@ -183,9 +183,6 @@ function InvertPosition(y, canvas_size) {
 	z += x;
 	return z;
 }
-
-//formulas for randomizing pipe and ufo position
-const ufoElevation = () => (InvertPosition(Math.abs(game.player.flyHeight), game.ground.collision - game.ufo.draw_size[1])); 
 
 function pipeLoc() { return ( Math.random() * ((game.ground.collision / 2) - game.pipe.draw_size[1]) + game.pipe.draw_size[1]); }
 
@@ -219,7 +216,7 @@ function game_reset() {
 	
 	game.ufo.LastSpawn = 0;
 	game.ufo.currentPOS[0] = -(game.ufo.draw_size[0] * game.ufo.sprite_scale);
-	game.ufo.currentPOS[1] = ufoElevation();
+	game.ufo.currentPOS[1] = ufo_Elevation();
 		
 	game.game.increased_speed = game.game.speed;
 	game.player.flight = game.player.jump;
@@ -228,6 +225,8 @@ function game_reset() {
 	game.player.flyHeight = (game.ground.collision / 2) - (game.player.draw_size[1] / 2);
 	
 	pipes = IntializePipes();
+	
+	spawn_ufo();
 	
 	game.game.gamePlaying = true;
 
@@ -296,6 +295,14 @@ function draw_ground() {
 
 
 //ufo functions
+function ufo_Elevation() {
+	var x;
+	//x = InvertPosition(Math.abs(game.player.flyHeight), game.ground.collision - game.ufo.draw_size[1])); 
+	
+	x = Math.random() * (game.ground.collision - game.ufo.draw_size[1]);
+	return x;
+}
+
 function random_UFO_size() { 
 	
 	let x = game.ufo.scale_min + Math.random();
@@ -315,17 +322,21 @@ function draw_UFO() {
 				&& (game.game.currentScore % game.ufo.interval == 0) //score trigger spawn interval
 					&& (game.ufo.LastSpawn != game.game.currentScore)) //make sure not spawn more than once per interval
 		{ 
-		console.log("UFO SPAWNED!");
-		airplane_fx.play();
-		//reset UFO when it's off screen and every 5 points
-		game.ufo.currentPOS[0] = game.ufo.startPOS;
-		game.ufo.currentPOS[1] = ufoElevation();
-		game.ufo.sprite_scale = random_UFO_size();
-		game.ufo.LastSpawn = game.game.currentScore; //interval tracking	
+			spawn_ufo();
 	}
 	
 	ctx.drawImage(ufo_sprite, 1, 0, game.ufo.size[0], game.ufo.size[1], 
 		game.ufo.currentPOS[0], game.ufo.currentPOS[1], game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
+}
+
+function spawn_ufo() {
+	console.log("UFO SPAWNED!");
+	airplane_fx.play();
+	//reset UFO when it's off screen and every 5 points
+	game.ufo.currentPOS[0] = game.ufo.startPOS;
+	game.ufo.currentPOS[1] = ufo_Elevation();
+	game.ufo.sprite_scale = random_UFO_size();
+	game.ufo.LastSpawn = game.game.currentScore; //interval tracking	
 }
 
 function ufo_collision() {
@@ -357,8 +368,8 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.scored = false;	
-		temp.movable = false; //Math.round(Math.random()) == 1;	//randomize which pipes can move 
-		temp.inverse_y = moving_pipe(temp.y); //metric for movable pipe
+		temp.movable = false; 
+		temp.inverse_y = moving_pipe_invert(temp.y); //metric for movable pipe
 		
 		pipes_array.push(temp);
 	}
@@ -387,10 +398,9 @@ function spawn_pipes(pipes_array) {
 		temp = {...game.pipe_array_data};
 		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
-		temp.inverse_y = moving_pipe(temp.y);
+		temp.inverse_y = moving_pipe_invert(temp.y);
 		temp.scored = false;
-		temp.movable = Math.round(Math.random()) == 1;	//randomize which pipes can move
-		
+		temp.movable = level_up();		
 		new_pipes.push(temp);
 
 		return new_pipes;
@@ -401,7 +411,23 @@ function spawn_pipes(pipes_array) {
 	}
 }
 
-function moving_pipe(y) {
+function level_up() {
+	
+		let x = false;
+		if (game.game.currentScore > 5) { //minimum score of 5 to get movable pipes.
+			if (game.game.currentScore > 15) { //every pipe is moving at 10.
+				x = true;
+			} else {
+				x = Math.round(Math.random()) == 1;	//randomize which pipes can move
+			}
+		}
+		
+		return x;
+		
+}
+
+
+function moving_pipe_invert(y) {
 	
 	let x = InvertPosition(y, game.ground.collision - game.pipe.draw_size[1]);
 	
@@ -448,10 +474,10 @@ function draw_pipes(pipe) {
 	
 	var top_pipe, btm_pipe;
 	
-	if(pipe.movable) {
+	if(pipe.movable) { //if pipe is movable render blue pipe
 		top_pipe = [game.pipe.blue.top_pipe[0], game.pipe.blue.top_pipe[1]];
 		btm_pipe = [game.pipe.blue.btm_pipe[0], game.pipe.blue.btm_pipe[1]];
-	} else {
+	} else { // else render regular green pipe
 		top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
 		btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
 	}
