@@ -12,10 +12,15 @@ const ctx = canvas.getContext('2d');
 //load sprites
 const sprites = new Image();
 sprites.src = "assets/flappy-bird-set.png";
+
 const logo = new Image();
 logo.src = "assets/fb-logo.png";
+
 const ufo_sprite = new Image();
 ufo_sprite.src = "assets/airplane.png";
+const ufo_warning = new Image();
+ufo_warning.src = "assets/warning_arrow.png";
+
 //load media
 const jump_fx = new Audio('assets/bloop.ogg');
 const airplane_fx = new Audio('assets/airplane.ogg');
@@ -92,6 +97,7 @@ const game_objects = {
 	ufo : {
 		//sprite dimensions
 		size : [248, 161],
+		warning_size : [50, 50],
 		sprite_scale : 1,
 		
 		// draw scaling constrants
@@ -149,10 +155,8 @@ game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] * 
 game_objects.pipe.start_position = SCREEN_SIZE[0] + game_objects.pipe.pipeGap[0] + game_objects.pipe.draw_size[0];
 game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pipe.pipe_size[0] + game_objects.pipe.pipeGap[0])) + 1;
 
-game_objects.ufo.startPOS = SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale);
+game_objects.ufo.startPOS = (SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale)) * 1.75;
 game_objects.ufo.speed = game_objects.game.speed * 2.5;
-
-const logoScaling = 0.90;
 
 const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
 
@@ -315,7 +319,7 @@ function random_UFO_size() {
 
 function draw_UFO() {
 	
-	if ((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) >= 0) {
+	if ((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) > 0) {
 		game.ufo.currentPOS[0] -= game.ufo.speed;
 	} else if (((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) < 0) //check to make sure ufo on not screen
 			&& (game.game.currentScore > 0) //dont spawn unless currentScore > 0
@@ -324,12 +328,22 @@ function draw_UFO() {
 		{ 
 			spawn_ufo();
 	}
+	if (game.ufo.currentPOS[0] > (SCREEN_SIZE[0] + game.ufo.draw_size[0])) {
+		//show wanring arrow when ufo is off screen
+		ctx.drawImage(ufo_warning, 1, 0, game.ufo.warning_size[0], game.ufo.warning_size[1], 
+			SCREEN_SIZE[0] - ((game.ufo.warning_size[0] * Y_Scaling) * 1.25), game.ufo.currentPOS[1] + (game.ufo.warning_size[1] / 2), game.ufo.warning_size[0] * Y_Scaling, game.ufo.warning_size[1] * Y_Scaling);
+		
+	}  
 	
+	// draw ufo
 	ctx.drawImage(ufo_sprite, 1, 0, game.ufo.size[0], game.ufo.size[1], 
 		game.ufo.currentPOS[0], game.ufo.currentPOS[1], game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
+	
+	
 }
 
 function spawn_ufo() {
+	
 	console.log("UFO SPAWNED!");
 	airplane_fx.play();
 	//reset UFO when it's off screen and every 5 points
@@ -560,10 +574,11 @@ function draw_player() {
 function start_screen()
 {
 	//Click to play
-
+	let logoScaling = 1;
+	if (600 >= SCREEN_SIZE[0]) { logoScaling = 0.75; }
 	//drawing logo
 	ctx.drawImage(logo, 0, 0, 600, 160,
-		(SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (135 * Y_Scaling), (600 * logoScaling), (160 * logoScaling));
+		(SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * Y_Scaling), (600 * logoScaling), (160 * logoScaling));
 	
 	var txt = "";
 	if (__touch_device__) { txt = "Tap to play";
