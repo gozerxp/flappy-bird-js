@@ -600,6 +600,16 @@ function update_score() {
 	document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
 	
+	
+	if (game.game.gamePlaying) {
+		let txt = game.game.currentScore;
+		ctx.font = "bold 200px courier new";
+		ctx.fillStyle = "#553847";
+		ctx.fillText(txt, 40, 175);
+		ctx.fillStyle = "#e9fcd9";
+		ctx.fillText(txt, 45, 180);
+	}
+	
 }
 
 function user_input() {
