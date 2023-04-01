@@ -461,7 +461,6 @@ function moving_pipe_invert(y) {
 	return x;
 }
 
-
 function draw_pipes(pipe) {
 
 	// pipe moving	
