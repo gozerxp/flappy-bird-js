@@ -382,9 +382,8 @@ function ufo_collision() {
 function IntializePipes() {
 
 	let pipes_array = [];
-	const max_pipes = game.pipe.max_num_of_pipes;
 	
-	for (let i = 0; i < max_pipes; i++) {
+	for (let i = 0; i < game.pipe.max_num_of_pipes; i++) {
 	
 		const temp = {...game.pipe_array_data};
 		
@@ -403,35 +402,33 @@ function IntializePipes() {
 function spawn_pipes(pipes_array) {
 
 	// create new pipe when pipe[0].x goes offscreen
-	let new_pipes = [];
+	
+	//let new_pipes = []
 	
 	if (pipes_array[0].x <= -game.pipe.draw_size[0]) {
 		
 		console.log("NEW PIPE!");
-			
-		// shift data
 		
-		for (let i = 1; i < pipes.length; i++) {
-			let temp = {...game.pipe_array_data};
-			temp = {...pipes_array[i]};
-			new_pipes.push(temp);		
-		}
+		const new_pipes = pipes_array;
+					
+		new_pipes.shift();
 		
 		//new pipe		
-		temp = {...game.pipe_array_data};
+		const temp = {...game.pipe_array_data};
 		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
 		temp.inverse_y = moving_pipe_invert(temp.y);
 		temp.scored = false;
-		temp.movable = level_up();		
+		temp.movable = level_up();
+		
 		new_pipes.push(temp);
-
+		
 		return new_pipes;
 		
-	} else {
+	} 
 		
-		return pipes_array;
-	}
+	return pipes_array;
+	
 }
 
 function level_up() {
