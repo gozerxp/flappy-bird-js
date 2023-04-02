@@ -172,11 +172,14 @@ const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
 const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 1.75);
 
 //if portrait mode then adjust player to the left side of the screen
-if (playerAdjustment) {	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 8;
-} else { game_objects.player.x_adjustment = cTenth; }
+if (playerAdjustment) {	
+	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 8;
+} else { 
+	game_objects.player.x_adjustment = cTenth; 
+}
 
 //  mobile or desktop device
-function isTouchDevice(){ return (window.ontouchstart !== undefined); }
+function isTouchDevice() { return (window.ontouchstart !== undefined); }
 const __touch_device__ = isTouchDevice();
 
 
@@ -197,7 +200,7 @@ function InvertPosition(y, canvas_size) {
 	return z;
 }
 
-function pipeLoc() { return ( Math.random() * ((game.ground.collision / 2) - game.pipe.draw_size[1]) + game.pipe.draw_size[1]); }
+function pipeLoc() { return ( game.pipe.draw_size[1] + (Math.random() * ((game.ground.collision / 2) - (game.pipe.draw_size[1] * 2)))); }
 
 function set_scaling() {
 
@@ -219,7 +222,7 @@ function set_scaling() {
 
 function start() {
 
-	run_game();
+	window.requestAnimationFrame(run_game);
 }
 
 //game functions
@@ -279,10 +282,15 @@ function run_game() {
 
 function game_over() {
 	//player hit the ground
-	if ((game.player.flyHeight + game.player.draw_size[1]) >= game.ground.collision) { game.game.gamePlaying = false; }
+	if ((game.player.flyHeight + game.player.draw_size[1]) >= game.ground.collision) {
+		game.game.gamePlaying = false;
+	}
 	
 	//player hit UFO
-	if (ufo_collision()) { game.game.gamePlaying = false; }
+	if (ufo_collision()) { 
+		game.game.gamePlaying = false; 
+	}
+	
 }
 
 function draw_background() {
@@ -309,11 +317,7 @@ function draw_ground() {
 
 //ufo functions
 function ufo_Elevation() {
-	var x;
-	//x = InvertPosition(Math.abs(game.player.flyHeight), game.ground.collision - game.ufo.draw_size[1])); 
-	
-	x = Math.random() * (game.ground.collision - game.ufo.draw_size[1]);
-	return x;
+	return Math.random() * (game.ground.collision - game.ufo.draw_size[1]);
 }
 
 function random_UFO_size() { 
@@ -340,13 +344,15 @@ function draw_UFO() {
 	if (game.ufo.currentPOS[0] > (SCREEN_SIZE[0] + game.ufo.draw_size[0])) {
 		//show wanring arrow when ufo is off screen
 		ctx.drawImage(ufo_warning, 1, 0, game.ufo.warning_size[0], game.ufo.warning_size[1], 
-			SCREEN_SIZE[0] - ((game.ufo.warning_size[0] * Y_Scaling) * 1.25), game.ufo.currentPOS[1] + (game.ufo.warning_size[1] / 2), game.ufo.warning_size[0] * Y_Scaling, game.ufo.warning_size[1] * Y_Scaling);
+			SCREEN_SIZE[0] - ((game.ufo.warning_size[0] * Y_Scaling) * 1.25), game.ufo.currentPOS[1] + (game.ufo.warning_size[1] / 2), 
+				game.ufo.warning_size[0] * Y_Scaling, game.ufo.warning_size[1] * Y_Scaling);
 		
 	}  
 	
 	// draw ufo
 	ctx.drawImage(ufo_sprite, 1, 0, game.ufo.size[0], game.ufo.size[1], 
-		game.ufo.currentPOS[0], game.ufo.currentPOS[1], game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
+		game.ufo.currentPOS[0], game.ufo.currentPOS[1], 
+			game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
 	
 	
 }
@@ -372,9 +378,10 @@ function ufo_collision() {
 	) {
 		return 1;
 		console.log("HIT UFO!");
-	} else {
-		return 0;
 	}
+	
+	return 0;
+
 }	
 
 
@@ -402,8 +409,6 @@ function IntializePipes() {
 function spawn_pipes(pipes_array) {
 
 	// create new pipe when pipe[0].x goes offscreen
-	
-	//let new_pipes = []
 	
 	if (pipes_array[0].x <= -game.pipe.draw_size[0]) {
 		
@@ -433,16 +438,15 @@ function spawn_pipes(pipes_array) {
 
 function level_up() {
 	
-		let x = false;
 		if (game.game.currentScore > 5) { //minimum score of 5 to get movable pipes.
 			if (game.game.currentScore > 15) { //every pipe is moving at 10.
-				x = true;
+				return true;
 			} else {
-				x = Math.round(Math.random()) == 1;	//randomize which pipes can move
+				return Math.round(Math.random()) == 1;	//randomize which pipes can move
 			}
 		}
 		
-		return x;		
+		return false;		
 }
 
 
