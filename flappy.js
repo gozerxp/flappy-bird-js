@@ -10,6 +10,14 @@ const _VERSION_ = "1.0.0c";
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+//delta time
+const frames_per_second = 60;
+let previousTime = performance.now();
+
+const frame_interval = 1000 / frames_per_second;
+let delta_time_multiplier = 1;
+let delta_time = 0;
+
 //load sprites
 const sprites = new Image();
 sprites.src = "assets/flappy-bird-set.png";
@@ -52,7 +60,7 @@ const game_objects = {
 		y : 0, 
 		scored : false, 
 		movable : false,
-		type : ["green","blue","red"],
+		type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
 		inverse_y : 0
 	},
 
@@ -89,9 +97,6 @@ const game_objects = {
 		
 		start_position : 0,
 		max_num_of_pipes : 0
-		
-		
-		
 	},
 
 // player
@@ -105,7 +110,7 @@ const game_objects = {
 		
 		sprite_index : 0, // 0 - 2
 		max_sprites : 3, //bird has 3 frames
-		sprite_interval : 2, //how often to change the index
+		sprite_interval : 3, //how often to change the index
 		last_sprite_update : 0, //when was the last frame update
 		
 		jump : -11.5,
@@ -135,12 +140,13 @@ const game_objects = {
 
 	game : {
 		gamePlaying : false,
+		gameOver : false,
 		
 		gravity : 0.5,
 		gravity_interval : 1,
 		last_gravity_update : 0,
 		
-		speed : 6.2,
+		speed : 5.5,//6.2,
 		
 		increased_speed : 0,
 		
@@ -160,7 +166,7 @@ if (window.innerHeight > SCREEN_SIZE[1]) {
 	Y_Scaling = SCREEN_SIZE[1] / game_objects.background.size[1];
 }
 
-set_scaling(); 
+set_scaling(); //sets draw sizes for objects based on resolution
 
 //adjust canvas size
 ctx.canvas.width = SCREEN_SIZE[0];
@@ -185,7 +191,7 @@ const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 
 
 //if portrait mode then adjust player to the left side of the screen
 if (playerAdjustment) {	
-	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 8;
+	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 7;
 } else { 
 	game_objects.player.x_adjustment = cTenth; 
 }
@@ -193,15 +199,6 @@ if (playerAdjustment) {
 //  mobile or desktop device
 function isTouchDevice() { return (window.ontouchstart !== undefined); }
 const __touch_device__ = isTouchDevice();
-
-//delta time
-const frames_per_second = 60;
-let previousTime = performance.now();
-
-const frame_interval = 1000 / frames_per_second;
-let delta_time_multiplier = 1;
-let delta_time = 0;
-
 
 // All variables are initialized
 
@@ -275,9 +272,9 @@ function game_reset() {
 function run_game(currentTime) {
 	
 	delta_time = currentTime - previousTime;
-	delta_time_multiplier = delta_time / frame_interval;
-	
-	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) {
+	delta_time_multiplier = Math.max(delta_time / frame_interval, 1); // caps at FPS (60)
+		
+	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) { 
 	
 		previousTime = currentTime;
 
@@ -291,8 +288,14 @@ function run_game(currentTime) {
 				
 			draw_UFO();
 
+		} else if (game.game.gameOver) {
+			
+			//game over screen
+			game.game.gameOver = false;
+			
+			
 		} else {
-
+			
 			start_screen();
 
 		}
@@ -303,7 +306,7 @@ function run_game(currentTime) {
 		game_over();
 
 		update_score();
-	
+		
 	}
 	
 	window.requestAnimationFrame(run_game);
@@ -314,11 +317,13 @@ function game_over() {
 	//player hit the ground
 	if ((game.player.flyHeight + game.player.draw_size[1]) >= game.ground.collision) {
 		game.game.gamePlaying = false;
+		game.game.gameOver = true;
 	}
 	
 	//player hit UFO
 	if (ufo_collision()) { 
 		game.game.gamePlaying = false; 
+		game.game.gameOver = true;
 	}
 	
 }
@@ -331,7 +336,7 @@ function draw_background() {
 	for (let i = 0; i <= game.background.canvas_fill; i++) {
 		ctx.drawImage(sprites, 0, 0, ...game.background.size, 
 			game.background.lastPOS_x + (i * game.background.draw_size[0]), 0, 
-				game.background.draw_size[0], game.background.draw_size[1]);
+				...game.background.draw_size);
 	}
 	
 	if (game.background.lastPOS_x < -game.background.draw_size[0]) {
@@ -348,7 +353,7 @@ function draw_ground() {
 	for (let i = 0; i <= game.ground.canvas_fill; i++) {
 		ctx.drawImage(sprites, 0, game.background.size[1], ...game.ground.size, 
 			game.ground.lastPOS_x + (i * game.ground.draw_size[0]), game.ground.collision, 
-				game.ground.draw_size[0] + 1, game.ground.draw_size[1]);
+				...game.ground.draw_size);
 	}
 	
 	if (game.ground.lastPOS_x < -game.ground.draw_size[0]) {
@@ -405,7 +410,7 @@ function draw_UFO() {
 
 function spawn_ufo() {
 	
-	game.ufo.speed = game.game.increased_speed * 2.5;
+	game.ufo.speed = game.game.increased_speed * 3;
 	console.log("UFO SPAWNED!");
 	airplane_fx.play();
 	//reset UFO when it's off screen and every 5 points
@@ -486,6 +491,7 @@ function spawn_pipes(pipes_array) {
 function level_up() {
 	
 		if (game.game.currentScore > 5) { //minimum score of 5 to get movable pipes.
+		
 			if (game.game.currentScore > 15) { //every pipe is moving at 10.
 				return true;
 			} else {
@@ -592,7 +598,7 @@ function draw_pipe_stems(y, stem_size, pipe) {
 
 function pipe_logic(pipe) {
 	
-		// if hit the pipe, end
+	// if hit the pipe, end
 	if ([
 		pipe.x <= game.player.x_adjustment + game.player.draw_size[0], 
 		pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment, 
@@ -601,6 +607,7 @@ function pipe_logic(pipe) {
 		
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
+		game.game.gameOver = true;
 		
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
 	//check to see if pipe moves past theshold for the first time.
@@ -609,6 +616,9 @@ function pipe_logic(pipe) {
 		console.log("SCORE!");
 		game.game.currentScore++; // score!
 		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); //high score
+		
+		game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) //increase speed by 0.1
+
 	}
 }
 
@@ -697,7 +707,7 @@ function update_score() {
 
 function user_input() {
 	if (game.player.flyHeight > -game.player.size[1]) { //makes sure player doesnt fly off the screen
-		game.player.flight = game.player.jump;
+		game.player.flight = game.player.jump;// * delta_time_multiplier;
 		jump_fx.play();
 	}
 	if (!game.game.gamePlaying) {
