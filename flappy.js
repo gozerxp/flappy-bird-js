@@ -135,7 +135,11 @@ const game_objects = {
 
 	game : {
 		gamePlaying : false,
+		
 		gravity : 0.5,
+		gravity_interval : 1,
+		last_gravity_update : 0,
+		
 		speed : 6.2,
 		
 		increased_speed : 0,
@@ -272,32 +276,35 @@ function run_game(currentTime) {
 	
 	delta_time = currentTime - previousTime;
 	delta_time_multiplier = delta_time / frame_interval;
-	previousTime = currentTime;
 	
-	// heartbeat
+	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) {
+	
+		previousTime = currentTime;
 
-	draw_background();
+		draw_background();
 
-	// pipe display
-	if (game.game.gamePlaying) {
-		
-		pipes.forEach(draw_pipes);
-		pipes = spawn_pipes(pipes);
+		// pipe display
+		if (game.game.gamePlaying) {
 			
-		draw_UFO();
-	
-	} else {
-	
-		start_screen();
+			pipes.forEach(draw_pipes);
+			pipes = spawn_pipes(pipes);
+				
+			draw_UFO();
 
+		} else {
+
+			start_screen();
+
+		}
+
+		draw_player();
+		draw_ground();
+
+		game_over();
+
+		update_score();
+	
 	}
-
-	draw_player();
-	draw_ground();
-
-	game_over();
-
-	update_score();
 	
 	window.requestAnimationFrame(run_game);
 	
@@ -609,8 +616,20 @@ function pipe_logic(pipe) {
 function draw_player() {
 	var x;
 	if (game.game.gamePlaying) {
+		
 		x = game.player.x_adjustment;
-		game.player.flight += game.game.gravity;
+		//		gravity_interval : 0,
+		//		last_gravity_update : 0,
+		
+	//interval for frame update
+		//delta = (previousTime - game.game.last_gravity_update) / frame_interval;	
+
+		//if (delta >= game.game.gravity_interval * delta_time_multiplier) {
+				
+			game.player.flight += game.game.gravity * delta_time_multiplier;
+		
+		//}
+		
 		game.player.flyHeight = Math.min(game.player.flyHeight + game.player.flight, game.ground.collision - game.player.draw_size[1]);
 	
 	} else {
@@ -618,6 +637,7 @@ function draw_player() {
 		game.player.flyHeight = (SCREEN_SIZE[1] / 2) - (game.player.draw_size[1] / 2);
 	}
 	
+	//interval for frame update
 	delta = (previousTime - game.player.last_sprite_update) / frame_interval;
 	
 	if (delta >= game.player.sprite_interval) {
