@@ -1,11 +1,11 @@
 // Flappy Bird Clone JS
-// Version 1.0.0 build 3/27/2023
+// Version 1.0.0c build 3/27/2023
 // Written by Dan Andersen
 // Original code base provided by Codepen.com
 // https://codepen.io/ju-az/pen/eYJQwLx
 
 
-const _VERSION_ = "1.0b";
+const _VERSION_ = "1.0.0c";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -30,15 +30,20 @@ const game_objects = {
 // background 
 	background : {
 		size : [431, 768],
+		draw_size : [0, 0], //for scaling
 		canvas_fill : 0,
-		speed : 0
+		speed : 0,
+		lastPOS_x : 0
 	},
 
 // ground
 	ground : {
 		size : [551, 150],
+		draw_size : [0, 0], //for scaling
 		canvas_fill : 0, // Math.ceil(SCREEN_SIZE[0] / ground.size[0]) + 1;
-		collision : 0 // SCREEN_SIZE[1] - ground.size[1];
+		collision : 0, // SCREEN_SIZE[1] - ground.size[1];
+		speed : 0,
+		lastPOS_x : 0
 	},
 
 // pipes
@@ -76,7 +81,7 @@ const game_objects = {
 		stem_size : [78, 0],
 		max_stem_size : 400,
 		
-		draw_size : [0, 0], //draw_scaling
+		draw_size : [0, 0], // draw_scaling
 		
 		// 0 = distance between each pipe
 		// 1 = distance between top and bottom for each pair of pipe
@@ -97,7 +102,12 @@ const game_objects = {
 		flyHeight : 0,
 		
 		draw_size : [0, 0], //draw scaling
-			
+		
+		sprite_index : 0, // 0 - 2
+		max_sprites : 3, //bird has 3 frames
+		sprite_interval : 2, //how often to change the index
+		last_sprite_update : 0, //when was the last frame update
+		
 		jump : -11.5,
 		flight : 0,
 	},
@@ -155,17 +165,15 @@ ctx.canvas.height = SCREEN_SIZE[1];
 // game settings
 game_objects.game.increased_speed = game_objects.game.speed;
 
-game_objects.background.speed = game_objects.game.speed / 5;
-game_objects.background.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]);
+game_objects.background.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.draw_size[0]);
 
-game_objects.ground.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.background.size[0]) + 1;
+game_objects.ground.canvas_fill = Math.ceil(SCREEN_SIZE[0] / game_objects.ground.draw_size[0]);
 game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] * (Y_Scaling / 1.5));
 
 game_objects.pipe.start_position = SCREEN_SIZE[0] + game_objects.pipe.pipeGap[0] + game_objects.pipe.draw_size[0];
 game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pipe.pipe_size[0] + game_objects.pipe.pipeGap[0])) + 1;
 
 game_objects.ufo.startPOS = (SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale)) * 1.75;
-game_objects.ufo.speed = game_objects.game.speed * 2.5;
 
 const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
 
@@ -182,13 +190,19 @@ if (playerAdjustment) {
 function isTouchDevice() { return (window.ontouchstart !== undefined); }
 const __touch_device__ = isTouchDevice();
 
+//delta time
+const frames_per_second = 60;
+let previousTime = performance.now();
+
+const frame_interval = 1000 / frames_per_second;
+let delta_time_multiplier = 1;
+let delta_time = 0;
 
 
 // All variables are initialized
 
 /////////////////////////////////////////////////////
 
-let game_tick = 0;
 let game = game_objects;
 let pipes = [];
 
@@ -205,6 +219,12 @@ function pipeLoc() { return ( game.pipe.draw_size[1] + (Math.random() * ((game.g
 function set_scaling() {
 
 	//setting draw size scaling for game objects
+	game_objects.background.draw_size[0] = game_objects.background.size[0] * Y_Scaling;
+	game_objects.background.draw_size[1] = game_objects.background.size[1] * Y_Scaling;
+	
+	game_objects.ground.draw_size[0] = game_objects.ground.size[0] * Y_Scaling;
+	game_objects.ground.draw_size[1] = game_objects.ground.size[1] * Y_Scaling;
+	
 	game_objects.ufo.draw_size = [game_objects.ufo.size[0] * Y_Scaling, game_objects.ufo.size[1] * Y_Scaling];
 	
 	game_objects.player.draw_size = [game_objects.player.size[0] * Y_Scaling, game_objects.player.size[1] * Y_Scaling];
@@ -248,10 +268,13 @@ function game_reset() {
 
 }
 
-function run_game() {
+function run_game(currentTime) {
+	
+	delta_time = currentTime - previousTime;
+	delta_time_multiplier = delta_time / frame_interval;
+	previousTime = currentTime;
 	
 	// heartbeat
-	game_tick++;
 
 	draw_background();
 
@@ -295,22 +318,36 @@ function game_over() {
 
 function draw_background() {
 	 // tile background	 
-	let draw_size = [game.background.size[0] * Y_Scaling, game.background.size[1]  * Y_Scaling];
+	 
+	game.background.speed = game_objects.game.increased_speed / 10;
 	
 	for (let i = 0; i <= game.background.canvas_fill; i++) {
-		ctx.drawImage(sprites, 0, 0, game.background.size[0], game.background.size[1], 
-			-((game_tick * game.background.speed) % draw_size[0]) + (draw_size[0] * i), 0, draw_size[0], draw_size[1]);
+		ctx.drawImage(sprites, 0, 0, ...game.background.size, 
+			game.background.lastPOS_x + (i * game.background.draw_size[0]), 0, 
+				game.background.draw_size[0], game.background.draw_size[1]);
+	}
+	
+	if (game.background.lastPOS_x < -game.background.draw_size[0]) {
+		game.background.lastPOS_x = 0; //reset
+	} else {
+		game.background.lastPOS_x -= game.background.speed * delta_time_multiplier;
 	}
 }
 
 function draw_ground() {
     // tile ground
-	
-	let draw_size = [game.ground.size[0] * Y_Scaling, game.ground.size[1]  * Y_Scaling];
+	game.ground.speed = game_objects.game.increased_speed;	
 	
 	for (let i = 0; i <= game.ground.canvas_fill; i++) {
-		ctx.drawImage(sprites, 0, game.background.size[1], game.ground.size[0], game.ground.size[1], 
-			-((game_tick * game.game.increased_speed) % draw_size[0]) + (draw_size[0] * i), game.ground.collision, draw_size[0] + 1, draw_size[1]);
+		ctx.drawImage(sprites, 0, game.background.size[1], ...game.ground.size, 
+			game.ground.lastPOS_x + (i * game.ground.draw_size[0]), game.ground.collision, 
+				game.ground.draw_size[0] + 1, game.ground.draw_size[1]);
+	}
+	
+	if (game.ground.lastPOS_x < -game.ground.draw_size[0]) {
+		game.ground.lastPOS_x = 0; //reset
+	} else {
+		game.ground.lastPOS_x -= game.ground.speed * delta_time_multiplier;
 	}
 }
 
@@ -323,7 +360,7 @@ function ufo_Elevation() {
 function random_UFO_size() { 
 	
 	let x = game.ufo.scale_min + Math.random();
-	while (x > game.ufo.scale_max) {
+	while (x > game.ufo.scale_max) { //loop that ensures random size stays within min and max constrants
 		y = x - game.ufo.scale_max;
 		x = game.ufo.scale_min + y;
 	}
@@ -333,25 +370,27 @@ function random_UFO_size() {
 function draw_UFO() {
 	
 	if ((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) > 0) {
-		game.ufo.currentPOS[0] -= game.ufo.speed;
+		game.ufo.currentPOS[0] -= game.ufo.speed * delta_time_multiplier;
+		
 	} else if (((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) < 0) //check to make sure ufo on not screen
 			&& (game.game.currentScore > 0) //dont spawn unless currentScore > 0
 				&& (game.game.currentScore % game.ufo.interval == 0) //score trigger spawn interval
 					&& (game.ufo.LastSpawn != game.game.currentScore)) //make sure not spawn more than once per interval
-		{ 
-			spawn_ufo();
+	{ 
+		spawn_ufo();
 	}
+	
 	if (game.ufo.currentPOS[0] > (SCREEN_SIZE[0] + game.ufo.draw_size[0])) {
-		//show wanring arrow when ufo is off screen
+		
+		//show warning arrow when ufo is off screen
 		ctx.drawImage(ufo_warning, 1, 0, game.ufo.warning_size[0], game.ufo.warning_size[1], 
 			SCREEN_SIZE[0] - ((game.ufo.warning_size[0] * Y_Scaling) * 1.25), game.ufo.currentPOS[1] + (game.ufo.warning_size[1] / 2), 
 				game.ufo.warning_size[0] * Y_Scaling, game.ufo.warning_size[1] * Y_Scaling);
-		
 	}  
 	
 	// draw ufo
-	ctx.drawImage(ufo_sprite, 1, 0, game.ufo.size[0], game.ufo.size[1], 
-		game.ufo.currentPOS[0], game.ufo.currentPOS[1], 
+	ctx.drawImage(ufo_sprite, 1, 0, ...game.ufo.size, 
+		...game.ufo.currentPOS, 
 			game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
 	
 	
@@ -359,6 +398,7 @@ function draw_UFO() {
 
 function spawn_ufo() {
 	
+	game.ufo.speed = game.game.increased_speed * 2.5;
 	console.log("UFO SPAWNED!");
 	airplane_fx.play();
 	//reset UFO when it's off screen and every 5 points
@@ -471,7 +511,7 @@ function draw_pipes(pipe) {
 
 	var x,y;						
 									
-	pipe.x -= game.game.increased_speed;
+	pipe.x -= game.game.increased_speed * delta_time_multiplier;
 	
 	//movable pipes
 	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) 
@@ -505,12 +545,12 @@ function draw_pipes(pipe) {
 	}
 	
 	//top_pipe
-	ctx.drawImage(sprites, top_pipe[0], top_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
-		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
+	ctx.drawImage(sprites, ...top_pipe, ...game.pipe.pipe_size, 
+		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
 		
 	//bottom_pipe
-	ctx.drawImage(sprites, btm_pipe[0], btm_pipe[1], game.pipe.pipe_size[0], game.pipe.pipe_size[1], 
-		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, game.pipe.draw_size[0], game.pipe.draw_size[1]);
+	ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
+		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
 		
 	pipe_logic(pipe); //collision and scoring detection	
 	
@@ -551,10 +591,13 @@ function pipe_logic(pipe) {
 		pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment, 
 		pipe.y > game.player.flyHeight || pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1]
 	].every((elem) => elem)) {
+		
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
+		
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
 	//check to see if pipe moves past theshold for the first time.
+	
 		pipe.scored = true; // flag so we don't count the same pipe more than once
 		console.log("SCORE!");
 		game.game.currentScore++; // score!
@@ -572,11 +615,23 @@ function draw_player() {
 	
 	} else {
 		x = cTenth;
-		game.player.flyHeight = (SCREEN_SIZE[1] / 2) - (game.player.size[1] / 2);
+		game.player.flyHeight = (SCREEN_SIZE[1] / 2) - (game.player.draw_size[1] / 2);
 	}
 	
-	ctx.drawImage(sprites, 433, Math.floor((game_tick % 9) / 3) * game.player.size[1], ...game.player.size, 
-			x, game.player.flyHeight, ...game.player.draw_size);
+	delta = (previousTime - game.player.last_sprite_update) / frame_interval;
+	
+	if (delta >= game.player.sprite_interval) {
+	
+		if (game.player.sprite_index == game.player.max_sprites - 1) 
+			{ game.player.sprite_index = 0; } else { game.player.sprite_index++; }
+		
+		game.player.last_sprite_update = previousTime;
+	
+	}
+
+	ctx.drawImage(sprites, 433, game.player.sprite_index * game.player.size[1], game.player.size[0], game.player.size[1]-1, //minus 1 for sprite clipping quick fix.
+		x, game.player.flyHeight, ...game.player.draw_size);
+		
 }
 
 function start_screen()
