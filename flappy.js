@@ -274,7 +274,7 @@ function run_game(currentTime) {
 	delta_time = currentTime - previousTime;
 	delta_time_multiplier = Math.max(delta_time / frame_interval, 1); // caps at FPS (60)
 		
-	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) { 
+	if (delta_time >= frame_interval) { 
 	
 		previousTime = currentTime;
 
