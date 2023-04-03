@@ -185,7 +185,7 @@ game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pi
 
 game_objects.ufo.startPOS = (SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale)) * 1.75;
 
-const player_center_pos = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
+const player_center_pos = ((SCREEN_SIZE[0] / 2) - (game_objects.player.draw_size[0] / 2));
 
 const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 1.75);
 
@@ -395,7 +395,7 @@ function draw_UFO() {
 	if (game.ufo.currentPOS[0] > (SCREEN_SIZE[0] + game.ufo.draw_size[0])) {
 		
 		//show warning arrow when ufo is off screen
-		ctx.drawImage(ufo_warning, 1, 0, game.ufo.warning_size[0], game.ufo.warning_size[1], 
+		ctx.drawImage(ufo_warning, 1, 0, ...game.ufo.warning_size, 
 			SCREEN_SIZE[0] - ((game.ufo.warning_size[0] * Y_Scaling) * 1.25), game.ufo.currentPOS[1] + (game.ufo.warning_size[1] / 2), 
 				game.ufo.warning_size[0] * Y_Scaling, game.ufo.warning_size[1] * Y_Scaling);
 	}  
@@ -533,7 +533,6 @@ function draw_pipes(pipe) {
 			pipe.y += (1 * Y_Scaling);
 		} else {
 			pipe.y -= (1 * Y_Scaling);
-
 		}
 	}
 	
@@ -587,7 +586,7 @@ function draw_pipe_stems(y, stem_size, pipe) {
 		} else {
 			x = stem_size;
 		}
-		ctx.drawImage(sprites, stem_pipe[0], stem_pipe[1], game.pipe.stem_size[0], x, 
+		ctx.drawImage(sprites, ...stem_pipe, game.pipe.stem_size[0], x, 
 			pipe.x, y, game.pipe.draw_size[0], stem_size); 
 
 		y += x;
@@ -627,19 +626,8 @@ function draw_player() {
 	var x;
 	if (game.game.gamePlaying) {
 		
-		x = game.player.x_adjustment;
-		//		gravity_interval : 0,
-		//		last_gravity_update : 0,
-		
-	//interval for frame update
-		//delta = (previousTime - game.game.last_gravity_update) / frame_interval;	
-
-		//if (delta >= game.game.gravity_interval * delta_time_multiplier) {
-				
-			game.player.flight += game.game.gravity * delta_time_multiplier;
-		
-		//}
-		
+		x = game.player.x_adjustment;			
+		game.player.flight += game.game.gravity * delta_time_multiplier;
 		game.player.flyHeight = Math.min(game.player.flyHeight + game.player.flight, game.ground.collision - game.player.draw_size[1]);
 	
 	} else {
@@ -692,7 +680,6 @@ function update_score() {
 	document.getElementById('bestScore').innerHTML = `Best : ${game.game.bestScore}`;
 	document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
-	
 	
 	if (game.game.gamePlaying) {
 		let txt = game.game.currentScore;
