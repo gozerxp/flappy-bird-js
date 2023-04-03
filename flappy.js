@@ -3,7 +3,7 @@
 // Written by Dan Andersen
 // Original code base provided by Codepen.com
 // https://codepen.io/ju-az/pen/eYJQwLx
-//
+// Source was heavily modified.
 
 const _VERSION_ = "1.0.0c";
 
@@ -185,7 +185,7 @@ game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pi
 
 game_objects.ufo.startPOS = (SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale)) * 1.75;
 
-const cTenth = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
+const player_center_pos = ((SCREEN_SIZE[0] / 2) - game_objects.player.draw_size[0] / 2);
 
 const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 1.75);
 
@@ -193,7 +193,7 @@ const playerAdjustment = (SCREEN_SIZE[0] / 2) < (game_objects.pipe.pipeGap[0] * 
 if (playerAdjustment) {	
 	game_objects.player.x_adjustment = SCREEN_SIZE[0] / 7;
 } else { 
-	game_objects.player.x_adjustment = cTenth; 
+	game_objects.player.x_adjustment = player_center_pos; 
 }
 
 //  mobile or desktop device
@@ -643,7 +643,7 @@ function draw_player() {
 		game.player.flyHeight = Math.min(game.player.flyHeight + game.player.flight, game.ground.collision - game.player.draw_size[1]);
 	
 	} else {
-		x = cTenth;
+		x = player_center_pos;
 		game.player.flyHeight = (SCREEN_SIZE[1] / 2) - (game.player.draw_size[1] / 2);
 	}
 	
