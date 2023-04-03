@@ -402,7 +402,7 @@ function draw_UFO() {
 	
 	// draw ufo
 	ctx.drawImage(ufo_sprite, 1, 0, ...game.ufo.size, 
-		...game.ufo.currentPOS, 
+		...game.ufo.currentPOS,
 			game.ufo.draw_size[0] * game.ufo.sprite_scale, game.ufo.draw_size[1] * game.ufo.sprite_scale);
 	
 	
