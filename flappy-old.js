@@ -18,6 +18,10 @@ const frame_interval = 1000 / frames_per_second;
 let delta_time_multiplier = 1;
 let delta_time = 0;
 
+//  mobile or desktop device
+function isTouchDevice() { return (window.ontouchstart !== undefined); }
+const __touch_device__ = isTouchDevice();
+
 //load sprites
 const sprites = new Image();
 sprites.src = "assets/flappy-bird-set.png";
@@ -196,10 +200,6 @@ if (playerAdjustment) {
 	game_objects.player.x_adjustment = cTenth; 
 }
 
-//  mobile or desktop device
-function isTouchDevice() { return (window.ontouchstart !== undefined); }
-const __touch_device__ = isTouchDevice();
-
 // All variables are initialized
 
 /////////////////////////////////////////////////////
@@ -274,7 +274,7 @@ function run_game(currentTime) {
 	delta_time = currentTime - previousTime;
 	delta_time_multiplier = Math.max(delta_time / frame_interval, 1); // caps at FPS (60)
 		
-	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) { 
+	if (delta_time >= frame_interval) { 
 	
 		previousTime = currentTime;
 
