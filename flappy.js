@@ -530,9 +530,9 @@ function draw_pipes(pipe) {
 	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) 
 			&& !pipe.scored) {
 		if (pipe.inverse_y > pipe.y) {
-			pipe.y += (1 * Y_Scaling);
+			pipe.y += (1 * Y_Scaling) * delta_time_multiplier;
 		} else {
-			pipe.y -= (1 * Y_Scaling);
+			pipe.y -= (1 * Y_Scaling) * delta_time_multiplier; 
 		}
 	}
 	
