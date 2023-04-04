@@ -656,8 +656,11 @@ function start_screen()
 		(SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * Y_Scaling), (600 * logoScaling), (160 * logoScaling));
 	
 	var txt = "";
-	if (__touch_device__) { txt = "Tap to play";
-	} else { txt = "Click to play";	}
+	if (__touch_device__) { 
+		txt = "Tap to play";
+	} else { 
+		txt = "Click to play";
+	}
 	
 	ctx.font = "bold 45px courier new";
 	ctx.fillStyle = "#4c3b46";
