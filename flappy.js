@@ -59,9 +59,9 @@ const game_objects = {
 		x : 0, 
 		y : 0, 
 		scored : false, 
-		movable : false,
+
 		type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
-		inverse_y : 0
+		inverse_y : 0 // for movable pipes (blue)
 	},
 
 	pipe : {
@@ -140,7 +140,6 @@ const game_objects = {
 
 	game : {
 		gamePlaying : false,
-		gameOver : false,
 		
 		gravity : 0.5,
 		gravity_interval : 1,
@@ -244,7 +243,7 @@ function set_scaling() {
 function start() {
 
 	window.requestAnimationFrame(run_game);
-	
+
 }
 
 //game functions
@@ -288,12 +287,6 @@ function run_game(currentTime) {
 			pipes = spawn_pipes(pipes);
 				
 			draw_UFO();
-
-		} else if (game.game.gameOver) {
-			
-			//game over screen
-			game.game.gameOver = false;
-			
 			
 		} else {
 			
@@ -318,13 +311,13 @@ function game_over() {
 	//player hit the ground
 	if ((game.player.flyHeight + game.player.draw_size[1]) >= game.ground.collision) {
 		game.game.gamePlaying = false;
-		game.game.gameOver = true;
+
 	}
 	
 	//player hit UFO
 	if (ufo_collision()) { 
 		game.game.gamePlaying = false; 
-		game.game.gameOver = true;
+
 	}
 	
 }
@@ -450,8 +443,8 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.scored = false;	
-		temp.movable = false; 
-		temp.inverse_y = moving_pipe_invert(temp.y); //metric for movable pipe
+		temp.type_index = 0; // start with green pipes
+		temp.inverse_y = moving_pipe_invert(temp.y); // metric for movable pipe
 		
 		pipes_array.push(temp);
 	}
@@ -477,7 +470,7 @@ function spawn_pipes(pipes_array) {
 		temp.y = pipeLoc();
 		temp.inverse_y = moving_pipe_invert(temp.y);
 		temp.scored = false;
-		temp.movable = level_up();
+		temp.type_index = level_up();
 		
 		new_pipes.push(temp);
 		
@@ -490,17 +483,13 @@ function spawn_pipes(pipes_array) {
 }
 
 function level_up() {
-	
-		if (game.game.currentScore > 5) { //minimum score of 5 to get movable pipes.
-		
-			if (game.game.currentScore > 15) { //every pipe is moving at 10.
-				return true;
-			} else {
-				return Math.round(Math.random()) == 1;	//randomize which pipes can move
-			}
-		}
-		
-		return false;		
+	if (game.game.currentScore <= 5) {
+		return 0;
+	} else if (game.game.currentScore > 5 && game.game.currentScore < 10) { //minimum score of 5 to get movable pipes.
+		return 1;
+	} else if (game.game.currentScore >= 10) {
+		return 2;
+	}	
 }
 
 
@@ -521,65 +510,70 @@ function moving_pipe_invert(y) {
 
 function draw_pipes(pipe) {
 
-	// pipe moving	
-
 	var x,y;						
 									
+	// pipe moving	
 	pipe.x -= game.game.increased_speed * delta_time_multiplier;
 	
-	//movable pipes
-	if (pipe.movable && pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) 
-			&& !pipe.scored) {
-		if (pipe.inverse_y > pipe.y) {
-			pipe.y += (1 * Y_Scaling) * delta_time_multiplier;
-		} else {
-			pipe.y -= (1 * Y_Scaling) * delta_time_multiplier; 
-		}
-	}
+	var top_pipe, btm_pipe, stem_pipe;
 	
-	//top pipe_stem
+	switch (pipe.type_index) {
+		case 0: // green pipe
+			top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
+			btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
+			stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
+			console.log("GREEN PIPE!");
+			break;
+
+		case 1: // blue pipe
+			top_pipe = [game.pipe.blue.top_pipe[0], game.pipe.blue.top_pipe[1]];
+			btm_pipe = [game.pipe.blue.btm_pipe[0], game.pipe.blue.btm_pipe[1]];
+			stem_pipe = [game.pipe.blue.stem_pipe[0], game.pipe.blue.stem_pipe[1]];
+
+			//movable pipes - pipe index 1 - blue pipe
+			if (pipe.x < (SCREEN_SIZE[0] + game.pipe.draw_size[0]) && !pipe.scored) {
+				if (pipe.inverse_y > pipe.y) {
+					pipe.y += (1 * Y_Scaling) * delta_time_multiplier;
+				} else {
+					pipe.y -= (1 * Y_Scaling) * delta_time_multiplier; 
+				}
+			}
+			console.log("BLUE PIPE!");
+			break;
+
+		case 2:  // red pipe
+			top_pipe = [game.pipe.red.top_pipe[0], game.pipe.red.top_pipe[1]];
+			btm_pipe = [game.pipe.red.btm_pipe[0], game.pipe.red.btm_pipe[1]];
+			stem_pipe= [game.pipe.red.stem_pipe[0], game.pipe.red.stem_pipe[1]];
+			console.log("RED PIPE!");
+			break;
+	}
+
+	// top pipe_stem
 	x = 0;
 	y = pipe.y - game.pipe.draw_size[1];
-	draw_pipe_stems(x, y, pipe);
+	draw_pipe_stems(x, y, stem_pipe, pipe);
 			
-	//bottom pipe_stem
+	// bottom pipe_stem
 	y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
 	x = game.ground.collision - y;
-	draw_pipe_stems(y, x, pipe);
+	draw_pipe_stems(y, x, stem_pipe, pipe);
 	
-	var top_pipe, btm_pipe;
-	
-	if(pipe.movable) { //if pipe is movable render blue pipe
-		top_pipe = [game.pipe.blue.top_pipe[0], game.pipe.blue.top_pipe[1]];
-		btm_pipe = [game.pipe.blue.btm_pipe[0], game.pipe.blue.btm_pipe[1]];
-	} else { // else render regular green pipe
-		top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
-		btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
-	}
-	
-	//top_pipe
+	// top_pipe
 	ctx.drawImage(sprites, ...top_pipe, ...game.pipe.pipe_size, 
 		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
 		
-	//bottom_pipe
+	// bottom_pipe
 	ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
 		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
 		
-	pipe_logic(pipe); //collision and scoring detection	
+	pipe_logic(pipe); // collision and scoring detection	
 	
 }
 
-function draw_pipe_stems(y, stem_size, pipe) {
+function draw_pipe_stems(y, stem_size, stem_pipe, pipe) {
 	
 	var x, z;
-	
-	var top_pipe, btm_pipe;
-	
-	if(pipe.movable) {
-		stem_pipe = [game.pipe.blue.stem_pipe[0], game.pipe.blue.stem_pipe[1]];
-	} else {
-		stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
-	}
 	
 	while (stem_size > 0) {
 		if (stem_size > game.pipe.max_stem_size) { 
@@ -607,22 +601,22 @@ function pipe_logic(pipe) {
 		
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
-		game.game.gameOver = true;
+
 		
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
-	//check to see if pipe moves past theshold for the first time.
+	// check to see if pipe moves past theshold for the first time.
 	
 		pipe.scored = true; // flag so we don't count the same pipe more than once
 		console.log("SCORE!");
 		game.game.currentScore++; // score!
-		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); //high score
+		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); // high score
 		
-		game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) //increase speed by 0.1
+		game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) // increase speed by 0.1
 
 	}
 }
 
-//player functions
+// player functions
 function draw_player() {
 	var x;
 	if (game.game.gamePlaying) {
