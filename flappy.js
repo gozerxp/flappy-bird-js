@@ -61,7 +61,8 @@ const game_objects = {
 		scored : false, 
 
 		type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
-		inverse_y : 0 // for movable pipes (blue)
+		inverse_y : 0, // for movable pipes (blue)'
+		top_or_btm : true // red pipes, true = top pipe, false = bottom pipe.
 	},
 
 	pipe : {
@@ -214,7 +215,7 @@ function InvertPosition(y, canvas_size) {
 	return z;
 }
 
-function pipeLoc() { return ( game.pipe.draw_size[1] + (Math.random() * ((game.ground.collision / 2) - (game.pipe.draw_size[1] * 2)))); }
+function pipeLoc() { return ( game.pipe.draw_size[1] + (Math.random() * ((game.ground.collision / 2) - game.pipe.draw_size[1]))); }
 
 function set_scaling() {
 
