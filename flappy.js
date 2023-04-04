@@ -244,6 +244,7 @@ function set_scaling() {
 function start() {
 
 	window.requestAnimationFrame(run_game);
+	
 }
 
 //game functions
