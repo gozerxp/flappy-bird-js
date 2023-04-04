@@ -5,7 +5,7 @@
 // https://codepen.io/ju-az/pen/eYJQwLx
 // Source was heavily modified.
 
-const _VERSION_ = "1.0.0c";
+const _VERSION_ = "1.0.0d";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -33,6 +33,7 @@ ufo_warning.src = "assets/warning_arrow.png";
 //load media
 const jump_fx = new Audio('assets/bloop.ogg');
 const airplane_fx = new Audio('assets/airplane.ogg');
+const blast_fx = new Audio('assets/blast.ogg');
 
 const game_objects = {
 // background 
@@ -58,11 +59,14 @@ const game_objects = {
 	pipe_array_data : {
 		x : 0, 
 		y : 0, 
-		scored : false, 
+		scored : false, //flag to ensure score is only counted once per pipe
 
 		type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
 		inverse_y : 0, // for movable pipes (blue)'
-		top_or_btm : true // red pipes, true = top pipe, false = bottom pipe.
+		
+		blasted : false, // check if the cannon has already been fired.
+		reached_max_blast_height : false,
+		cannon_Y : 0 // track trajectory of cannonball
 	},
 
 	pipe : {
@@ -84,7 +88,10 @@ const game_objects = {
 			btm_pipe : [822,108],
 			stem_pipe : [744,110],
 			cannonball : [500, 0],
-			cannonball_size : [65, 55]
+			cannonball_size : [65, 55],
+			blast_speed: 0,
+			max_blast_height: 0
+
 		},
 		
 		pipe_size : [78,77],
@@ -444,9 +451,8 @@ function IntializePipes() {
 		
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
-		temp.scored = false;	
-		temp.type_index = 0; // start with green pipes
-		temp.inverse_y = moving_pipe_invert(temp.y); // metric for movable pipe
+		temp.type_index = 2; // start with green pipes
+		//temp.inverse_y = moving_pipe_invert(temp.y); // metric for movable pipe
 		
 		pipes_array.push(temp);
 	}
@@ -470,9 +476,8 @@ function spawn_pipes(pipes_array) {
 		const temp = {...game.pipe_array_data};
 		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
-		temp.inverse_y = moving_pipe_invert(temp.y);
-		temp.scored = false;
-		temp.type_index = level_up();
+		temp.type_index = 2;//level_up();
+		if (temp.type_index == 1) { temp.inverse_y = moving_pipe_invert(temp.y);} //only calculate invert if blue pipe.
 		
 		new_pipes.push(temp);
 		
