@@ -522,7 +522,6 @@ function draw_pipes(pipe) {
 			top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
 			btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
 			stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
-			console.log("GREEN PIPE!");
 			break;
 
 		case 1: // blue pipe
@@ -538,14 +537,14 @@ function draw_pipes(pipe) {
 					pipe.y -= (1 * Y_Scaling) * delta_time_multiplier; 
 				}
 			}
-			console.log("BLUE PIPE!");
+
 			break;
 
 		case 2:  // red pipe
 			top_pipe = [game.pipe.red.top_pipe[0], game.pipe.red.top_pipe[1]];
 			btm_pipe = [game.pipe.red.btm_pipe[0], game.pipe.red.btm_pipe[1]];
 			stem_pipe= [game.pipe.red.stem_pipe[0], game.pipe.red.stem_pipe[1]];
-			console.log("RED PIPE!");
+
 			break;
 	}
 
