@@ -83,7 +83,8 @@ const game_objects = {
 			top_pipe : [744,511],
 			btm_pipe : [822,108],
 			stem_pipe : [744,110],
-			cannonball : [0, 0]
+			cannonball : [500, 0],
+			cannonball_size : [65, 55]
 		},
 		
 		pipe_size : [78,77],
@@ -549,23 +550,26 @@ function draw_pipes(pipe) {
 			break;
 	}
 
-	// top pipe_stem
-	x = 0;
-	y = pipe.y - game.pipe.draw_size[1];
-	draw_pipe_stems(x, y, stem_pipe, pipe);
-			
+	if (pipe.type_index != 2) { //only draw top pipe if not red
+		// top pipe_stem
+		x = 0;
+		y = pipe.y - game.pipe.draw_size[1];
+		draw_pipe_stems(x, y, stem_pipe, pipe);
+				
+		// top_pipe
+		ctx.drawImage(sprites, ...top_pipe, ...game.pipe.pipe_size, 
+			pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
+	}
+
 	// bottom pipe_stem
 	y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
 	x = game.ground.collision - y;
 	draw_pipe_stems(y, x, stem_pipe, pipe);
-	
-	// top_pipe
-	ctx.drawImage(sprites, ...top_pipe, ...game.pipe.pipe_size, 
-		pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
 		
 	// bottom_pipe
 	ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
 		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
+	
 		
 	pipe_logic(pipe); // collision and scoring detection	
 	
