@@ -89,9 +89,8 @@ const game_objects = {
 			stem_pipe : [744,110],
 			cannonball : [500, 0],
 			cannonball_size : [65, 55],
-			blast_speed: 0,
+			blast_speed: 5,
 			max_blast_height: 0
-
 		},
 		
 		pipe_size : [78,77],
@@ -190,6 +189,7 @@ game_objects.ground.collision = SCREEN_SIZE[1] - (game_objects.ground.size[1] * 
 
 game_objects.pipe.start_position = SCREEN_SIZE[0] + game_objects.pipe.pipeGap[0] + game_objects.pipe.draw_size[0];
 game_objects.pipe.max_num_of_pipes = Math.ceil(SCREEN_SIZE[0] / (game_objects.pipe.pipe_size[0] + game_objects.pipe.pipeGap[0])) + 1;
+game_objects.pipe.red.max_blast_height = game_objects.pipe.pipeGap[1];
 
 game_objects.ufo.startPOS = (SCREEN_SIZE[0] + (game_objects.ufo.draw_size[0] * game_objects.ufo.sprite_scale)) * 1.75;
 
@@ -551,6 +551,9 @@ function draw_pipes(pipe) {
 			top_pipe = [game.pipe.red.top_pipe[0], game.pipe.red.top_pipe[1]];
 			btm_pipe = [game.pipe.red.btm_pipe[0], game.pipe.red.btm_pipe[1]];
 			stem_pipe= [game.pipe.red.stem_pipe[0], game.pipe.red.stem_pipe[1]];
+			
+			//write code for cannonball
+			
 
 			break;
 	}
