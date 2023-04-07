@@ -71,7 +71,7 @@ const game_objects = {
 
 	pipe : {
 		// sprite dimensions
-		green	: { // classic pipe
+		green : { // classic pipe
 			top_pipe : [432,511],
 			btm_pipe : [510,108],
 			stem_pipe : [432,110]
