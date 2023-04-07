@@ -491,12 +491,12 @@ function spawn_pipes(pipes_array) {
 }
 
 function level_up() {
-	if (game.game.currentScore <= 5) {
+	if (game.game.currentScore <= 10) {
 		return 0;
-	} else if (game.game.currentScore > 5 && game.game.currentScore < 10) { // minimum score of 5 to get movable pipes.
-		return 1;
-	} else if (game.game.currentScore >= 10) {
-		return 2;
+	 } else { // if (game.game.currentScore > 5 && game.game.currentScore < 10) { // minimum score of 5 to get movable pipes.
+		return Math.round(Math.random());
+	//} else if (game.game.currentScore >= 10) {
+	//	return 2;
 	}	
 }
 
