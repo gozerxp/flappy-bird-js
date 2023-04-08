@@ -1,11 +1,11 @@
 // Flappy Bird Clone JS
-// Version 1.0.0c build 3/27/2023
+// Version 1.0.0e build 3/27/2023
 // Written by Dan Andersen
 // Original code base provided by Codepen.com
 // https://codepen.io/ju-az/pen/eYJQwLx
 // Source was heavily modified.
 
-const _VERSION_ = "1.0.0d";
+const _VERSION_ = "1.0.0e";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -66,6 +66,7 @@ const game_objects = {
 		inverse_y : 0, // for movable pipes (blue)'
 		
 		red_top_or_btm : false, // true = top pipe, false = bottom pipe
+		
 		blasted : false, // check if the cannon has already been fired (red).
 		reached_max_blast_height : false,
 		cannon_Y : 0 // track trajectory of cannonball
@@ -89,9 +90,11 @@ const game_objects = {
 			top_pipe : [744,511],
 			btm_pipe : [822,108],
 			stem_pipe : [744,110],
-			cannonball : [500, 0],
-			cannonball_size : [65, 55],
-			blast_speed: 5,
+
+			cannonball_sprite : [500, 0],
+			cannonball_size : [62, 62],
+			cannonball_draw_size : [0, 0],
+			blast_speed: 11.5,
 			max_blast_height: 0
 		},
 		
@@ -141,7 +144,7 @@ const game_objects = {
 		
 		startPOS : 0,
 		currentPOS : [0,0],
-		interval : 5, // spawn new ufo when score % interval = 0
+		interval : 8, // spawn new ufo when score % interval = 0
 		LastSpawn : 0,
 		
 		speed : 0
@@ -246,6 +249,9 @@ function set_scaling() {
 	
 	game_objects.pipe.draw_size[0] = game_objects.pipe.pipe_size[0] * Y_Scaling;
 	game_objects.pipe.draw_size[1] = game_objects.pipe.pipe_size[1] * Y_Scaling;
+	game_objects.pipe.red.cannonball_draw_size[0] = game_objects.pipe.red.cannonball_size[0] * Y_Scaling;
+	game_objects.pipe.red.cannonball_draw_size[1] = game_objects.pipe.red.cannonball_size[1] * Y_Scaling;
+	game_objects.pipe.red.blast_speed *= Y_Scaling;
 	
 	game_objects.game.gravity *= Y_Scaling;
 	game_objects.game.speed *= Y_Scaling;
@@ -455,6 +461,7 @@ function IntializePipes() {
 		temp.y = pipeLoc();
 		temp.type_index = level_up(); // start with green pipes
 		temp.inverse_y = moving_pipe_invert(temp.y); 
+
 		// metric for movable pipe
 		
 		pipes_array.push(temp);
@@ -481,7 +488,13 @@ function spawn_pipes(pipes_array) {
 		temp.y = pipeLoc();
 		temp.type_index = level_up();
 		temp.inverse_y = moving_pipe_invert(temp.y);
-		temp.red_top_or_btm = Boolean(Math.round(Math.random()));
+		temp.red_top_or_btm = Boolean(Math.round(Math.random())); //randomizes if the red pipe will be on the top of bottom of the screen
+		
+		if (temp.red_top_or_btm) {
+			temp.cannon_Y = temp.y - game.pipe.red.cannonball_draw_size[1]; // top pipe cannonball starting position
+		} else {
+			temp.cannon_Y = temp.y + game.pipe.pipeGap[1] + game.pipe.red.cannonball_draw_size[1]; // bottom pipe cannonball starting position
+		}
 		
 		new_pipes.push(temp);
 		
@@ -494,12 +507,11 @@ function spawn_pipes(pipes_array) {
 }
 
 function level_up() {
+
 	if (game.game.currentScore <= 5) {
 		return 0;
-	 } else { // if (game.game.currentScore > 5 && game.game.currentScore < 10) { // minimum score of 5 to get movable pipes.
+	 } else { 
 		return Math.round(Math.random() * 2);
-	//} else if (game.game.currentScore >= 10) {
-	//	return 2;
 	}	
 }
 
@@ -554,7 +566,15 @@ function draw_pipes(pipe) {
 			top_pipe = [game.pipe.red.top_pipe[0], game.pipe.red.top_pipe[1]];
 			btm_pipe = [game.pipe.red.btm_pipe[0], game.pipe.red.btm_pipe[1]];
 			stem_pipe= [game.pipe.red.stem_pipe[0], game.pipe.red.stem_pipe[1]];
-			
+
+			// check to see if cannon has been blasted
+			if (pipe.blasted) { 
+				draw_cannonball(pipe); 
+				cannonball_logic(pipe); 
+			} else {
+				//code for checking why cannon hasn't been blasted yet.
+				check_for_blastoff(pipe);
+			}
 			// write code for cannonball
 			break;
 	}
@@ -580,10 +600,35 @@ function draw_pipes(pipe) {
 		ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
 			pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
 	}
+
+	pipe_logic(pipe); // collision and scoring detection
+
 	
-		
-	pipe_logic(pipe); // collision and scoring detection	
-	
+}
+
+function check_for_blastoff(pipe) {
+
+	if (pipe.x - game.player.x_adjustment <= (game.pipe.pipeGap[0] / 1.25)) {
+		pipe.blasted = true;
+		blast_fx.play();
+	}
+
+}
+
+function draw_cannonball(pipe) {
+
+	if (pipe.red_top_or_btm) { //top pipe
+		pipe.cannon_Y += game.pipe.red.blast_speed * delta_time_multiplier;
+	} else {
+		pipe.cannon_Y -= game.pipe.red.blast_speed * delta_time_multiplier;
+	}
+
+	let x = pipe.x + (game.pipe.draw_size[0] / 2) - (game.pipe.red.cannonball_draw_size[0] / 2);
+
+	// cannon ball	
+	ctx.drawImage(sprites, ...game.pipe.red.cannonball_sprite, ...game.pipe.red.cannonball_size,
+		x, pipe.cannon_Y, ...game.pipe.red.cannonball_draw_size);
+
 }
 
 function draw_pipe_stems(y, stem_size, stem_pipe, pipe) {
@@ -601,6 +646,25 @@ function draw_pipe_stems(y, stem_size, stem_pipe, pipe) {
 
 		y += x;
 		stem_size -= game.pipe.max_stem_size;
+	}
+
+}
+
+function cannonball_logic(pipe) {
+
+	let cannon_x = pipe.x + (game.pipe.draw_size[0] / 2) - (game.pipe.red.cannonball_draw_size[0] / 2);
+
+	let check_x1 = cannon_x <= game.player.x_adjustment + game.player.draw_size[0];
+	let check_x2 = cannon_x + game.pipe.red.cannonball_draw_size[0] >= game.player.x_adjustment;
+
+	let check_y1 = pipe.cannon_Y <= game.player.flyHeight;
+	let check_y2 = pipe.cannon_Y + game.pipe.red.cannonball_draw_size[1] >= game.player.flyHeight + game.player.draw_size[1];
+
+	if ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem)) {
+		
+		console.log("HIT CANNONBALL!");
+		game.game.gamePlaying = false;
+		
 	}
 
 }
