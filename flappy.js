@@ -351,7 +351,7 @@ function draw_background() {
 				...game.background.draw_size);
 	}
 	
-	if (game.background.lastPOS_x < -game.background.draw_size[0]) {
+	if (game.background.lastPOS_x <= -game.background.draw_size[0]) {
 		game.background.lastPOS_x = 0; // reset
 	} else {
 		game.background.lastPOS_x -= game.background.speed * delta_time_multiplier;
@@ -368,7 +368,7 @@ function draw_ground() {
 				...game.ground.draw_size);
 	}
 	
-	if (game.ground.lastPOS_x < -game.ground.draw_size[0]) {
+	if (game.ground.lastPOS_x <= -game.ground.draw_size[0]) {
 		game.ground.lastPOS_x = 0; // reset
 	} else {
 		game.ground.lastPOS_x -= game.ground.speed * delta_time_multiplier;
@@ -544,6 +544,7 @@ function draw_pipes(pipe) {
 			top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
 			btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
 			stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
+			
 			break;
 
 		case 1: // blue pipe
