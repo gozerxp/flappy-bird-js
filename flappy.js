@@ -62,9 +62,11 @@ const game_objects = {
 		scored : false, // flag to ensure score is only counted once per pipe
 
 		type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
+
 		inverse_y : 0, // for movable pipes (blue)'
 		
-		blasted : false, // check if the cannon has already been fired.
+		red_top_or_btm : false, // true = top pipe, false = bottom pipe
+		blasted : false, // check if the cannon has already been fired (red).
 		reached_max_blast_height : false,
 		cannon_Y : 0 // track trajectory of cannonball
 	},
@@ -452,7 +454,7 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.type_index = level_up(); // start with green pipes
-		// temp.inverse_y = moving_pipe_invert(temp.y); 
+		temp.inverse_y = moving_pipe_invert(temp.y); 
 		// metric for movable pipe
 		
 		pipes_array.push(temp);
@@ -478,7 +480,8 @@ function spawn_pipes(pipes_array) {
 		temp.x = pipes[(pipes.length - 1)].x + (game.pipe.pipeGap[0] + game.pipe.draw_size[0]);
 		temp.y = pipeLoc();
 		temp.type_index = level_up();
-		if (temp.type_index == 1) { temp.inverse_y = moving_pipe_invert(temp.y);} // only calculate invert if blue pipe.
+		temp.inverse_y = moving_pipe_invert(temp.y);
+		temp.red_top_or_btm = Boolean(Math.round(Math.random()));
 		
 		new_pipes.push(temp);
 		
@@ -491,15 +494,14 @@ function spawn_pipes(pipes_array) {
 }
 
 function level_up() {
-	if (game.game.currentScore <= 10) {
+	if (game.game.currentScore <= 5) {
 		return 0;
 	 } else { // if (game.game.currentScore > 5 && game.game.currentScore < 10) { // minimum score of 5 to get movable pipes.
-		return Math.round(Math.random());
+		return Math.round(Math.random() * 2);
 	//} else if (game.game.currentScore >= 10) {
 	//	return 2;
 	}	
 }
-
 
 function moving_pipe_invert(y) {
 	
@@ -554,12 +556,10 @@ function draw_pipes(pipe) {
 			stem_pipe= [game.pipe.red.stem_pipe[0], game.pipe.red.stem_pipe[1]];
 			
 			// write code for cannonball
-			
-
 			break;
 	}
 
-	if (pipe.type_index != 2) { // only draw top pipe if not red
+	if (!(pipe.type_index == 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
 		// top pipe_stem
 		x = 0;
 		y = pipe.y - game.pipe.draw_size[1];
@@ -570,14 +570,16 @@ function draw_pipes(pipe) {
 			pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
 	}
 
-	// bottom pipe_stem
-	y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
-	x = game.ground.collision - y;
-	draw_pipe_stems(y, x, stem_pipe, pipe);
-		
-	// bottom_pipe
-	ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
-		pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
+	if (!(pipe.type_index == 2 && pipe.red_top_or_btm)) { // checking red pipe logic
+		// bottom pipe_stem
+		y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
+		x = game.ground.collision - y;
+		draw_pipe_stems(y, x, stem_pipe, pipe);
+			
+		// bottom_pipe
+		ctx.drawImage(sprites, ...btm_pipe, ...game.pipe.pipe_size, 
+			pipe.x, pipe.y + game.pipe.pipeGap[1] + 1, ...game.pipe.draw_size);
+	}
 	
 		
 	pipe_logic(pipe); // collision and scoring detection	
@@ -606,15 +608,21 @@ function draw_pipe_stems(y, stem_size, stem_pipe, pipe) {
 function pipe_logic(pipe) {
 	
 	// if hit the pipe, end
-	if ([
-		pipe.x <= game.player.x_adjustment + game.player.draw_size[0], 
-		pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment, 
-		pipe.y > game.player.flyHeight || pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1]
-	].every((elem) => elem)) {
+
+	// check if player has entered into x-axis of oncoming pipe
+	let check_pipe_x1 = pipe.x <= game.player.x_adjustment + game.player.draw_size[0];
+	let check_pipe_x2 = pipe.x + game.pipe.draw_size[0] >= game.player.x_adjustment;
+
+	// check if has hit the top or bottom pipe
+	let check_top_pipe = pipe.y > game.player.flyHeight && 
+		(!(pipe.type_index == 2 && !pipe.red_top_or_btm)); // red pipe logic
+	let check_btm_pipe = pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1] &&
+		 (!(pipe.type_index == 2 && pipe.red_top_or_btm)); // red pipe logic
+	
+	if ([check_pipe_x1, check_pipe_x2, check_top_pipe || check_btm_pipe].every((elem) => elem)) {
 		
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
-
 		
 	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
 	// check to see if pipe moves past theshold for the first time.
