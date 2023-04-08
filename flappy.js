@@ -157,8 +157,6 @@ const game_objects = {
 		gamePlaying : false,
 		
 		gravity : 0.5,
-		gravity_interval : 1,
-		last_gravity_update : 0,
 		
 		speed : 5.5,//6.2,
 		
@@ -772,6 +770,13 @@ function update_score() {
 	//document.getElementById('bestScore').innerHTML = `Best : ${game.game.bestScore}`;
 	//document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	//document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
+
+	box_size = [500, 250];
+
+	ctx.globalAlpha = 0.5;
+	ctx.fillStyle = "#4c3b46";
+    //ctx.fillRect((SCREEN_SIZE[0] / 2) - (box_size[0] / 2), (game.ground.collision /  2) - (box_size[1] / 2), box_size[0], box_size[1]);
+    ctx.globalAlpha = 1.0;
 	
 	if (game.game.gamePlaying) {
 		let txt = game.game.currentScore;
