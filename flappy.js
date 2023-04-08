@@ -47,7 +47,7 @@ const game_objects = {
 
 // ground
 	ground : {
-		size : [551, 150],
+		size : [550, 150],
 		draw_size : [0, 0], // for scaling
 		canvas_fill : 0, // Math.ceil(SCREEN_SIZE[0] / ground.size[0]) + 1;
 		collision : 0, // SCREEN_SIZE[1] - ground.size[1];
@@ -94,7 +94,7 @@ const game_objects = {
 			cannonball_sprite : [500, 0],
 			cannonball_size : [62, 62],
 			cannonball_draw_size : [0, 0],
-			blast_speed: 11.5,
+			blast_speed: 15,
 			max_blast_height: 0
 		},
 		
@@ -109,7 +109,9 @@ const game_objects = {
 		pipeGap : [270, 220],
 		
 		start_position : 0,
-		max_num_of_pipes : 0
+		max_num_of_pipes : 0,
+
+		total_pipes : 0
 	},
 
 // player
@@ -138,13 +140,13 @@ const game_objects = {
 		sprite_scale : 1,
 		
 		// draw scaling constrants
-		scale_min : .55,
-		scale_max : .7,
+		scale_min : .5,
+		scale_max : .65,
 		draw_size : [0, 0], // draw scaling
 		
 		startPOS : 0,
 		currentPOS : [0,0],
-		interval : 8, // spawn new ufo when score % interval = 0
+		interval : 10, // spawn new ufo when score % interval = 0
 		LastSpawn : 0,
 		
 		speed : 0
@@ -279,22 +281,22 @@ function run_game(currentTime) {
 			
 			pipes.forEach(draw_pipes);
 			pipes = spawn_pipes(pipes);
-				
+
 			draw_UFO();
-			
+					
 		} else {
 			
 			start_screen();
 
 		}
 
+		update_score();
+
 		draw_player();
 		draw_ground();
 
 		game_over();
 
-		update_score();
-		
 	}
 	
 	window.requestAnimationFrame(run_game);
@@ -316,6 +318,7 @@ function game_reset() {
 	// set initial flyHeight (middle of screen - size of the bird)
 	game.player.flyHeight = (game.ground.collision / 2) - (game.player.draw_size[1] / 2);
 	
+	game.pipe.total_pipes = 0;
 	pipes = IntializePipes();
 	
 	spawn_ufo();
@@ -460,11 +463,14 @@ function IntializePipes() {
 		temp.x = game.pipe.start_position + (i * (game.pipe.pipeGap[0] + game.pipe.draw_size[0]));
 		temp.y = pipeLoc();
 		temp.type_index = level_up(); // start with green pipes
-		temp.inverse_y = moving_pipe_invert(temp.y); 
+		temp.inverse_y = moving_pipe_invert(temp.y);
+		temp.red_top_or_btm = Boolean(Math.round(Math.random()));
 
 		// metric for movable pipe
 		
 		pipes_array.push(temp);
+
+		game.pipe.total_pipes++;
 	}
 	
 	return pipes_array;
@@ -490,13 +496,9 @@ function spawn_pipes(pipes_array) {
 		temp.inverse_y = moving_pipe_invert(temp.y);
 		temp.red_top_or_btm = Boolean(Math.round(Math.random())); //randomizes if the red pipe will be on the top of bottom of the screen
 		
-		if (temp.red_top_or_btm) {
-			temp.cannon_Y = temp.y - game.pipe.red.cannonball_draw_size[1]; // top pipe cannonball starting position
-		} else {
-			temp.cannon_Y = temp.y + game.pipe.pipeGap[1] + game.pipe.red.cannonball_draw_size[1]; // bottom pipe cannonball starting position
-		}
-		
 		new_pipes.push(temp);
+
+		game.pipe.total_pipes++;
 		
 		return new_pipes;
 		
@@ -508,10 +510,10 @@ function spawn_pipes(pipes_array) {
 
 function level_up() {
 
-	if (game.game.currentScore <= 5) {
+	if (game.pipe.total_pipes < 5) {
 		return 0;
 	 } else { 
-		return Math.round(Math.random() * 2);
+		return   Math.round(Math.random() * 2);
 	}	
 }
 
@@ -609,6 +611,13 @@ function draw_pipes(pipe) {
 function check_for_blastoff(pipe) {
 
 	if (pipe.x - game.player.x_adjustment <= (game.pipe.pipeGap[0] / 1.25)) {
+		
+		if (pipe.red_top_or_btm) {
+			pipe.cannon_Y = pipe.y - game.pipe.red.cannonball_draw_size[1]; // top pipe cannonball starting position
+		} else {
+			pipe.cannon_Y = pipe.y + game.pipe.pipeGap[1] + game.pipe.red.cannonball_draw_size[1]; // bottom pipe cannonball starting position
+		}
+		
 		pipe.blasted = true;
 		blast_fx.play();
 	}
@@ -696,7 +705,7 @@ function pipe_logic(pipe) {
 		game.game.currentScore++; // score!
 		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); // high score
 		
-		game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) // increase speed by 0.1
+		//game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) // increase speed by 0.1
 
 	}
 }
