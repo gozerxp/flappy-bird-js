@@ -94,7 +94,7 @@ const game_objects = {
 			cannonball_sprite : [500, 0],
 			cannonball_size : [62, 62],
 			cannonball_draw_size : [0, 0],
-			blast_speed: 15,
+			blast_speed: 11.5,
 			max_blast_height: 0
 		},
 		
@@ -170,7 +170,7 @@ const game_objects = {
 	}
 };
 
-const scoreboard_buffer = 32;
+const scoreboard_buffer = 0;//32;
 let SCREEN_SIZE = [window.innerWidth, game_objects.background.size[1]];
 let Y_Scaling = 1;
 
@@ -513,7 +513,7 @@ function level_up() {
 	if (game.pipe.total_pipes < 5) {
 		return 0;
 	 } else { 
-		return   Math.round(Math.random() * 2);
+		return Math.round(Math.random() * 2);
 	}	
 }
 
@@ -610,7 +610,7 @@ function draw_pipes(pipe) {
 
 function check_for_blastoff(pipe) {
 
-	if (pipe.x - game.player.x_adjustment <= (game.pipe.pipeGap[0] / 1.25)) {
+	if (pipe.x - game.player.x_adjustment <= (game.pipe.pipeGap[0] / 1.5)) {
 		
 		if (pipe.red_top_or_btm) {
 			pipe.cannon_Y = pipe.y - game.pipe.red.cannonball_draw_size[1]; // top pipe cannonball starting position
@@ -769,9 +769,9 @@ function start_screen()
 
 function update_score() {
 	
-	document.getElementById('bestScore').innerHTML = `Best : ${game.game.bestScore}`;
-	document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
-	document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
+	//document.getElementById('bestScore').innerHTML = `Best : ${game.game.bestScore}`;
+	//document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
+	//document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
 	
 	if (game.game.gamePlaying) {
 		let txt = game.game.currentScore;
