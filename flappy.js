@@ -544,7 +544,7 @@ function draw_pipes(pipe) {
 			top_pipe = [game.pipe.green.top_pipe[0], game.pipe.green.top_pipe[1]];
 			btm_pipe = [game.pipe.green.btm_pipe[0], game.pipe.green.btm_pipe[1]];
 			stem_pipe= [game.pipe.green.stem_pipe[0], game.pipe.green.stem_pipe[1]];
-			
+
 			break;
 
 		case 1: // blue pipe
@@ -774,10 +774,14 @@ function update_score() {
 
 	box_size = [500, 250];
 
-	ctx.globalAlpha = 0.5;
-	ctx.fillStyle = "#4c3b46";
-    //ctx.fillRect((SCREEN_SIZE[0] / 2) - (box_size[0] / 2), (game.ground.collision /  2) - (box_size[1] / 2), box_size[0], box_size[1]);
-    ctx.globalAlpha = 1.0;
+	// ctx.globalAlpha = 0.5;
+	// ctx.strokeStyle = "#4c3b46";
+	// ctx.fillStyle = "#4c3b46";
+	// ctx.beginPath();
+    // ctx.roundRect((SCREEN_SIZE[0] / 2) - (box_size[0] / 2), (SCREEN_SIZE[1] /  2) - (box_size[1] / 2), box_size[0], box_size[1], 50);
+	// ctx.stroke();
+	// ctx.fill();
+    // ctx.globalAlpha = 1.0;
 	
 	if (game.game.gamePlaying) {
 		let txt = game.game.currentScore;
@@ -807,18 +811,15 @@ sprites.onload = start;
 if (__touch_device__) {
 	document.body.ontouchstart = () => {
 		user_input();
-		console.log("touch");
 	}
 } else {
 	document.body.onmousedown = () => { 
 		user_input();
-		console.log("click");
 	}
 	
 	document.body.onkeydown = function(e) {
 		if (e.key == " ") {
 			user_input();
-			console.log("spacebar");
 		}
 	}
 }
