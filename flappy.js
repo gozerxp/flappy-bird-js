@@ -5,7 +5,7 @@
 // https://codepen.io/ju-az/pen/eYJQwLx
 // Source was heavily modified.
 
-const _VERSION_ = "1.0.0e";
+const _VERSION_ = "1.0.0g";
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -27,13 +27,24 @@ logo.src = "assets/fb-logo.png";
 
 const ufo_sprite = new Image();
 ufo_sprite.src = "assets/airplane.png";
+
 const ufo_warning = new Image();
 ufo_warning.src = "assets/warning_arrow.png";
 
+//EasterEgg Sprite
+// const egg_sprite = new Image();
+// egg_sprite.src = "assets/eastereggs.png";
+// const egg_size = [158, 178];
+
 // load media
 const jump_fx = new Audio('assets/bloop.ogg');
+jump_fx.load();
+
 const airplane_fx = new Audio('assets/airplane.ogg');
+airplane_fx.load();
+
 const blast_fx = new Audio('assets/blast.ogg');
+blast_fx.load();
 
 const game_objects = {
 // background 
@@ -141,7 +152,7 @@ const game_objects = {
 		
 		// draw scaling constrants
 		scale_min : .5,
-		scale_max : .65,
+		scale_max : .75,
 		draw_size : [0, 0], // draw scaling
 		
 		startPOS : 0,
@@ -155,6 +166,8 @@ const game_objects = {
 
 	game : {
 		gamePlaying : false,
+
+		easterEgg: false,
 		
 		gravity : 0.5,
 		
@@ -221,9 +234,9 @@ let game = game_objects;
 let pipes = [];
 
 function InvertPosition(y, canvas_size) {
-	var x, z;
-	x = canvas_size / 2;
-	z = (x - y);
+
+	let x = canvas_size / 2;
+	let  z = (x - y);
 	z += x;
 	return z;
 }
@@ -268,7 +281,7 @@ function run_game(currentTime) {
 	delta_time = currentTime - previousTime;
 	delta_time_multiplier = Math.max(delta_time / frame_interval, 1); // caps at FPS (60)
 		
-	if (delta_time >= Math.floor(frame_interval * delta_time_multiplier)) { 
+	if (delta_time >= Math.floor(frame_interval)) { 
 	
 		previousTime = currentTime;
 
@@ -291,9 +304,10 @@ function run_game(currentTime) {
 		update_score();
 
 		draw_player();
-		draw_ground();
-
+	
 		game_over();
+
+		draw_ground();
 
 	}
 	
@@ -322,6 +336,8 @@ function game_reset() {
 	spawn_ufo();
 	
 	game.game.gamePlaying = true;
+
+	game.game.easterEgg = false;
 
 }
 
@@ -398,8 +414,8 @@ function draw_UFO() {
 		
 	} else if (((game.ufo.currentPOS[0] + (game.ufo.draw_size[0] * game.ufo.sprite_scale)) < 0) // check to make sure ufo on not screen
 			&& (game.game.currentScore > 0) // dont spawn unless currentScore > 0
-				&& (game.game.currentScore % game.ufo.interval == 0) // score trigger spawn interval
-					&& (game.ufo.LastSpawn != game.game.currentScore)) // make sure not spawn more than once per interval
+				&& (game.game.currentScore % game.ufo.interval === 0) // score trigger spawn interval
+					&& (game.ufo.LastSpawn !== game.game.currentScore)) // make sure not spawn more than once per interval
 	{ 
 		spawn_ufo();
 	}
@@ -507,12 +523,7 @@ function spawn_pipes(pipes_array) {
 }
 
 function level_up() {
-
-	if (game.pipe.total_pipes < 5) {
-		return 0;
-	 } else { 
-		return Math.round(Math.random() * 2);
-	}	
+	return game.pipe.total_pipes < 5 ? 0 : Math.round(Math.random() * 2);	
 }
 
 function moving_pipe_invert(y) {
@@ -530,14 +541,12 @@ function moving_pipe_invert(y) {
 	return x;
 }
 
-function draw_pipes(pipe) {
-
-	var x,y;						
+function draw_pipes(pipe) {		
 									
 	// pipe moving	
 	pipe.x -= game.game.increased_speed * delta_time_multiplier;
 	
-	var top_pipe, btm_pipe, stem_pipe;
+	let top_pipe, btm_pipe, stem_pipe;
 	
 	switch (pipe.type_index) {
 		case 0: // green pipe
@@ -580,10 +589,10 @@ function draw_pipes(pipe) {
 			break;
 	}
 
-	if (!(pipe.type_index == 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
+	if (!(pipe.type_index === 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
 		// top pipe_stem
-		x = 0;
-		y = pipe.y - game.pipe.draw_size[1];
+		let x = 0;
+		let y = pipe.y - game.pipe.draw_size[1];
 		draw_pipe_stems(x, y, stem_pipe, pipe);
 				
 		// top_pipe
@@ -591,10 +600,10 @@ function draw_pipes(pipe) {
 			pipe.x, pipe.y - game.pipe.draw_size[1] - 1, ...game.pipe.draw_size);
 	}
 
-	if (!(pipe.type_index == 2 && pipe.red_top_or_btm)) { // checking red pipe logic
+	if (!(pipe.type_index === 2 && pipe.red_top_or_btm)) { // checking red pipe logic
 		// bottom pipe_stem
-		y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
-		x = game.ground.collision - y;
+		let y = pipe.y + game.pipe.pipeGap[1] + game.pipe.draw_size[1];
+		let x = game.ground.collision - y;
 		draw_pipe_stems(y, x, stem_pipe, pipe);
 			
 		// bottom_pipe
@@ -641,7 +650,7 @@ function draw_cannonball(pipe) {
 
 function draw_pipe_stems(y, stem_size, stem_pipe, pipe) {
 	
-	var x, z;
+	let x, z;
 	
 	while (stem_size > 0) {
 		if (stem_size > game.pipe.max_stem_size) { 
@@ -687,22 +696,24 @@ function pipe_logic(pipe) {
 
 	// check if has hit the top or bottom pipe
 	let check_top_pipe = pipe.y > game.player.flyHeight && 
-		(!(pipe.type_index == 2 && !pipe.red_top_or_btm)); // red pipe logic
+		(!(pipe.type_index === 2 && !pipe.red_top_or_btm)); // red pipe logic
 	let check_btm_pipe = pipe.y + game.pipe.pipeGap[1] < game.player.flyHeight + game.player.draw_size[1] &&
-		 (!(pipe.type_index == 2 && pipe.red_top_or_btm)); // red pipe logic
+		 (!(pipe.type_index === 2 && pipe.red_top_or_btm)); // red pipe logic
 	
 	if ([check_pipe_x1, check_pipe_x2, check_top_pipe || check_btm_pipe].every((elem) => elem)) {
 		
 		console.log("HIT PIPE!");
 		game.game.gamePlaying = false;
 		
-	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored == false) { 
+	} else if ((pipe.x + game.pipe.draw_size[0]) < game.player.x_adjustment && pipe.scored === false) { 
 	// check to see if pipe moves past theshold for the first time.
 	
 		pipe.scored = true; // flag so we don't count the same pipe more than once
 		console.log("SCORE!");
 		game.game.currentScore++; // score!
 		game.game.bestScore = Math.max(game.game.bestScore, game.game.currentScore); // high score
+		
+		if (game.game.currentScore >= 100 ) { game.game.easterEgg = true; } //easter egg for easter!
 		
 		//game.game.increased_speed = (game.game.speed + (game.game.currentScore / 10)) // increase speed by 0.1
 
@@ -711,7 +722,7 @@ function pipe_logic(pipe) {
 
 // player functions
 function draw_player() {
-	var x;
+	let x;
 	if (game.game.gamePlaying) {
 		
 		x = game.player.x_adjustment;			
@@ -728,14 +739,14 @@ function draw_player() {
 	
 	if (delta >= game.player.sprite_interval) {
 	
-		if (game.player.sprite_index == game.player.max_sprites - 1) 
+		if (game.player.sprite_index === game.player.max_sprites - 1) 
 			{ game.player.sprite_index = 0; } else { game.player.sprite_index++; }
 		
 		game.player.last_sprite_update = previousTime;
 	
 	}
 
-	ctx.drawImage(sprites, 433, game.player.sprite_index * game.player.size[1], game.player.size[0], game.player.size[1]-1, //minus 1 for sprite clipping quick fix.
+	ctx.drawImage(sprites, 433, game.player.sprite_index * game.player.size[1] +1, game.player.size[0], game.player.size[1]-2, //minus 1 for sprite clipping quick fix.
 		x, game.player.flyHeight, ...game.player.draw_size);
 		
 }
@@ -749,7 +760,7 @@ function start_screen()
 	ctx.drawImage(logo, 0, 0, 600, 160,
 		(SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * Y_Scaling), (600 * logoScaling), (160 * logoScaling));
 	
-	var txt = "";
+	let txt = "";
 	if (__touch_device__) { 
 		txt = "Tap to play";
 	} else { 
@@ -772,9 +783,9 @@ function update_score() {
 	//document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	//document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
 
-	box_size = [500, 250];
+	let box_size = [500, 250];
 
-	// ctx.globalAlpha = 0.5;
+	//ctx.globalAlpha = 0.5;
 	// ctx.strokeStyle = "#4c3b46";
 	// ctx.fillStyle = "#4c3b46";
 	// ctx.beginPath();
@@ -784,15 +795,66 @@ function update_score() {
     // ctx.globalAlpha = 1.0;
 	
 	if (game.game.gamePlaying) {
+		let Y_position = 175;
 		let txt = game.game.currentScore;
-		ctx.font = "bold 150px courier new";
-		ctx.fillStyle = "#553847";
-		ctx.fillText(txt, 30, 125);
-		ctx.fillStyle = "#e9fcd9";
-		ctx.fillText(txt, 35, 130);
+		ctx.font = "125px 'Press Start 2P'";
+		ctx.strokeStyle = "#553847";
+		ctx.lineWidth = 10;
+		ctx.strokeText(txt, SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+		ctx.fillStyle = "#fefefe";
+		ctx.fillText(txt, SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+
 	}
 	
 }
+
+// function EasterEgg() {
+
+// 	for (let x = 0; x < 3; x++) {
+
+// 		ctx.drawImage(egg_sprite, 0, egg_size[1] * x + 4, ...egg_size, 
+// 		50, 50 + (egg_size[1] * x) + (50 * x) , ...egg_size);
+
+// 		ctx.drawImage(egg_sprite, egg_size[0], egg_size[1] * x + 4, ...egg_size, 
+// 			SCREEN_SIZE[0] - egg_size[0] - 50, 50 + (egg_size[1] * x) + (50 * x) , ...egg_size);
+
+// 	}
+
+// 	let title = "Happy Easter, Penny & Ferris!";
+// 	let txt = ["This is an Easter EasterEgg to help",
+// 				"you on your scanvenger hunt!",
+// 				" ",
+// 				"You will find 2 eggs at each location.",
+// 				"Take only 1 each!",
+// 				"Work together to find them all!",
+// 				" ",
+// 				"CLUE #2:",
+// 				"Your teasure can be found on the",
+// 				"window sill of your parent's room."];
+
+// 	let box_size = [800, 600];
+
+// 	ctx.globalAlpha = 0.5;
+// 	ctx.strokeStyle = "#4c3b46";
+// 	ctx.fillStyle = "#4c3b46";
+// 	ctx.beginPath();
+// 	ctx.roundRect((SCREEN_SIZE[0] / 2) - (box_size[0] / 2), 100, box_size[0], box_size[1], 50);
+// 	ctx.stroke();
+// 	ctx.fill();
+// 	ctx.globalAlpha = 1.0;
+
+// 	//draw text
+// 	ctx.font = "bold 40px courier new";
+// 	ctx.fillStyle = "#e9fcd9";
+// 	ctx.fillText(title, SCREEN_SIZE[0] / 2 - (ctx.measureText(title).width / 2), 175);
+
+// 	ctx.font = "bold 25px courier new";
+
+// 	for (let i = 0; i < txt.length; i++) {
+// 		ctx.fillText(txt[i], SCREEN_SIZE[0] / 2 - (ctx.measureText(txt[i]).width / 2), 275 + (i * 40));
+// 	}
+
+// }
 
 function user_input() {
 	if (game.player.flyHeight > -game.player.size[1]) { // makes sure player doesnt fly off the screen
@@ -818,7 +880,7 @@ if (__touch_device__) {
 	}
 	
 	document.body.onkeydown = function(e) {
-		if (e.key == " ") {
+		if (e.key === " ") {
 			user_input();
 		}
 	}
