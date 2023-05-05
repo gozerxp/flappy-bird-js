@@ -18,7 +18,7 @@ export default class Player {
 
         this._flyHeight = 0;
         this._x_adjustment = 0;
-        this._jump = -11.5;
+        this._jump = -11.5 * game.draw_scaling;
         this._flight = 0;
         this._center_position = ((game.SCREEN_SIZE[0] / 2) - (this._sprite.draw_size[0] / 2));
 
@@ -38,7 +38,7 @@ export default class Player {
         let playerAdjustment = (SCREEN_SIZE / 2) < (270 * 1.75);
 
         if (playerAdjustment) {	
-            this._x_adjustment = game.SCREEN_SIZE / 7;
+            this._x_adjustment = SCREEN_SIZE / 7;
         } else {    
             this._x_adjustment = this._center_position; 
         }
@@ -56,7 +56,7 @@ export default class Player {
 
         this.sprite_update(delta);
         
-        ctx.drawImage(this._sprite_sheet, 433, this._sprite.sprite_index * this._sprite.size[1], this._sprite.size[0], this._sprite.size[1] - 1,
+        ctx.drawImage(this._sprite_sheet, 433, this._sprite.sprite_index * this._sprite.size[1], this._sprite.size[0], this._sprite.size[1]-1,
 		this._x_adjustment, this._flyHeight, ...this._sprite.draw_size);
 
 

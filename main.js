@@ -21,7 +21,7 @@ const game = new _Game(ctx);
 const player = new _Player(game);
 const background = new _Scene(game, "background");
 const ground = new _Scene(game, "ground");
-const pipes = new _Pipes();
+const pipes = new _Pipes(game);
 
 window.requestAnimationFrame(run_game);
 
@@ -34,11 +34,11 @@ function run_game(currentTime) {
 
         delta.previousTime = currentTime;
 
-        //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
 		background.draw_scene(ctx, game, delta, 3, 0);
 		ground.draw_scene(ctx, game, delta, 1, game.ground_collision);
         player.draw_player(ctx, game, delta);
+		pipes.draw_pipes(ctx, game, delta);
+		game.draw_scoreboard(ctx);
 
     }
 
