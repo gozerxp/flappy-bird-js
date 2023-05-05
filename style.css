@@ -12,7 +12,8 @@ body {
   text-align: center;
   font-family: 'Press Start 2P', cursive;
   user-select: none;
-  background: #4c3b46;
+  /* background: #4c3b46; */
+  background: black;
 }
 
 .score-container {

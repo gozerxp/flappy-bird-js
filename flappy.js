@@ -181,13 +181,12 @@ const game_objects = {
 	}
 };
 
-const scoreboard_buffer = 0;//32;
 let SCREEN_SIZE = [window.innerWidth, game_objects.background.size[1]];
 let Y_Scaling = 1;
 
 // checks to see if vertical space > game height for scaling
 if (window.innerHeight > SCREEN_SIZE[1]) {
-	SCREEN_SIZE[1] = window.innerHeight - scoreboard_buffer; 
+	SCREEN_SIZE[1] = window.innerHeight; 
 	Y_Scaling = SCREEN_SIZE[1] / game_objects.background.size[1];
 }
 
@@ -399,12 +398,12 @@ function ufo_Elevation() {
 
 function random_UFO_size() { 
 	
-	let x = game.ufo.scale_min + Math.random();
-	while (x > game.ufo.scale_max) { // loop that ensures random size stays within min and max constrants
-		y = x - game.ufo.scale_max;
-		x = game.ufo.scale_min + y;
+	let RandomSize = game.ufo.scale_min + Math.random();
+	while (RandomSize > game.ufo.scale_max) { // loop that ensures random size stays within min and max constrants
+		let Size_Constrant = RandomSize - game.ufo.scale_max;
+		RandomSize = game.ufo.scale_min + Size_Constrant;
 	}
-	return x;
+	return RandomSize;
 }
 
 function draw_UFO() {
@@ -735,7 +734,7 @@ function draw_player() {
 	}
 	
 	// interval for frame update
-	delta = (previousTime - game.player.last_sprite_update) / frame_interval;
+	let delta = (previousTime - game.player.last_sprite_update) / frame_interval;
 	
 	if (delta >= game.player.sprite_interval) {
 	
@@ -795,11 +794,11 @@ function update_score() {
     // ctx.globalAlpha = 1.0;
 	
 	if (game.game.gamePlaying) {
-		let Y_position = 175;
+		let Y_position = 125 * Y_Scaling;
 		let txt = game.game.currentScore;
-		ctx.font = "125px 'Press Start 2P'";
+		ctx.font = `${80 * Y_Scaling}px 'Press Start 2P'`;
 		ctx.strokeStyle = "#553847";
-		ctx.lineWidth = 10;
+		ctx.lineWidth = 6 * Y_Scaling;
 		ctx.strokeText(txt, SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
 		ctx.fillStyle = "#fefefe";
 		ctx.fillText(txt, SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
