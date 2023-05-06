@@ -13,6 +13,8 @@ export default class Game {
         this._speed = 5.5 * this._draw_scaling;
         this._increased_speed = this._speed;
 
+        this._game_over = true;
+
         this.ground_collision = this.SCREEN_SIZE[1] - 150 * (this._draw_scaling / 1.5);
 
         this.scoreboard = {
@@ -20,6 +22,9 @@ export default class Game {
             bestScore : 0,
             attempts : 0
         }
+
+        this._logo_sprite = new Image();
+        this._logo_sprite.src = "assets/fb-logo.png";
     }
 
     _setup_canvas(ctx) {
@@ -70,6 +75,39 @@ export default class Game {
         this._increased_speed = speed;
     }
 
+    get game_over() {
+        return this._game_over;
+    }
+
+    set game_over(game_over) {
+        this._game_over = game_over;
+    }
+
+    draw_start_screen(ctx, __touch_device__, _VERSION_) {
+
+        let logoScaling = 1;
+        if(600 >= this.SCREEN_SIZE[0]) { logoScaling = 0.75; }
+        // drawing logo
+        ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
+            (this.SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * this.draw_scaling), (600 * logoScaling), (160 * logoScaling));
+        
+        let txt = "";
+        if (__touch_device__) { 
+            txt = "Tap to play";
+        } else { 
+            txt = "Click to play";
+        }
+        
+        ctx.font = "bold 45px courier new";
+        ctx.fillStyle = "#4c3b46";
+        ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), (550 * this.draw_scaling));
+        
+        txt = `Version: ${_VERSION_}`;
+        ctx.font = "bold 24px courier new";
+        ctx.fillText(txt, 10, this.ground_collision - 12)
+    }
+
+
     increase_score() {
         this.scoreboard.currentScore++;
         this.scoreboard.bestScore = Math.max(this.scoreboard.bestScore, this.scoreboard.currentScore)
@@ -78,7 +116,9 @@ export default class Game {
     reset_game() {
         this.scoreboard.currentScore = 0;
         this.scoreboard.attempts++;
-        
+
         this._increased_speed = this._speed;
+
+        this._game_over = false;
     }
 }

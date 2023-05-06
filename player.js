@@ -51,18 +51,28 @@ export default class Player {
 
     draw_player(ctx, game, delta) {
 
-        this._flight += game.gravity * delta.delta_time_multiplier;
-		this._flyHeight = Math.min(this._flyHeight + this._flight, game.ground_collision - this._sprite.draw_size[1]);
+        let x_position = this._x_adjustment;
 
-        this.sprite_update(delta);
+        if (!game.game_over) {
+
+            this._flight += game.gravity * delta.delta_time_multiplier;
+            this._flyHeight = Math.min(this._flyHeight + this._flight, game.ground_collision - this._sprite.draw_size[1]);
+        
+        } else {
+
+            x_position = this._center_position;
+            this._flyHeight = (game.SCREEN_SIZE[1] / 2) - (this._sprite.draw_size[1] / 2);
+
+        }
+        
+        this._sprite_update(delta);
         
         ctx.drawImage(this._sprite_sheet, 433, this._sprite.sprite_index * this._sprite.size[1], this._sprite.size[0], this._sprite.size[1]-1,
-		this._x_adjustment, this._flyHeight, ...this._sprite.draw_size);
-
+            x_position, this._flyHeight, ...this._sprite.draw_size);
 
     }
 
-    sprite_update(delta) {
+    _sprite_update(delta) {
 
         let delta_time = (delta.previousTime - this._sprite.last_sprite_update) / delta.frame_interval;
 	

@@ -35,10 +35,19 @@ function run_game(currentTime) {
         delta.previousTime = currentTime;
 
 		background.draw_scene(ctx, game, delta, 3, 0);
+		
 		ground.draw_scene(ctx, game, delta, 1, game.ground_collision);
-        player.draw_player(ctx, game, delta);
-		pipes.draw_pipes(ctx, game, delta);
-		game.draw_scoreboard(ctx);
+        
+		if (!game.game_over) {
+			pipes.draw_pipes(ctx, game, delta);
+
+			game.draw_scoreboard(ctx);
+		
+		} else {
+			game.draw_start_screen(ctx, __touch_device__, _VERSION_);
+		}
+
+		player.draw_player(ctx, game, delta);
 
     }
 
@@ -46,7 +55,13 @@ function run_game(currentTime) {
 }
 
 const user_input = () => {
-    	player.FLY(delta.delta_time_multiplier);
+
+	player.FLY(delta.delta_time_multiplier);
+
+	if (game.game_over) {
+
+		game.reset_game();
+	}
 }
 
 //user inputs

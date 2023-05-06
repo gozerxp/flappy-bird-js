@@ -782,7 +782,7 @@ function update_score() {
 	//document.getElementById('currentScore').innerHTML = `Current : ${game.game.currentScore}`;
 	//document.getElementById('attempts').innerHTML = `Attempts : ${game.game.attempts}`;
 
-	let box_size = [500, 250];
+	//let box_size = [500, 250];
 
 	//ctx.globalAlpha = 0.5;
 	// ctx.strokeStyle = "#4c3b46";

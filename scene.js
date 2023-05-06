@@ -31,6 +31,7 @@ export default class Scene {
     }
 
     draw_scene(ctx, game, delta, speed_divider, Y_position) {
+
         this._speed = game.increased_speed / speed_divider;
 
         for (let i = 0; i <= this._canvas_fill; i++) {
@@ -40,7 +41,7 @@ export default class Scene {
         }
         
         if (this._last_draw_position <= -this._draw_size[0]) {
-            this._last_draw_position = 0; // reset
+            this._last_draw_position += (this._draw_size[0] - this._speed - 1); // reset
         } else {
             this._last_draw_position -= this._speed * delta.delta_time_multiplier;
         }

@@ -158,62 +158,81 @@ export default class Pipes {
         this._pipes_array = this._spawn_pipes(this._pipes_array, game);
     }
 
+    _load_pipe_components(pipe_components, type_index) {
+
+        const temp = {...pipe_components}
+
+        switch (type_index) {
+            
+            case 0: // green pipe
+
+                temp.top_pipe = [this._sprites.pipes.green.top_pipe[0], this._sprites.pipes.green.top_pipe[1]];
+                temp.btm_pipe = [this._sprites.pipes.green.btm_pipe[0], this._sprites.pipes.green.btm_pipe[1]];
+                temp.stem_pipe = [this._sprites.pipes.green.stem_pipe[0], this._sprites.pipes.green.stem_pipe[1]];
+    
+                break;
+    
+            case 1: // blue pipe
+
+                temp.top_pipe = [this._sprites.pipes.blue.top_pipe[0], this._sprites.pipes.blue.top_pipe[1]];
+                temp.btm_pipe = [this._sprites.pipes.blue.btm_pipe[0], this._sprites.pipes.blue.btm_pipe[1]];
+                temp.stem_pipe = [this._sprites.pipes.blue.stem_pipe[0], this._sprites.pipes.blue.stem_pipe[1]];
+    
+                // movable pipes - pipe index 1 - blue pipe
+                // if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
+                //     if (pipe.inverse_y > pipe.y) {
+                //         pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier;
+                //     } else {
+                //         pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier; 
+                //     }
+                // }
+    
+                break;
+    
+            case 2:  // red pipe
+
+                temp.top_pipe = [this._sprites.pipes.red.top_pipe[0], this._sprites.pipes.red.top_pipe[1]];
+                temp.btm_pipe = [this._sprites.pipes.red.btm_pipe[0], this._sprites.pipes.red.btm_pipe[1]];
+                temp.stem_pipe = [this._sprites.pipes.red.stem_pipe[0], this._sprites.pipes.red.stem_pipe[1]];
+    
+                // check to see if cannon has been blasted
+                // if (pipe.blasted) { 
+                //     //draw_cannonball(pipe); 
+                //     //cannonball_logic(pipe); 
+                // } else {
+                //     //code for checking why cannon hasn't been blasted yet.
+                //     //check_for_blastoff(pipe);
+                //}
+                // write code for cannonball
+
+                break;
+        }
+
+        return temp;
+
+    }
+
     _draw_pipe(pipe, ctx, game, delta) {		
 									
         // pipe moving	
         pipe.x -= game.increased_speed * delta.delta_time_multiplier;
         
-        let top_pipe, btm_pipe, stem_pipe;
+        let pipe_components = {
+             top_pipe : [0, 0],
+             btm_pipe : [0, 0],
+             stem_pipe : [0, 0]
+        };
         
-        switch (pipe.type_index) {
-            case 0: // green pipe
-                top_pipe = [this._sprites.pipes.green.top_pipe[0], this._sprites.pipes.green.top_pipe[1]];
-                btm_pipe = [this._sprites.pipes.green.btm_pipe[0], this._sprites.pipes.green.btm_pipe[1]];
-                stem_pipe = [this._sprites.pipes.green.stem_pipe[0], this._sprites.pipes.green.stem_pipe[1]];
-    
-                break;
-    
-            case 1: // blue pipe
-                top_pipe = [this._sprites.pipes.blue.top_pipe[0], this._sprites.pipes.blue.top_pipe[1]];
-                btm_pipe = [this._sprites.pipes.blue.btm_pipe[0], this._sprites.pipes.blue.btm_pipe[1]];
-                stem_pipe = [this._sprites.pipes.blue.stem_pipe[0], this._sprites.pipes.blue.stem_pipe[1]];
-    
-                // movable pipes - pipe index 1 - blue pipe
-                if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
-                    if (pipe.inverse_y > pipe.y) {
-                        pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier;
-                    } else {
-                        pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier; 
-                    }
-                }
-    
-                break;
-    
-            case 2:  // red pipe
-                top_pipe = [this._sprites.pipes.red.top_pipe[0], this._sprites.pipes.red.top_pipe[1]];
-                btm_pipe = [this._sprites.pipes.red.btm_pipe[0], this._sprites.pipes.red.btm_pipe[1]];
-                stem_pipe= [this._sprites.pipes.red.stem_pipe[0], this._sprites.pipes.red.stem_pipe[1]];
-    
-                // check to see if cannon has been blasted
-                if (pipe.blasted) { 
-                    //draw_cannonball(pipe); 
-                    //cannonball_logic(pipe); 
-                } else {
-                    //code for checking why cannon hasn't been blasted yet.
-                    //check_for_blastoff(pipe);
-                }
-                // write code for cannonball
-                break;
-        }
-    
+        pipe_components = this._load_pipe_components(pipe_components, pipe.type_index);
+   
         if (!(pipe.type_index === 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
             // top pipe_stem
             let x = 0;
             let y = pipe.y - this._sprites.pipes.draw_size[1];
-            this._draw_pipe_stems(ctx, x, y, stem_pipe, pipe);
+            this._draw_pipe_stems(ctx, x, y, pipe_components.stem_pipe, pipe);
                     
             // top_pipe
-            ctx.drawImage(this._sprite_sheet, ...top_pipe, ...this._sprites.pipes.pipe_size, 
+            ctx.drawImage(this._sprite_sheet, ...pipe_components.top_pipe, ...this._sprites.pipes.pipe_size, 
                 pipe.x, pipe.y - this._sprites.pipes.draw_size[1] - 1, ...this._sprites.pipes.draw_size);
         }
     
@@ -221,10 +240,10 @@ export default class Pipes {
             // bottom pipe_stem
             let y = pipe.y + this._pipe_gap[1] + this._sprites.pipes.draw_size[1];
             let x = game.ground_collision - y;
-            this._draw_pipe_stems(ctx, y, x, stem_pipe, pipe);
+            this._draw_pipe_stems(ctx, y, x, pipe_components.stem_pipe, pipe);
                 
             // bottom_pipe
-            ctx.drawImage(this._sprite_sheet, ...btm_pipe, ...this._sprites.pipes.pipe_size, 
+            ctx.drawImage(this._sprite_sheet, ...pipe_components.btm_pipe, ...this._sprites.pipes.pipe_size, 
                 pipe.x, pipe.y + this._pipe_gap[1] + 1, ...this._sprites.pipes.draw_size);
         }
     
