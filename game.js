@@ -44,15 +44,38 @@ export default class Game {
 
     draw_scoreboard(ctx) {
 
-        let Y_position = 125 * this._draw_scaling;
-		let txt = this.scoreboard.currentScore;
-		ctx.font = `${80 * this._draw_scaling}px 'Press Start 2P'`;
-		ctx.strokeStyle = "#553847";
-		ctx.lineWidth = 6 * this._draw_scaling;
-		ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
-		ctx.fillStyle = "#fefefe";
-		ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+        let txt_size = 70;
+        let Y_position = (txt_size * 1.35) * this._draw_scaling;
+        let txt = this.scoreboard.currentScore;
 
+        if (!this.game_over) { //only draw current score during gameplay.
+            ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
+            ctx.strokeStyle = "#553847";
+            ctx.lineWidth = 8 * this._draw_scaling;
+            ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+            ctx.fillStyle = "#fefefe";
+            ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+        // } else {
+        //     ctx.globalAlpha = 0.5;
+        //     ctx.fillStyle = "#553847";
+        //     ctx.fillRect(0, 0, this.SCREEN_SIZE[0], 50);
+        //     ctx.globalAlpha = 1;
+
+        }
+
+        let padding = 25;
+        txt_size = 25;
+        Y_position = padding * 1.5;//this.ground_collision + ((this.SCREEN_SIZE[1] - this.ground_collision) /  2) + txt_size;
+
+        ctx.font = `${txt_size}px 'Press Start 2P'`;
+        ctx.fillStyle = "#553847";
+
+        txt = `Best: ${this.scoreboard.bestScore}`;
+        ctx.fillText(txt, padding, Y_position);
+
+        txt = `Attempts: ${this.scoreboard.attempts}`;
+        ctx.fillText(txt, this.SCREEN_SIZE[0] - ctx.measureText(txt).width - padding, Y_position);
+        
     }
 
     get draw_scaling() {
@@ -87,6 +110,7 @@ export default class Game {
 
         let logoScaling = 1;
         if(600 >= this.SCREEN_SIZE[0]) { logoScaling = 0.75; }
+
         // drawing logo
         ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
             (this.SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * this.draw_scaling), (600 * logoScaling), (160 * logoScaling));
@@ -107,6 +131,20 @@ export default class Game {
         ctx.fillText(txt, 10, this.ground_collision - 12)
     }
 
+    game_logic(player, pipes) {
+
+        let check_ground = this._check_ground_collision(player); 
+        let check_pipes = pipes.check_pipe_logic(player, this); 
+
+        if(check_ground || check_pipes) {
+            this.game_over = true;
+        }
+
+    }
+
+    _check_ground_collision(player) {
+        return player.getflyHeight + player.getSize[1] >= this.ground_collision;
+    }
 
     increase_score() {
         this.scoreboard.currentScore++;

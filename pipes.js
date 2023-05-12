@@ -158,11 +158,11 @@ export default class Pipes {
         this._pipes_array = this._spawn_pipes(this._pipes_array, game);
     }
 
-    _load_pipe_components(pipe_components, type_index) {
+    _load_pipe_components(pipe_components, pipe, game, delta) {
 
         const temp = {...pipe_components}
 
-        switch (type_index) {
+        switch (pipe.type_index) {
             
             case 0: // green pipe
 
@@ -179,13 +179,13 @@ export default class Pipes {
                 temp.stem_pipe = [this._sprites.pipes.blue.stem_pipe[0], this._sprites.pipes.blue.stem_pipe[1]];
     
                 // movable pipes - pipe index 1 - blue pipe
-                // if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
-                //     if (pipe.inverse_y > pipe.y) {
-                //         pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier;
-                //     } else {
-                //         pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier; 
-                //     }
-                // }
+                if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
+                    if (pipe.inverse_y > pipe.y) {
+                        pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier;
+                    } else {
+                        pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier; 
+                    }
+                }
     
                 break;
     
@@ -223,7 +223,7 @@ export default class Pipes {
              stem_pipe : [0, 0]
         };
         
-        pipe_components = this._load_pipe_components(pipe_components, pipe.type_index);
+        pipe_components = this._load_pipe_components(pipe_components, pipe, game, delta);
    
         if (!(pipe.type_index === 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
             // top pipe_stem
@@ -269,6 +269,40 @@ export default class Pipes {
             stem_size -= this._sprites.pipes.max_stem_size;
         }
     
+    }
+
+    check_pipe_logic(player, game) {
+
+        let game_over = false;
+
+        this._pipes_array.forEach(pipe => {
+
+            // if hit the pipe, end
+
+            // check if player has entered into x-axis of oncoming pipe
+            let check_pipe_x1 = pipe.x <= player.getPosition + player.getSize[0];
+            let check_pipe_x2 = pipe.x + this._sprites.pipes.draw_size[0] >= player.getPosition;
+
+            // check if has hit the top or bottom pipe
+            let check_top_pipe = pipe.y > player.getflyHeight && 
+                (!(pipe.type_index === 2 && !pipe.red_top_or_btm)); // red pipe logic
+            let check_btm_pipe = pipe.y + this._pipe_gap[1] < player.getflyHeight + player.getSize[1] &&
+                (!(pipe.type_index === 2 && pipe.red_top_or_btm)); // red pipe logic
+            
+            if ([check_pipe_x1, check_pipe_x2, check_top_pipe || check_btm_pipe].every((elem) => elem)) {
+                
+                console.log("HIT PIPE!");
+                game_over = true;
+                
+            } else if ((pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition && pipe.scored === false) { 
+            // check to see if pipe moves past theshold for the first time.
+                pipe.scored = true; // flag so we don't count the same pipe more than once
+                game.increase_score();                
+            }
+        });
+
+        return game_over;
+        
     }
 
 

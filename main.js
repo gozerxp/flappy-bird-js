@@ -3,7 +3,7 @@
 // Written by Dan Andersen
 // Refactored codebase using class objects
 
-const _VERSION_ = "1.1a";
+const _VERSION_ = "1.1b";
 
 import _Delta_Time from './delta.js';
 import _Game from './game.js';
@@ -39,14 +39,16 @@ function run_game(currentTime) {
 		ground.draw_scene(ctx, game, delta, 1, game.ground_collision);
         
 		if (!game.game_over) {
-			pipes.draw_pipes(ctx, game, delta);
 
-			game.draw_scoreboard(ctx);
+			pipes.draw_pipes(ctx, game, delta);
+			game.game_logic(player, pipes);
+			
 		
 		} else {
 			game.draw_start_screen(ctx, __touch_device__, _VERSION_);
 		}
 
+		game.draw_scoreboard(ctx);
 		player.draw_player(ctx, game, delta);
 
     }
@@ -56,11 +58,12 @@ function run_game(currentTime) {
 
 const user_input = () => {
 
-	player.FLY(delta.delta_time_multiplier);
+	player.jump(delta.delta_time_multiplier);
 
 	if (game.game_over) {
 
 		game.reset_game();
+		pipes.reset(game);
 	}
 }
 
@@ -81,6 +84,7 @@ if (__touch_device__) {
 		}
 	}
 }
+
 // disables browser zooming
 window.addEventListener('wheel', e => {
   if (e.ctrlKey) {

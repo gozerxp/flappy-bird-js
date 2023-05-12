@@ -1,9 +1,10 @@
 export default class Player {
     
     constructor(game) {
+
         this._sprite = {
             // sprite dimensions
-            size : [51, 36],          
+            size : [51, 35],          
             draw_size : [0, 0], // draw scaling
             
             sprite_index : 0, // 0 - 2
@@ -17,6 +18,7 @@ export default class Player {
         this._sprite.draw_size[1] = this._sprite.size[1] * game.draw_scaling;   
 
         this._flyHeight = 0;
+        this._angle = 45;
         this._x_adjustment = 0;
         this._jump = -11.5 * game.draw_scaling;
         this._flight = 0;
@@ -44,6 +46,34 @@ export default class Player {
         }
     }
     
+    _set_angle(previous_height, new_height, game, delta) {
+
+        if (game.game_over) { 
+            this._sprite_update(delta);
+            return 0;
+        }
+
+        let increment = 10 * delta.delta_time_multiplier;
+        let max_angle = 30;
+        
+        if (new_height > previous_height) { //player is falling
+            
+            this._sprite.sprite_index = 0;
+            return Math.min(this._angle + increment, max_angle); 
+
+        } else if (new_height < previous_height) { //player is flying
+
+            this._sprite_update(delta);
+            return Math.max(this._angle - increment, -max_angle);
+
+        } else {
+
+            this._sprite_update(delta);
+            return 0;
+        }
+
+    }
+
     reset_position(SCREEN_SIZE) {
         this._flight = this._jump;
         this._flyHeight = (SCREEN_SIZE / 2) - (this._sprite.draw_size[1] / 2);
@@ -52,6 +82,7 @@ export default class Player {
     draw_player(ctx, game, delta) {
 
         let x_position = this._x_adjustment;
+        let previous_flyHeight = this._flyHeight;
 
         if (!game.game_over) {
 
@@ -65,10 +96,19 @@ export default class Player {
 
         }
         
-        this._sprite_update(delta);
-        
-        ctx.drawImage(this._sprite_sheet, 433, this._sprite.sprite_index * this._sprite.size[1], this._sprite.size[0], this._sprite.size[1]-1,
+        //this._sprite_update(delta);
+
+        this._angle = this._set_angle(previous_flyHeight, this._flyHeight, game, delta);
+
+        ctx.save();
+        ctx.translate(x_position, this._flyHeight);
+        ctx.rotate(this._angle * Math.PI / 360);
+        ctx.translate(-x_position, -this._flyHeight);
+      
+        ctx.drawImage(this._sprite_sheet, 432, this._sprite.sprite_index * (this._sprite.size[1] + 1), this._sprite.size[0], this._sprite.size[1] + 1,
             x_position, this._flyHeight, ...this._sprite.draw_size);
+
+        ctx.restore();
 
     }
 
@@ -98,10 +138,11 @@ export default class Player {
         return this._x_adjustment;
     }
 
-    FLY(delta_time_multiplier) {
+    jump(delta_time_multiplier) {
 
         if (this._flyHeight > -this._sprite.draw_size[1]) { // makes sure player doesnt fly off the screen
-            this._flight = this._jump * delta_time_multiplier;
+
+            this._flight = this._jump;//* delta_time_multiplier;
             this._jump_fx.play();
 
         }
