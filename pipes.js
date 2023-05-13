@@ -37,7 +37,7 @@ export default class Pipes {
                 sprite : [500, 0],
                 size : [62, 62],
                 draw_size : [0, 0],
-                blast_speed: 11.5,
+                blast_speed: 15,
                 max_blast_height: 0
             },
         }
@@ -67,7 +67,7 @@ export default class Pipes {
         this._pipes_array = [];
 
         this._pipe_gap = [270, 220]; //default gap
-        this._minimum_gap = [75, 100]; //minimum gap constrants 
+        this._minimum_gap = [125, 100]; //minimum gap constrants 
         
         this._pipe_gap[0] *= game.draw_scaling;
         this._pipe_gap[1] *= game.draw_scaling;
@@ -76,6 +76,7 @@ export default class Pipes {
         
         this._sprites.pipes.draw_size[0] = this._sprites.pipes.pipe_size[0] * game.draw_scaling;
         this._sprites.pipes.draw_size[1] = this._sprites.pipes.pipe_size[1] * game.draw_scaling;
+
         this._sprites.cannon_ball.draw_size[0] = this._sprites.cannon_ball.size[0] * game.draw_scaling;
         this._sprites.cannon_ball.draw_size[1] = this._sprites.cannon_ball.size[1] * game.draw_scaling;
 
@@ -90,6 +91,9 @@ export default class Pipes {
 
         this._sprite_sheet = new Image();
         this._sprite_sheet.src = "assets/flappy-bird-set.png";
+
+        this._blast_fx = new Audio('assets/blast.ogg');
+        this._blast_fx.load();
 
     } 
 
@@ -179,14 +183,14 @@ export default class Pipes {
 
     }
 
-    draw_pipes(ctx, game, delta) {
+    draw_pipes(ctx, player, game, delta) {
 
-        this._pipes_array.forEach(pipe => this._draw_pipe(pipe, ctx, game, delta));
+        this._pipes_array.forEach(pipe => this._draw_pipe(ctx, pipe, player, game, delta));
         this._pipes_array = this._shift_pipes(this._pipes_array);
         this._pipes_array = this._spawn_pipe(this._pipes_array, game);
     }
 
-    _load_pipe_components(pipe_components, pipe, game, delta) {
+    _load_pipe_components(pipe_components, ctx, pipe, player, game, delta) {
 
         const temp = {...pipe_components}
 
@@ -224,13 +228,12 @@ export default class Pipes {
                 temp.stem_pipe = [this._sprites.pipes.red.stem_pipe[0], this._sprites.pipes.red.stem_pipe[1]];
     
                 // check to see if cannon has been blasted
-                // if (pipe.blasted) { 
-                //     //draw_cannonball(pipe); 
-                //     //cannonball_logic(pipe); 
-                // } else {
-                //     //code for checking why cannon hasn't been blasted yet.
-                //     //check_for_blastoff(pipe);
-                //}
+                if (pipe.blasted) { 
+                     this._draw_cannonball(ctx, pipe, delta); 
+                 } else {
+                     //code for checking why cannon hasn't been blasted yet.
+                     this._check_4_blastoff(pipe, player);
+                }
                 // write code for cannonball
 
                 break;
@@ -244,7 +247,38 @@ export default class Pipes {
 
     }
 
-    _draw_pipe(pipe, ctx, game, delta) {		
+    _draw_cannonball(ctx, pipe, delta) {
+
+        if (pipe.up_or_down) { //top pipe
+            pipe.cannon_Y += this._sprites.cannon_ball.blast_speed * delta.delta_time_multiplier;
+        } else {
+            pipe.cannon_Y -= this._sprites.cannon_ball.blast_speed * delta.delta_time_multiplier;
+        }
+    
+        let x = pipe.x + (this._sprites.pipes.draw_size[0] / 2) - (this._sprites.cannon_ball.draw_size[0] / 2);
+    
+        // cannon ball	
+        ctx.drawImage(this._sprite_sheet, ...this._sprites.cannon_ball.sprite, ...this._sprites.cannon_ball.size,
+            x, pipe.cannon_Y, ...this._sprites.cannon_ball.draw_size);
+
+    }
+
+    _check_4_blastoff(pipe, player) {
+
+        if (pipe.x - player.getPosition <= (pipe.gap_x / 1.5)) {
+		
+            if (pipe.up_or_down) {
+                pipe.cannon_Y = pipe.y - this._sprites.cannon_ball.draw_size[1]; // top pipe cannonball starting position
+            } else {
+                pipe.cannon_Y = pipe.y + pipe.gap_y + this._sprites.cannon_ball.draw_size[1]; // bottom pipe cannonball starting position
+            }
+            
+            pipe.blasted = true;
+            this._blast_fx.play();
+        }
+    }
+
+    _draw_pipe(ctx, pipe, player, game, delta) {		
 									
         // pipe moving	
         pipe.x -= game.increased_speed * delta.delta_time_multiplier;
@@ -255,7 +289,7 @@ export default class Pipes {
              stem_pipe : [0, 0]
         };
         
-        pipe_components = this._load_pipe_components(pipe_components, pipe, game, delta);
+        pipe_components = this._load_pipe_components(pipe_components, ctx, pipe, player, game, delta);
    
         if (!(pipe.type_index === 2 && !pipe.up_or_down)) { // checking red pipe logic
             // top pipe_stem
@@ -278,10 +312,7 @@ export default class Pipes {
             ctx.drawImage(this._sprite_sheet, ...pipe_components.btm_pipe, ...this._sprites.pipes.pipe_size, 
                 pipe.x, pipe.y + this._pipe_gap[1] + 1, ...this._sprites.pipes.draw_size);
         }
-    
-        //pipe_logic(pipe); // collision and scoring detection
-    
-        
+   
     }
 
     _draw_pipe_stems(ctx, y, stem_size, stem_pipe, pipe) {
@@ -317,15 +348,20 @@ export default class Pipes {
 
             // check if has hit the top or bottom pipe
             let check_top_pipe = pipe.y > player.getflyHeight && 
-                (!(pipe.type_index === 2 && !pipe.red_top_or_btm)); // red pipe logic
-            let check_btm_pipe = pipe.y + this._pipe_gap[1] < player.getflyHeight + player.getSize[1] &&
-                (!(pipe.type_index === 2 && pipe.red_top_or_btm)); // red pipe logic
+                (!(pipe.type_index === 2 && !pipe.up_or_down)); // red pipe logic
+            let check_btm_pipe = pipe.y + pipe.gap_y < player.getflyHeight + player.getSize[1] &&
+                (!(pipe.type_index === 2 && pipe.up_or_down)); // red pipe logic
             
             if ([check_pipe_x1, check_pipe_x2, check_top_pipe || check_btm_pipe].every((elem) => elem)) {
                 
                 console.log("HIT PIPE!");
                 game_over = true;
-                
+            
+            } else if (this._check_cannonball_logic(pipe, player)) {
+
+                console.log("HIT CANNONBALL!");
+                game_over = true;
+
             } else if ((pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition && pipe.scored === false) { 
             // check to see if pipe moves past theshold for the first time.
                 pipe.scored = true; // flag so we don't count the same pipe more than once
@@ -335,6 +371,24 @@ export default class Pipes {
 
         return game_over;
         
+    }
+
+    _check_cannonball_logic(pipe, player) {
+
+        let cannon_x = pipe.x + (this._sprites.pipes.draw_size[0] / 2) - (this._sprites.cannon_ball.draw_size[0] / 2);
+
+        let check_x1 = cannon_x <= player.getPosition + player.getSize[0];
+        let check_x2 = cannon_x + this._sprites.cannon_ball.draw_size[0] >= player.getPosition;
+    
+        let check_y1 = pipe.cannon_Y <= player.getflyHeight;
+        let check_y2 = pipe.cannon_Y + this._sprites.cannon_ball.draw_size[1] >= player.getflyHeight + player.getSize[1];
+    
+        if ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem)) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 

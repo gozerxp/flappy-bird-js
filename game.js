@@ -59,12 +59,6 @@ export default class Game {
             ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
             ctx.fillStyle = "#fefefe";
             ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
-        // } else {
-        //     ctx.globalAlpha = 0.5;
-        //     ctx.fillStyle = "#553847";
-        //     ctx.fillRect(0, 0, this.SCREEN_SIZE[0], 50);
-        //     ctx.globalAlpha = 1;
-
         }
 
         let padding = 25;
@@ -142,7 +136,7 @@ export default class Game {
         let check_ground = this._check_ground_collision(player); 
         let check_pipes = pipes.check_pipe_logic(player, this); 
 
-        if(check_ground) {//} || check_pipes) {
+        if(check_ground || check_pipes) {
             this.game_over = true;
         }
 

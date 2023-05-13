@@ -39,7 +39,7 @@ function run_game(currentTime) {
         
 		if (!game.game_over) {
 
-			pipes.draw_pipes(ctx, game, delta);
+			pipes.draw_pipes(ctx, player, game, delta);
 			game.game_logic(player, pipes);
 			
 		
