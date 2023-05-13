@@ -48,25 +48,33 @@ export default class Pipes {
 
             x : 0, 
             y : 0, 
+
+            gap_x : 0,
+            gap_y : 0,
+
             scored : false, // flag to ensure score is only counted once per pipe
     
             type_index : 0, // 0 = "green", 1 = "blue", 3 = "red"
     
-            inverse_y : 0, // for movable pipes (blue)'
-            
-            red_top_or_btm : false, // true = top pipe, false = bottom pipe
+            up_or_down : false, 
+            // blue pipes - true moves pipe up, false moves pipe down
+            // red pipes - true for only showing top pipe, false for only showing bottom pipe.
             
             blasted : false, // check if the cannon has already been fired (red).
             reached_max_blast_height : false,
-            cannon_Y : 0 // track trajectory of cannonball
+            cannon_Y : 0 // track trajectory of cannonball for collission
+
         }
 
         this._pipes_array = [];
 
-        this._pipe_gap = [270, 220];
+        this._pipe_gap = [270, 220]; //default gap
+        this._minimum_gap = [75, 100]; //minimum gap constrants 
         
         this._pipe_gap[0] *= game.draw_scaling;
         this._pipe_gap[1] *= game.draw_scaling;
+        this._minimum_gap[0] *= game.draw_scaling;
+        this._minimum_gap[1] *= game.draw_scaling;
         
         this._sprites.pipes.draw_size[0] = this._sprites.pipes.pipe_size[0] * game.draw_scaling;
         this._sprites.pipes.draw_size[1] = this._sprites.pipes.pipe_size[1] * game.draw_scaling;
@@ -85,77 +93,99 @@ export default class Pipes {
         this._sprite_sheet = new Image();
         this._sprite_sheet.src = "assets/flappy-bird-set.png";
 
-        this.reset(game);
     } 
 
     reset(game) {
         this._total_pipes = 0;
-        this._pipes_array = this.initialize_pipes(game);
+        this._pipes_array = [];
+        this._pipes_array = this._spawn_pipe(this._pipes_array, game);
     }
 
-    pipeLoc(game) { 
+    _pipe_height(game) { 
         return ( this._sprites.pipes.draw_size[1] + (Math.random() * ((game.ground_collision / 2) - this._sprites.pipes.draw_size[1]))); 
     }
 
-    initialize_pipes(game) {
-
-        let pipes_array = [];
-	
-        for (let i = 0; i < this._max_pipes; i++) {
-        
-            const temp = {...this._pipe_array_data};
-            
-            temp.x = this._start_position + (i * (this._pipe_gap[0] + this._sprites.pipes.draw_size[0]));
-            temp.y = this.pipeLoc(game);
-            temp.type_index = 0; //level_up(); // start with green pipes
-            
-            //temp.inverse_y = moving_pipe_invert(temp.y);
-            //temp.red_top_or_btm = Boolean(Math.round(Math.random()));
-    
-            // metric for movable pipe
-            
-            pipes_array.push(temp);
-    
-            this._total_pipes++;
-        }
-        
-        return pipes_array;
-
+    get get_total_pipes() {
+        return this._total_pipes;
     }
 
-    _spawn_pipes(pipes_array, game) {
+    _spawn_pipe(pipes_array, game) {
 
-        // create new pipe when pipe[0].x goes offscreen
-        
-        if (pipes_array[0].x <= -this._sprites.pipes.draw_size[0]) {
+        let last_pipe = pipes_array.length - 1
+
+        if (!this._total_pipes || pipes_array[last_pipe].x <= game.SCREEN_SIZE[0]) {
                       
             const new_pipes = pipes_array;
             
-            new_pipes.shift();
-            
             // new pipe		
             const temp = {...this._pipe_array_data};
-            temp.x = pipes_array[(pipes_array.length - 1)].x + (this._pipe_gap[0] + this._sprites.pipes.draw_size[0]);
-            temp.y = this.pipeLoc(game);
-            temp.type_index = 0; //level_up();
-            // temp.inverse_y = moving_pipe_invert(temp.y);
-            // temp.red_top_or_btm = Boolean(Math.round(Math.random())); //randomizes if the red pipe will be on the top of bottom of the screen
+
+            if (this._total_pipes) {
+
+                temp.x = pipes_array[last_pipe].x + pipes_array[last_pipe].gap_x + this._sprites.pipes.draw_size[0];
+            
+            } else { 
+
+                temp.x = this._start_position;
+            }
+            
+            temp.y = this._pipe_height(game);
+            temp.type_index = game.level_up(this);
+            temp.gap_x = Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+            temp.gap_y = this._pipe_gap[1];
+            temp.up_or_down = this._up_or_down(temp, game);
             
             new_pipes.push(temp);
     
             this._total_pipes++;
+
+            //console.log(`total pipes: ${this._total_pipes} | pipes array length ${new_pipes.length}`);
             
             return new_pipes;
-            
         } 
             
-        return pipes_array;
+        return pipes_array;   
+    }
+
+    _up_or_down(temp, game) {
+
+        switch (temp.type_index) {
+            case 1: //check where blue pipe's starting position, if its less than 1/3 of ground collission then move down
+                if (temp.y >= game.ground_collision / 3) {
+                    return true;
+                } else { //otherwise move up
+                    return false;
+                }
+                break;
+            case 2: //randomize red pipe
+                return Boolean(Math.round(Math.random()));
+                break;
+            default:
+                return false;
+        }
         
     }
 
+    _shift_pipes(pipes_array) {
+
+        // remove pipe when pipe[0].x goes offscreen
+        if (pipes_array[0].x <= -this._sprites.pipes.draw_size[0] && pipes_array.length > 0) {
+                      
+            const new_pipes = pipes_array;
+            new_pipes.shift();
+
+            return new_pipes;
+        }
+
+        return pipes_array;
+
+    }
+
     draw_pipes(ctx, game, delta) {
+
         this._pipes_array.forEach(pipe => this._draw_pipe(pipe, ctx, game, delta));
-        this._pipes_array = this._spawn_pipes(this._pipes_array, game);
+        this._pipes_array = this._shift_pipes(this._pipes_array);
+        this._pipes_array = this._spawn_pipe(this._pipes_array, game);
     }
 
     _load_pipe_components(pipe_components, pipe, game, delta) {
@@ -180,10 +210,10 @@ export default class Pipes {
     
                 // movable pipes - pipe index 1 - blue pipe
                 if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
-                    if (pipe.inverse_y > pipe.y) {
-                        pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier;
-                    } else {
-                        pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier; 
+                    if (pipe.up_or_down) { //if true, move blue pipes upward
+                        pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier;
+                    } else { 
+                        pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier; 
                     }
                 }
     
@@ -206,6 +236,10 @@ export default class Pipes {
                 // write code for cannonball
 
                 break;
+
+            default:
+
+                break;
         }
 
         return temp;
@@ -225,7 +259,7 @@ export default class Pipes {
         
         pipe_components = this._load_pipe_components(pipe_components, pipe, game, delta);
    
-        if (!(pipe.type_index === 2 && !pipe.red_top_or_btm)) { // checking red pipe logic
+        if (!(pipe.type_index === 2 && !pipe.up_or_down)) { // checking red pipe logic
             // top pipe_stem
             let x = 0;
             let y = pipe.y - this._sprites.pipes.draw_size[1];
@@ -236,7 +270,7 @@ export default class Pipes {
                 pipe.x, pipe.y - this._sprites.pipes.draw_size[1] - 1, ...this._sprites.pipes.draw_size);
         }
     
-        if (!(pipe.type_index === 2 && pipe.red_top_or_btm)) { // checking red pipe logic
+        if (!(pipe.type_index === 2 && pipe.up_or_down)) { // checking red pipe logic
             // bottom pipe_stem
             let y = pipe.y + this._pipe_gap[1] + this._sprites.pipes.draw_size[1];
             let x = game.ground_collision - y;
