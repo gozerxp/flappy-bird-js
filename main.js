@@ -1,9 +1,8 @@
 // Flappy Bird Clone JS
-// Version 1.1a build 5/4/2023
+// Version 1.1c build 5/4/2023
 // Written by Dan Andersen
-// Refactored codebase using class objects
 
-const _VERSION_ = "1.1b";
+const _VERSION_ = "1.1c";
 
 import _Delta_Time from './delta.js';
 import _Game from './game.js';

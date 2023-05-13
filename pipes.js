@@ -1,5 +1,3 @@
-
-
 export default class Pipes {
 
     constructor(game) {

@@ -30,17 +30,18 @@ export default class Player {
         this._jump_fx = new Audio('assets/bloop.ogg');
         this._jump_fx.load();
 
-        this._player_adjustment(game.SCREEN_SIZE[0]);
+        this._player_adjustment(game.SCREEN_SIZE);
         this.reset_position(game.SCREEN_SIZE[1]);
 
     }
 
     _player_adjustment(SCREEN_SIZE) {
 
-        let playerAdjustment = (SCREEN_SIZE / 2) < (270 * 1.75);
+        // if screen height is > then screen width then offset player.
+        let playerAdjustment = SCREEN_SIZE[1] > SCREEN_SIZE[0];
 
         if (playerAdjustment) {	
-            this._x_adjustment = SCREEN_SIZE / 7;
+            this._x_adjustment = SCREEN_SIZE[0] / 5;
         } else {    
             this._x_adjustment = this._center_position; 
         }
@@ -96,8 +97,6 @@ export default class Player {
 
         }
         
-        //this._sprite_update(delta);
-
         this._angle = this._set_angle(previous_flyHeight, this._flyHeight, game, delta);
 
         ctx.save();

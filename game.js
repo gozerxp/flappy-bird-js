@@ -27,6 +27,10 @@ export default class Game {
         this._logo_sprite.src = "assets/fb-logo.png";
     }
 
+    level_up(pipe) {
+        return pipe.get_total_pipes < 5 ? 0 : Math.round(Math.random() * 2);	
+    }
+
     _setup_canvas(ctx) {
 
         this.SCREEN_SIZE = [window.innerWidth, background_width];
@@ -51,7 +55,7 @@ export default class Game {
         if (!this.game_over) { //only draw current score during gameplay.
             ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
             ctx.strokeStyle = "#553847";
-            ctx.lineWidth = 8 * this._draw_scaling;
+            ctx.lineWidth = 6 * this._draw_scaling;
             ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
             ctx.fillStyle = "#fefefe";
             ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
@@ -65,7 +69,7 @@ export default class Game {
 
         let padding = 25;
         txt_size = 25;
-        Y_position = padding * 1.5;//this.ground_collision + ((this.SCREEN_SIZE[1] - this.ground_collision) /  2) + txt_size;
+        Y_position = padding * 1.75;//this.ground_collision + ((this.SCREEN_SIZE[1] - this.ground_collision) /  2) + txt_size;
 
         ctx.font = `${txt_size}px 'Press Start 2P'`;
         ctx.fillStyle = "#553847";
@@ -109,7 +113,9 @@ export default class Game {
     draw_start_screen(ctx, __touch_device__, _VERSION_) {
 
         let logoScaling = 1;
-        if(600 >= this.SCREEN_SIZE[0]) { logoScaling = 0.75; }
+        if(this._logo_sprite.width >= this.SCREEN_SIZE[0]) { 
+            logoScaling = 0.75; 
+        }
 
         // drawing logo
         ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
@@ -136,7 +142,7 @@ export default class Game {
         let check_ground = this._check_ground_collision(player); 
         let check_pipes = pipes.check_pipe_logic(player, this); 
 
-        if(check_ground || check_pipes) {
+        if(check_ground) {//} || check_pipes) {
             this.game_over = true;
         }
 
