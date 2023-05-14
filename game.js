@@ -13,7 +13,11 @@ export default class Game {
         this._speed = 5.5 * this._draw_scaling;
         this._increased_speed = this._speed;
 
-        this._game_over = true;
+        this._game_state = 0;
+        // 0 = start screen
+        // 1 = game playing
+        // 2 = game over screen
+        // 3 = ?
 
         this.ground_collision = this.SCREEN_SIZE[1] - 150 * (this._draw_scaling / 1.5);
 
@@ -52,7 +56,7 @@ export default class Game {
         let Y_position = (txt_size * 1.35) * this._draw_scaling;
         let txt = this.scoreboard.currentScore;
 
-        if (!this.game_over) { //only draw current score during gameplay.
+        if (this.game_state === 1) { //only draw current score during gameplay.
             ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
             ctx.strokeStyle = "#553847";
             ctx.lineWidth = 6 * this._draw_scaling;
@@ -96,12 +100,12 @@ export default class Game {
         this._increased_speed = speed;
     }
 
-    get game_over() {
-        return this._game_over;
+    get game_state() {
+        return this._game_state;
     }
 
-    set game_over(game_over) {
-        this._game_over = game_over;
+    set game_state(game_state) {
+        this._game_state = game_state;
     }
 
     draw_start_screen(ctx, __touch_device__, _VERSION_) {
@@ -131,15 +135,19 @@ export default class Game {
         ctx.fillText(txt, 10, this.ground_collision - 12)
     }
 
+    draw_game_over() {
+        console.log("GAME OVER");
+        this.game_state = 0;
+    }
+
     game_logic(player, pipes) {
 
         let check_ground = this._check_ground_collision(player); 
         let check_pipes = pipes.check_pipe_logic(player, this); 
 
         if(check_ground || check_pipes) {
-            this.game_over = true;
+            this.game_state = 2; // draw game over
         }
-
     }
 
     _check_ground_collision(player) {
@@ -157,6 +165,6 @@ export default class Game {
 
         this._increased_speed = this._speed;
 
-        this._game_over = false;
+        this._game_state = 1;
     }
 }

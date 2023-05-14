@@ -66,7 +66,7 @@ export default class Pipes {
 
         this._pipes_array = [];
 
-        this._pipe_gap = [270, 220]; //default gap
+        this._pipe_gap = [350, 220],//[270, 220]; //default gap
         this._minimum_gap = [125, 100]; //minimum gap constrants 
         
         this._pipe_gap[0] *= game.draw_scaling;
@@ -234,7 +234,6 @@ export default class Pipes {
                      //code for checking why cannon hasn't been blasted yet.
                      this._check_4_blastoff(pipe, player);
                 }
-                // write code for cannonball
 
                 break;
 
@@ -265,7 +264,7 @@ export default class Pipes {
 
     _check_4_blastoff(pipe, player) {
 
-        if (pipe.x - player.getPosition <= (pipe.gap_x / 1.5)) {
+        if (pipe.x - player.getPosition < (pipe.gap_x / 1.25)) {
 		
             if (pipe.up_or_down) {
                 pipe.cannon_Y = pipe.y - this._sprites.cannon_ball.draw_size[1]; // top pipe cannonball starting position
@@ -280,9 +279,11 @@ export default class Pipes {
 
     _draw_pipe(ctx, pipe, player, game, delta) {		
 									
-        // pipe moving	
-        pipe.x -= game.increased_speed * delta.delta_time_multiplier;
-        
+        // pipe moving
+        if (game.game_state === 1) {
+            pipe.x -= game.increased_speed * delta.delta_time_multiplier;
+        }
+
         let pipe_components = {
              top_pipe : [0, 0],
              btm_pipe : [0, 0],
@@ -343,8 +344,8 @@ export default class Pipes {
             // if hit the pipe, end
 
             // check if player has entered into x-axis of oncoming pipe
-            let check_pipe_x1 = pipe.x <= player.getPosition + player.getSize[0];
-            let check_pipe_x2 = pipe.x + this._sprites.pipes.draw_size[0] >= player.getPosition;
+            let check_pipe_x1 = pipe.x < player.getPosition + player.getSize[0];
+            let check_pipe_x2 = pipe.x + this._sprites.pipes.draw_size[0] > player.getPosition;
 
             // check if has hit the top or bottom pipe
             let check_top_pipe = pipe.y > player.getflyHeight && 
@@ -377,11 +378,11 @@ export default class Pipes {
 
         let cannon_x = pipe.x + (this._sprites.pipes.draw_size[0] / 2) - (this._sprites.cannon_ball.draw_size[0] / 2);
 
-        let check_x1 = cannon_x <= player.getPosition + player.getSize[0];
-        let check_x2 = cannon_x + this._sprites.cannon_ball.draw_size[0] >= player.getPosition;
+        let check_x1 = cannon_x < player.getPosition + player.getSize[0];
+        let check_x2 = cannon_x + this._sprites.cannon_ball.draw_size[0] > player.getPosition;
     
-        let check_y1 = pipe.cannon_Y <= player.getflyHeight;
-        let check_y2 = pipe.cannon_Y + this._sprites.cannon_ball.draw_size[1] >= player.getflyHeight + player.getSize[1];
+        let check_y1 = pipe.cannon_Y < player.getflyHeight;
+        let check_y2 = pipe.cannon_Y + this._sprites.cannon_ball.draw_size[1] > player.getflyHeight + player.getSize[1];
     
         if ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem)) {
             return true;

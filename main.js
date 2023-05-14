@@ -1,8 +1,8 @@
 // Flappy Bird Clone JS
-// Version 1.1c build 5/4/2023
+// Version 1.0.1 build 5/4/2023
 // Written by Dan Andersen
 
-const _VERSION_ = "1.1c";
+const _VERSION_ = "1.0.1";
 
 import _Delta_Time from './delta.js';
 import _Game from './game.js';
@@ -37,14 +37,18 @@ function run_game(currentTime) {
 		
 		ground.draw_scene(ctx, game, delta, 1, game.ground_collision);
         
-		if (!game.game_over) {
-
-			pipes.draw_pipes(ctx, player, game, delta);
-			game.game_logic(player, pipes);
-			
-		
-		} else {
-			game.draw_start_screen(ctx, __touch_device__, _VERSION_);
+		switch (game.game_state) {                           
+			case 0: // start screen
+				game.draw_start_screen(ctx, __touch_device__, _VERSION_);
+				break;
+			case 1: //live game
+				pipes.draw_pipes(ctx, player, game, delta);
+				game.game_logic(player, pipes);
+				break;
+			case 2: //game over screen/animation
+				game.draw_game_over();
+				break;
+			default:
 		}
 
 		game.draw_scoreboard(ctx);
@@ -59,7 +63,7 @@ const user_input = () => {
 
 	player.jump(delta.delta_time_multiplier);
 
-	if (game.game_over) {
+	if (game.game_state === 0) {
 
 		game.reset_game();
 		pipes.reset(game);

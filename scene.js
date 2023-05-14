@@ -34,6 +34,7 @@ export default class Scene {
 
         this._speed = game.increased_speed / speed_divider;
 
+        // loop to tile specified image until canvas is full
         for (let i = 0; i <= this._canvas_fill; i++) {
             ctx.drawImage(this._sprite_sheet, 0, this._sprite_Y_location, ...this._size, 
                 this._last_draw_position + (i * this._draw_size[0]), Y_position, 

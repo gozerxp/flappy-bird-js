@@ -49,13 +49,13 @@ export default class Player {
     
     _set_angle(previous_height, new_height, game, delta) {
 
-        if (game.game_over) { 
+        if (game.game_state === 0) { 
             this._sprite_update(delta);
             return 0;
         }
 
         let increment = 10 * delta.delta_time_multiplier;
-        let max_angle = 30;
+        let max_angle = 45;
         
         if (new_height > previous_height) { //player is falling
             
@@ -85,7 +85,7 @@ export default class Player {
         let x_position = this._x_adjustment;
         let previous_flyHeight = this._flyHeight;
 
-        if (!game.game_over) {
+        if (game.game_state === 1) {
 
             this._flight += game.gravity * delta.delta_time_multiplier;
             this._flyHeight = Math.min(this._flyHeight + this._flight, game.ground_collision - this._sprite.draw_size[1]);
