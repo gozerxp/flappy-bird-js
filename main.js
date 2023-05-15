@@ -33,26 +33,37 @@ function run_game(currentTime) {
 
         delta.previousTime = currentTime;
 
-		background.draw_scene(ctx, game, delta, 3, 0);
-		
-		ground.draw_scene(ctx, game, delta, 1, game.ground_collision);
-        
-		switch (game.game_state) {                           
+      		switch (game.game_state) {                           
+
 			case 0: // start screen
+				background.draw_scene(ctx, game, delta, 4, 0, true);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				game.draw_start_screen(ctx, __touch_device__, _VERSION_);
+				game.draw_scoreboard(ctx);
+				player.draw_player(ctx, game, delta);
 				break;
 			case 1: //live game
+				background.draw_scene(ctx, game, delta, 4, 0, true);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				pipes.draw_pipes(ctx, player, game, delta);
 				game.game_logic(player, pipes);
+				game.draw_scoreboard(ctx);
+				player.draw_player(ctx, game, delta);
 				break;
 			case 2: //game over screen/animation
-				game.draw_game_over();
+				background.draw_scene(ctx, game, delta, 4, 0, false);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, false);
+				pipes.draw_pipes(ctx, player, game, delta);
+				game.draw_scoreboard(ctx);
+				game.draw_game_over(ctx);
+				player.draw_player(ctx, game, delta);
+				
+
 				break;
 			default:
 		}
 
-		game.draw_scoreboard(ctx);
-		player.draw_player(ctx, game, delta);
+
 
     }
 
@@ -63,10 +74,12 @@ const user_input = () => {
 
 	player.jump(delta.delta_time_multiplier);
 
-	if (game.game_state === 0) {
-
+	if (game.game_state !== 1) {
+		
 		game.reset_game();
 		pipes.reset(game);
+		player.reset_position(game.SCREEN_SIZE[1]);
+		
 	}
 }
 

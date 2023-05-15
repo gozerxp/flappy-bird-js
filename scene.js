@@ -30,9 +30,7 @@ export default class Scene {
         }
     }
 
-    draw_scene(ctx, game, delta, speed_divider, Y_position) {
-
-        this._speed = game.increased_speed / speed_divider;
+    draw_scene(ctx, game, delta, speed_divider, Y_position, scroll) {
 
         // loop to tile specified image until canvas is full
         for (let i = 0; i <= this._canvas_fill; i++) {
@@ -41,11 +39,16 @@ export default class Scene {
                     ...this._draw_size);
         }
         
-        if (this._last_draw_position <= -this._draw_size[0]) {
-            this._last_draw_position += (this._draw_size[0] - this._speed - 1); // reset
-        } else {
-            this._last_draw_position -= this._speed * delta.delta_time_multiplier;
-        }
+        if (scroll) {
+            this._speed = game.increased_speed / speed_divider;
+
+            if (this._last_draw_position <= -this._draw_size[0]) {
+                this._last_draw_position += (this._draw_size[0] - this._speed - 1); // reset
+            } else {
+                this._last_draw_position -= this._speed * delta.delta_time_multiplier;
+            }
+    }   
+
     }
 
 }

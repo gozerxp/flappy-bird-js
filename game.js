@@ -56,7 +56,7 @@ export default class Game {
         let Y_position = (txt_size * 1.35) * this._draw_scaling;
         let txt = this.scoreboard.currentScore;
 
-        if (this.game_state === 1) { //only draw current score during gameplay.
+        if (this.game_state > 0) { //only draw current score during gameplay.
             ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
             ctx.strokeStyle = "#553847";
             ctx.lineWidth = 6 * this._draw_scaling;
@@ -135,9 +135,24 @@ export default class Game {
         ctx.fillText(txt, 10, this.ground_collision - 12)
     }
 
-    draw_game_over() {
-        console.log("GAME OVER");
-        this.game_state = 0;
+    draw_game_over(ctx) {
+
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "gray";
+        ctx.fillRect(0, 0, ...this.SCREEN_SIZE);
+        ctx.globalAlpha = 1.0;
+
+        let txt_size = 50;
+        let Y_position = this.SCREEN_SIZE[1] / 2;
+        let txt = "Game Over";
+
+        ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
+        ctx.strokeStyle = "#553847";
+        ctx.lineWidth = 6 * this._draw_scaling;
+        ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+        ctx.fillStyle = "#fefefe";
+        ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+
     }
 
     game_logic(player, pipes) {

@@ -211,11 +211,13 @@ export default class Pipes {
                 temp.stem_pipe = [this._sprites.pipes.blue.stem_pipe[0], this._sprites.pipes.blue.stem_pipe[1]];
     
                 // movable pipes - pipe index 1 - blue pipe
-                if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
-                    if (pipe.up_or_down) { //if true, move blue pipes upward
-                        pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier;
-                    } else { 
-                        pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier; 
+                if (game.game_state === 1) {
+                    if (pipe.x < (game.SCREEN_SIZE[0] + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
+                        if (pipe.up_or_down) { //if true, move blue pipes upward
+                            pipe.y -= (1 * game.draw_scaling) * delta.delta_time_multiplier;
+                        } else { 
+                            pipe.y += (1 * game.draw_scaling) * delta.delta_time_multiplier; 
+                        }
                     }
                 }
     
@@ -228,11 +230,13 @@ export default class Pipes {
                 temp.stem_pipe = [this._sprites.pipes.red.stem_pipe[0], this._sprites.pipes.red.stem_pipe[1]];
     
                 // check to see if cannon has been blasted
-                if (pipe.blasted) { 
-                     this._draw_cannonball(ctx, pipe, delta); 
-                 } else {
-                     //code for checking why cannon hasn't been blasted yet.
-                     this._check_4_blastoff(pipe, player);
+                if (game.game_state === 1) {
+                    if (pipe.blasted) { 
+                        this._draw_cannonball(ctx, pipe, delta); 
+                    } else {
+                        //code for checking why cannon hasn't been blasted yet.
+                        this._check_4_blastoff(pipe, player);
+                    }
                 }
 
                 break;
