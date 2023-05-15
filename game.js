@@ -137,7 +137,7 @@ export default class Game {
 
     draw_game_over(ctx) {
 
-        ctx.globalAlpha = 0.5;
+        ctx.globalAlpha = 0.6;
         ctx.fillStyle = "gray";
         ctx.fillRect(0, 0, ...this.SCREEN_SIZE);
         ctx.globalAlpha = 1.0;
