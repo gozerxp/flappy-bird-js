@@ -52,8 +52,8 @@ export default class Game {
 
     draw_scoreboard(ctx) {
 
-        let txt_size = 70;
-        let Y_position = (txt_size * 1.35) * this._draw_scaling;
+        let txt_size = 60;
+        let Y_position = (txt_size * 1.5) * this._draw_scaling;
         let txt = this.scoreboard.currentScore;
 
         if (this.game_state > 0) { //only draw current score during gameplay.
@@ -118,7 +118,35 @@ export default class Game {
         // drawing logo
         ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
             (this.SCREEN_SIZE[0] / 2) - ((600 / 2) * logoScaling), (100 * this.draw_scaling), (600 * logoScaling), (160 * logoScaling));
+
+        this._draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_);
         
+
+    }
+
+    draw_game_over(ctx, __touch_device__, _VERSION_) {
+
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = "gray";
+        ctx.fillRect(0, 0, ...this.SCREEN_SIZE);
+        ctx.globalAlpha = 1.0;
+
+        let txt_size = 40;
+        let Y_position = this.SCREEN_SIZE[1] / 3;
+        let txt = "Game Over";
+
+        ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
+        ctx.strokeStyle = "#553847";
+        ctx.lineWidth = 6 * this._draw_scaling;
+        ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+        ctx.fillStyle = "#fefefe";
+        ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
+
+        this._draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_);
+    }
+
+    _draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_) {
+
         let txt = "";
         if (__touch_device__) { 
             txt = "Tap to play";
@@ -133,25 +161,6 @@ export default class Game {
         txt = `Version: ${_VERSION_}`;
         ctx.font = "bold 24px courier new";
         ctx.fillText(txt, 10, this.ground_collision - 12)
-    }
-
-    draw_game_over(ctx) {
-
-        ctx.globalAlpha = 0.6;
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0, 0, ...this.SCREEN_SIZE);
-        ctx.globalAlpha = 1.0;
-
-        let txt_size = 50;
-        let Y_position = this.SCREEN_SIZE[1] / 2;
-        let txt = "Game Over";
-
-        ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
-        ctx.strokeStyle = "#553847";
-        ctx.lineWidth = 6 * this._draw_scaling;
-        ctx.strokeText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
-        ctx.fillStyle = "#fefefe";
-        ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
 
     }
 

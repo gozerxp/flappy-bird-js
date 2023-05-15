@@ -2,7 +2,7 @@
 // Version 1.0.1 build 5/4/2023
 // Written by Dan Andersen
 
-const _VERSION_ = "1.0.1";
+const _VERSION_ = "1.0.2";
 
 import _Delta_Time from './delta.js';
 import _Game from './game.js';
@@ -39,25 +39,24 @@ function run_game(currentTime) {
 				background.draw_scene(ctx, game, delta, 4, 0, true);
 				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				game.draw_start_screen(ctx, __touch_device__, _VERSION_);
-				game.draw_scoreboard(ctx);
 				player.draw_player(ctx, game, delta);
+				game.draw_scoreboard(ctx);
 				break;
 			case 1: //live game
 				background.draw_scene(ctx, game, delta, 4, 0, true);
 				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				pipes.draw_pipes(ctx, player, game, delta);
+				player.draw_player(ctx, game, delta);
 				game.game_logic(player, pipes);
 				game.draw_scoreboard(ctx);
-				player.draw_player(ctx, game, delta);
 				break;
 			case 2: //game over screen/animation
 				background.draw_scene(ctx, game, delta, 4, 0, false);
 				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, false);
 				pipes.draw_pipes(ctx, player, game, delta);
-				game.draw_scoreboard(ctx);
-				game.draw_game_over(ctx);
+				game.draw_game_over(ctx, __touch_device__, _VERSION_);
 				player.draw_player(ctx, game, delta);
-				
+				game.draw_scoreboard(ctx);
 
 				break;
 			default:

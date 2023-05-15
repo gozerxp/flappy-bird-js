@@ -103,14 +103,20 @@ export default class Player {
                     this._flyHeight = this._flyHeight + this._flight;
                     this._angle -= 10 * delta.delta_time_multiplier;
                 }
+
+
+
                 break;
             default:
         }
 
         ctx.save();
-        ctx.translate(x_position, this._flyHeight);
+
+        let translate_pos = [x_position + (this._sprite.draw_size[0] / 2), this._flyHeight + (this._sprite.draw_size[1] / 2)]
+
+        ctx.translate(...translate_pos);
         ctx.rotate(this._angle * Math.PI / 360);
-        ctx.translate(-x_position, -this._flyHeight);
+        ctx.translate(-translate_pos[0], -translate_pos[1]);
       
         ctx.drawImage(this._sprite_sheet, 432, this._sprite.sprite_index * (this._sprite.size[1] + 1), this._sprite.size[0], this._sprite.size[1] + 1,
             x_position, this._flyHeight, ...this._sprite.draw_size);
