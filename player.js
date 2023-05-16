@@ -87,16 +87,19 @@ export default class Player {
         let previous_flyHeight = this._flyHeight;
 
         switch (game.game_state) { //check gamer state before drawing to determine player position
+            
             case 0: //start screen, player flies in the middle
                 x_position = this._center_position;
                 this._flyHeight = (game.SCREEN_SIZE[1] / 2) - (this._sprite.draw_size[1] / 2);
                 this._angle = this._set_flight_angle(previous_flyHeight, this._flyHeight, game, delta);
                 break;
+            
             case 1: // live game flight calculation
                 this._flight += game.gravity * delta.delta_time_multiplier;
                 this._flyHeight = Math.min(this._flyHeight + this._flight, game.ground_collision - this._sprite.draw_size[1]);
                 this._angle = this._set_flight_angle(previous_flyHeight, this._flyHeight, game, delta);
                 break;
+            
             case 2: // game over fall
                 if (this._flyHeight < game.ground_collision - this._sprite.draw_size[1]) {
                     this._flight += game.gravity * delta.delta_time_multiplier;
