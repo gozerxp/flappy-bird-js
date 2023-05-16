@@ -102,9 +102,9 @@ export default class Player {
                     this._flight += game.gravity * delta.delta_time_multiplier;
                     this._flyHeight = this._flyHeight + this._flight;
                     this._angle -= 10 * delta.delta_time_multiplier;
+                }  else {
+                    game.game_playable = true;
                 }
-
-
 
                 break;
             default:

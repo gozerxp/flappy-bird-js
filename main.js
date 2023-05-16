@@ -37,32 +37,33 @@ function run_game(currentTime) {
 
 			case 0: // start screen
 				background.draw_scene(ctx, game, delta, 4, 0, true);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				game.draw_start_screen(ctx, __touch_device__, _VERSION_);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				player.draw_player(ctx, game, delta);
-				game.draw_scoreboard(ctx);
+				
+				
 				break;
 			case 1: //live game
 				background.draw_scene(ctx, game, delta, 4, 0, true);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				pipes.draw_pipes(ctx, player, game, delta);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				player.draw_player(ctx, game, delta);
-				game.game_logic(player, pipes);
-				game.draw_scoreboard(ctx);
+				game.game_logic(player, pipes, delta);
+				
+
 				break;
 			case 2: //game over screen/animation
 				background.draw_scene(ctx, game, delta, 4, 0, false);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, false);
 				pipes.draw_pipes(ctx, player, game, delta);
-				game.draw_game_over(ctx, __touch_device__, _VERSION_);
+				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, false);
+				game.draw_game_over(ctx, delta, __touch_device__, _VERSION_);
 				player.draw_player(ctx, game, delta);
-				game.draw_scoreboard(ctx);
-
+				
 				break;
 			default:
 		}
 
-
+		game.draw_scoreboard(ctx);
 
     }
 
@@ -71,9 +72,11 @@ function run_game(currentTime) {
 
 const user_input = () => {
 
-	player.jump(delta.delta_time_multiplier);
+	if (game.game_playable) {
+		player.jump(delta.delta_time_multiplier);
+	}
 
-	if (game.game_state !== 1) {
+	if (game.game_state !== 1 && game.game_playable) {
 		
 		game.reset_game();
 		pipes.reset(game);

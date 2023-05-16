@@ -18,6 +18,8 @@ export default class Game {
         // 1 = game playing
         // 2 = game over screen
         // 3 = ?
+        this._game_over_timer = 0;
+        this._game_playable = true;
 
         this.ground_collision = this.SCREEN_SIZE[1] - 150 * (this._draw_scaling / 1.5);
 
@@ -108,6 +110,14 @@ export default class Game {
         this._game_state = game_state;
     }
 
+    get game_playable() {
+        return this._game_playable;
+    }
+
+    set game_playable(game_playable) {
+        this._game_playable = game_playable;
+    }
+
     draw_start_screen(ctx, __touch_device__, _VERSION_) {
 
         let logoScaling = 1;
@@ -124,7 +134,7 @@ export default class Game {
 
     }
 
-    draw_game_over(ctx, __touch_device__, _VERSION_) {
+    draw_game_over(ctx, delta, __touch_device__, _VERSION_) {
 
         ctx.globalAlpha = 0.6;
         ctx.fillStyle = "gray";
@@ -142,7 +152,12 @@ export default class Game {
         ctx.fillStyle = "#fefefe";
         ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
 
-        this._draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_);
+        let delta_time = delta.previousTime - this._game_over_timer;
+
+        if(this.game_playable) {
+            this._draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_);
+        }
+        if (delta_time >= 10000) { this.game_state = 0; } //reset to start screen after 10 seconds.
     }
 
     _draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_) {
@@ -164,13 +179,16 @@ export default class Game {
 
     }
 
-    game_logic(player, pipes) {
+    game_logic(player, pipes, delta) {
 
         let check_ground = this._check_ground_collision(player); 
         let check_pipes = pipes.check_pipe_logic(player, this); 
 
         if(check_ground || check_pipes) {
             this.game_state = 2; // draw game over
+            this.game_playable = false;
+            this._game_over_timer = delta.previousTime;
+
         }
     }
 
