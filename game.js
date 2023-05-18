@@ -34,7 +34,15 @@ export default class Game {
     }
 
     level_up(pipe) {
-        return pipe.get_total_pipes < 5 ? 0 : Math.round(Math.random() * 2);	
+        
+        if (pipe.get_total_pipes <= 5) {
+            return 0;
+        } else if (pipe.get_total_pipes > 5 && pipe.get_total_pipes < 10) {
+            return Math.round(Math.random() * 1);	
+        
+        } else if (pipe.get_total_pipes >= 10) {
+            return Math.round(Math.random() * 2);
+        } 
     }
 
     _setup_canvas(ctx) {

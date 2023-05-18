@@ -9,7 +9,7 @@ export default class Player {
             
             sprite_index : 0, // 0 - 2
             max_sprites : 3, // bird has 3 frames
-            sprite_interval : 3, // how often to change the index
+            sprite_interval : 4, // how often to change the index
             last_sprite_update : 0, // when was the last frame update
 
         };

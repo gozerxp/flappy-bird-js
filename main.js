@@ -41,7 +41,6 @@ function run_game(currentTime) {
 				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
 				player.draw_player(ctx, game, delta);
 				
-				
 				break;
 			case 1: //live game
 				background.draw_scene(ctx, game, delta, 4, 0, true);
@@ -50,7 +49,6 @@ function run_game(currentTime) {
 				player.draw_player(ctx, game, delta);
 				game.game_logic(player, pipes, delta);
 				
-
 				break;
 			case 2: //game over screen/animation
 				background.draw_scene(ctx, game, delta, 4, 0, false);
@@ -73,16 +71,19 @@ function run_game(currentTime) {
 const user_input = () => {
 
 	if (game.game_playable) {
+		
 		player.jump(delta.delta_time_multiplier);
+
+		if (game.game_state !== 1) {
+		
+			game.reset_game();
+			pipes.reset(game);
+			player.reset_position(game.SCREEN_SIZE[1]);
+			
+		}
 	}
 
-	if (game.game_state !== 1 && game.game_playable) {
-		
-		game.reset_game();
-		pipes.reset(game);
-		player.reset_position(game.SCREEN_SIZE[1]);
-		
-	}
+
 }
 
 //user inputs
