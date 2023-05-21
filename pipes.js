@@ -171,7 +171,7 @@ export default class Pipes {
     _shift_pipes(pipes_array) {
 
         // remove pipe when pipe[0].x goes offscreen
-        if (pipes_array[0].x <= -this._sprites.pipes.draw_size[0] && pipes_array.length > 0) {
+        if (pipes_array.length > 0 && pipes_array[0].x <= -this._sprites.pipes.draw_size[0]) {
                       
             const new_pipes = pipes_array;
             new_pipes.shift();
