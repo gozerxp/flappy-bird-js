@@ -367,7 +367,7 @@ export default class Pipes {
                 console.log("HIT CANNONBALL!");
                 game_over = true;
 
-            } else if ((pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition && pipe.scored === false) { 
+            } else if (pipe.scored === false && (pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition) { 
             // check to see if pipe moves past theshold for the first time.
                 pipe.scored = true; // flag so we don't count the same pipe more than once
                 game.increase_score();                

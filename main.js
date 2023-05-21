@@ -2,7 +2,7 @@
 // Version 1.0.1 build 5/4/2023
 // Written by Dan Andersen
 
-const _VERSION_ = "1.0.2";
+const _VERSION_ = "1.0.3";
 
 import _Delta_Time from './delta.js';
 import _Game from './game.js';
