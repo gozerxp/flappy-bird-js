@@ -1,5 +1,5 @@
 
-const background_width = 768
+const background_height = 768
 
 // delta time
 export default class Game {
@@ -47,11 +47,11 @@ export default class Game {
 
     _setup_canvas(ctx) {
 
-        this.SCREEN_SIZE = [window.innerWidth, background_width];
+        this.SCREEN_SIZE = [window.innerWidth, background_height];
 
         if (window.innerHeight > this.SCREEN_SIZE[1]) {
             this.SCREEN_SIZE[1] = window.innerHeight;
-            this._draw_scaling = this.SCREEN_SIZE[1] / background_width;
+            this._draw_scaling = this.SCREEN_SIZE[1] / background_height;
         }
         
         console.log(`res: ${this.SCREEN_SIZE[0]}x${this.SCREEN_SIZE[1]}`);
