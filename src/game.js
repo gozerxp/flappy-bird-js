@@ -1,5 +1,5 @@
 
-const background_height = 768
+const background_height = 768;
 
 // delta time
 export default class Game {
