@@ -1,23 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-header {
-  margin: 0 auto;
-  height: 32px;
-  width: 100%;
-  background: #5EE270;
-}
-
 body {
-  margin: 0;
-  text-align: center;
+  margin: 0 auto;
   font-family: 'Press Start 2P', cursive;
   user-select: none;
-  /* background: #4c3b46; */
-  background: black;
+  background-color: black;
 }
-
-.score-container {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 6px;
- }
