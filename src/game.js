@@ -210,6 +210,7 @@ export default class Game {
     }
 
     reset_game() {
+
         this.scoreboard.currentScore = 0;
         this.scoreboard.attempts++;
 

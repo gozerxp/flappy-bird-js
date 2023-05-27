@@ -2,12 +2,8 @@ export default class Scene {
     constructor(game, scene_type) {
 
         this._set_size(scene_type);
+        this._set_scaling(game);
 
-		this._draw_size = [0, 0]; // for scaling
-        this._draw_size[0] = this._size[0] * game.draw_scaling;
-        this._draw_size[1] = this._size[1] * game.draw_scaling;
-
-		this._canvas_fill = Math.ceil(game.SCREEN_SIZE[0] / this._draw_size[0]);
 		this._speed = 0;
 		this._last_draw_position = 0;
 
@@ -30,13 +26,27 @@ export default class Scene {
         }
     }
 
+    _set_scaling(game) {
+        this._draw_size = [0, 0]; // for scaling
+        this._draw_size[0] = this._size[0] * game.draw_scaling;
+        this._draw_size[1] = this._size[1] * game.draw_scaling;
+    }
+
+    set set_scaling(game) {
+        this._set_scaling(game);
+    }
+
     draw_scene(ctx, game, delta, speed_divider, Y_position, scroll) {
 
-        // loop to tile specified image until canvas is full
-        for (let i = 0; i <= this._canvas_fill; i++) {
+        let tile_position = this._last_draw_position;
+
+        while (tile_position < game.SCREEN_SIZE[0]) {
+
             ctx.drawImage(this._sprite_sheet, 0, this._sprite_Y_location, ...this._size, 
-                this._last_draw_position + (i * this._draw_size[0]), Y_position, 
-                    ...this._draw_size);
+                tile_position, Y_position, ...this._draw_size);
+            
+            tile_position += this._draw_size[0];
+
         }
         
         if (scroll) {
