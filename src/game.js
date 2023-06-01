@@ -49,7 +49,7 @@ export default class Game {
 
         this.SCREEN_SIZE = [window.innerWidth, background_height];
 
-        if (window.innerHeight > this.SCREEN_SIZE[1]) {
+        if (window.innerHeight !== this.SCREEN_SIZE[1]) {
             this.SCREEN_SIZE[1] = window.innerHeight;
             this._draw_scaling = this.SCREEN_SIZE[1] / background_height;
         }
@@ -63,7 +63,7 @@ export default class Game {
     draw_scoreboard(ctx) {
 
         let txt_size = 60;
-        let Y_position = (txt_size * 1.5) * this._draw_scaling;
+        let Y_position = (txt_size * 2) * this._draw_scaling;
         let txt = this.scoreboard.currentScore;
 
         if (this.game_state > 0) { //only draw current score during gameplay.
@@ -76,7 +76,7 @@ export default class Game {
         }
 
         let padding = 25;
-        txt_size = 25;
+        txt_size = 15;
         Y_position = padding * 1.75;//this.ground_collision + ((this.SCREEN_SIZE[1] - this.ground_collision) /  2) + txt_size;
 
         ctx.font = `${txt_size}px 'Press Start 2P'`;
