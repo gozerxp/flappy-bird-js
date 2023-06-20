@@ -5,6 +5,7 @@
 const _VERSION_ = "1.0.3";
 
 import _Delta_Time from './delta.js';
+import _Display from './display.js';
 import _Game from './game.js';
 import _Player from './player.js';
 import _Scene from './scene.js';
@@ -16,6 +17,7 @@ const ctx = canvas.getContext('2d');
 const __touch_device__ = window.ontouchstart !== undefined;
 
 const delta = new _Delta_Time();
+const display = new _Display();
 const game = new _Game(ctx);
 const player = new _Player(game);
 const background = new _Scene(game, "background");

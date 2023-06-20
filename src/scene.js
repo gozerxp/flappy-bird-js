@@ -1,4 +1,5 @@
 export default class Scene {
+    
     constructor(game, scene_type) {
 
         this._set_size(scene_type);
@@ -57,7 +58,7 @@ export default class Scene {
             } else {
                 this._last_draw_position -= this._speed * delta.delta_time_multiplier;
             }
-    }   
+        }   
 
     }
 

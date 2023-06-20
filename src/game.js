@@ -75,7 +75,7 @@ export default class Game {
             ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
         }
 
-        let padding = 25;
+        let padding = 15;
         txt_size = 15;
         Y_position = padding * 1.75;//this.ground_collision + ((this.SCREEN_SIZE[1] - this.ground_collision) /  2) + txt_size;
 
