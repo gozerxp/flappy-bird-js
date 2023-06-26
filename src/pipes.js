@@ -67,7 +67,7 @@ export default class Pipes {
         this._pipes_array = [];
 
         this._pipe_gap = [350, 220],//[270, 220]; //default gap
-        this._minimum_gap = [125, 100]; //minimum gap constrants 
+        this._minimum_gap = [150, 100]; //minimum gap constrants 
         
         this._pipe_gap[0] *= game.draw_scaling;
         this._pipe_gap[1] *= game.draw_scaling;

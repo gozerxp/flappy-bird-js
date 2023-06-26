@@ -28,7 +28,7 @@ export default class Game {
             bestScore : 0,
             attempts : 0
         }
-
+        
         this._logo_sprite = new Image();
         this._logo_sprite.src = "assets/fb-logo.png";
     }
@@ -160,12 +160,15 @@ export default class Game {
         ctx.fillStyle = "#fefefe";
         ctx.fillText(txt, this.SCREEN_SIZE[0] / 2 - (ctx.measureText(txt).width / 2), Y_position);
 
-        let delta_time = delta.previousTime - this._game_over_timer;
-
-        if(this.game_playable) {
+        if (this.game_playable) {
             this._draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_);
+
+            //reset to start screen after 5 seconds.
+            if (delta.previousTime - this._game_over_timer >= (5 * 1000)) {
+                this.game_state = 0;
+            } 
         }
-        if (delta_time >= 10000) { this.game_state = 0; } //reset to start screen after 10 seconds.
+
     }
 
     _draw_tap_2_play_txt(ctx, __touch_device__, _VERSION_) {
