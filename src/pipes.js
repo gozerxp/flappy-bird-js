@@ -1,6 +1,6 @@
 export default class Pipes {
 
-    constructor(game) {
+    constructor(game, display) {
         
         this._sprites = {
         // sprite dimensions
@@ -82,8 +82,8 @@ export default class Pipes {
 
         this._sprites.cannon_ball.blast_speed *= game.draw_scaling;
 
-        this._start_position = game.SCREEN_SIZE[0] + this._pipe_gap[0] + this._sprites.pipes.draw_size[0];
-        this._max_pipes = Math.ceil(game.SCREEN_SIZE[0] / (this._sprites.pipes.pipe_size[0] + this._pipe_gap[0])) + 1;
+        this._start_position = display.width + this._pipe_gap[0] + this._sprites.pipes.draw_size[0];
+        this._max_pipes = Math.ceil(display.width / (this._sprites.pipes.pipe_size[0] + this._pipe_gap[0])) + 1;
         
         this._sprites.cannon_ball.max_blast_height = this._pipe_gap[1];
 

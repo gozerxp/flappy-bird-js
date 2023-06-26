@@ -1,6 +1,6 @@
 export default class Player {
     
-    constructor(game) {
+    constructor(display) {
 
         this._sprite = {
             // sprite dimensions
@@ -14,15 +14,15 @@ export default class Player {
 
         };
 
-        this._sprite.draw_size[0] = this._sprite.size[0] * game.draw_scaling;
-        this._sprite.draw_size[1] = this._sprite.size[1] * game.draw_scaling;   
+        this._sprite.draw_size[0] = this._sprite.size[0];//* game.draw_scaling;
+        this._sprite.draw_size[1] = this._sprite.size[1];// * game.draw_scaling;   
 
         this._flyHeight = 0;
         this._angle = 45;
         this._x_adjustment = 0;
-        this._jump = -11.5 * game.draw_scaling;
+        this._jump = -11.5;// * game.draw_scaling;
         this._flight = 0;
-        this._center_position = ((game.SCREEN_SIZE[0] / 2) - (this._sprite.draw_size[0] / 2));
+        this._center_position = ((display.width / 2) - (this._sprite.draw_size[0] / 2));
 
         this._sprite_sheet = new Image();
         this._sprite_sheet.src = "assets/flappy-bird-set.png";
@@ -30,18 +30,15 @@ export default class Player {
         this._jump_fx = new Audio('assets/bloop.ogg');
         this._jump_fx.load();
 
-        this._player_adjustment(game.SCREEN_SIZE);
-        this.reset_position(game.SCREEN_SIZE[1]);
+        this._player_adjustment(display);
+        this.reset_position(display.height);
 
     }
 
-    _player_adjustment(SCREEN_SIZE) {
+    _player_adjustment(display) {
 
-        // if screen height is > then screen width then offset player.
-        let playerAdjustment = SCREEN_SIZE[1] > SCREEN_SIZE[0];
-
-        if (playerAdjustment) {	
-            this._x_adjustment = SCREEN_SIZE[0] / 5;
+        if (display.portrait_mode) {	
+            this._x_adjustment = display.width / 5;
         } else {    
             this._x_adjustment = this._center_position; 
         }
@@ -75,10 +72,10 @@ export default class Player {
 
     }
 
-    reset_position(SCREEN_SIZE) {
+    reset_position(display_height) {
         this._angle = 0;
         this._flight = this._jump;
-        this._flyHeight = (SCREEN_SIZE / 2) - (this._sprite.draw_size[1] / 2);
+        this._flyHeight = (display_height / 2) - (this._sprite.draw_size[1] / 2);
     }
 
     draw_player(ctx, game, delta) {

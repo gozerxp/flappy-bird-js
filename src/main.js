@@ -1,8 +1,8 @@
 // Flappy Bird Clone JS
-// Version 1.0.1 build 5/4/2023
+// Version 1.0.4 build 5/4/2023
 // Written by Dan Andersen
 
-const _VERSION_ = "1.0.3";
+const _VERSION_ = "1.0.4";
 
 import _Delta_Time from './delta.js';
 import _Display from './display.js';
@@ -11,18 +11,20 @@ import _Player from './player.js';
 import _Scene from './scene.js';
 import _Pipes from './pipes.js';
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-
 const __touch_device__ = window.ontouchstart !== undefined;
 
 const delta = new _Delta_Time();
 const display = new _Display();
-const game = new _Game(ctx);
-const player = new _Player(game);
-const background = new _Scene(game, "background");
-const ground = new _Scene(game, "ground");
-const pipes = new _Pipes(game);
+
+const game = new _Game(display);
+
+const background = new _Scene(display, "background");
+const ground = new _Scene(display, "ground");
+
+const player = new _Player(display);
+const pipes = new _Pipes(game, display);
+
+resize_assets();
 
 window.requestAnimationFrame(run_game);
 
@@ -35,39 +37,46 @@ function run_game(currentTime) {
 
         delta.previousTime = currentTime;
 
-      		switch (game.game_state) {                           
+      	switch (game.game_state) {                           
 
-			case 0: // start screen
-				background.draw_scene(ctx, game, delta, 4, 0, true);
-				game.draw_start_screen(ctx, __touch_device__, _VERSION_);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
-				player.draw_player(ctx, game, delta);
+		 	case 0: // start screen
+				background.draw_scene(display, delta, game, 4, 0, true);
+				game.draw_start_screen(display, __touch_device__, _VERSION_);
+				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				player.draw_player(display, game, delta);
 				
-				break;
+		 		break;
 			case 1: //live game
-				background.draw_scene(ctx, game, delta, 4, 0, true);
-				pipes.draw_pipes(ctx, player, game, delta);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, true);
-				player.draw_player(ctx, game, delta);
+				background.draw_scene(display, delta, game, 4, 0, true);
+				pipes.draw_pipes(display, player, game, delta);
+				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				player.draw_player(display, game, delta);
 				game.game_logic(player, pipes, delta);
 				
 				break;
 			case 2: //game over screen/animation
-				background.draw_scene(ctx, game, delta, 4, 0, false);
-				pipes.draw_pipes(ctx, player, game, delta);
-				ground.draw_scene(ctx, game, delta, 1, game.ground_collision, false);
-				game.draw_game_over(ctx, delta, __touch_device__, _VERSION_);
-				player.draw_player(ctx, game, delta);
+				background.draw_scene(display, delta, game, 4, 0, false);
+				pipes.draw_pipes(display, player, game, delta);
+				ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
+				game.draw_game_over(display, delta, __touch_device__, _VERSION_);
+				player.draw_player(display, game, delta);
 				
 				break;
 			default:
 		}
 
-		game.draw_scoreboard(ctx);
+		game.draw_scoreboard(display);
 
     }
 
     window.requestAnimationFrame(run_game);
+}
+
+function resize_assets() {
+	display.resize_canvas();
+	game.set_scaling(display);
+	background.set_scaling = display.draw_scaling;
+	ground.set_scaling = display.draw_scaling;	
 }
 
 const user_input = () => {
@@ -80,7 +89,7 @@ const user_input = () => {
 		
 			game.reset_game();
 			pipes.reset(game);
-			player.reset_position(game.SCREEN_SIZE[1]);
+			player.reset_position(display.height);
 			
 		}
 	}
@@ -112,3 +121,7 @@ window.addEventListener('wheel', e => {
     e.preventDefault();
   }
 }, { passive: false });
+
+window.onresize = function(e) {
+	resize_assets();
+}

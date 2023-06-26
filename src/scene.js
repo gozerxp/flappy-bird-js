@@ -1,9 +1,11 @@
 export default class Scene {
     
-    constructor(game, scene_type) {
+    constructor(display, scene_type) {
 
         this._set_size(scene_type);
-        this._set_scaling(game);
+
+        this._draw_size = [0, 0]; // for scaling
+        this._set_scaling(display.draw_scaling);
 
 		this._speed = 0;
 		this._last_draw_position = 0;
@@ -15,7 +17,7 @@ export default class Scene {
     _set_size(scene_type) {
         switch(scene_type) {
             case "background":
-                this._size = [431, 768]; //background
+                this._size = [430, 768]; //background
                 this._sprite_Y_location = 0;
                 break;
             case "ground":
@@ -27,23 +29,22 @@ export default class Scene {
         }
     }
 
-    _set_scaling(game) {
-        this._draw_size = [0, 0]; // for scaling
-        this._draw_size[0] = this._size[0] * game.draw_scaling;
-        this._draw_size[1] = this._size[1] * game.draw_scaling;
+    _set_scaling(draw_scaling) {
+        this._draw_size[0] = Math.floor(this._size[0] * draw_scaling);
+        this._draw_size[1] = Math.floor(this._size[1] * draw_scaling);
     }
 
-    set set_scaling(game) {
-        this._set_scaling(game);
+    set set_scaling(draw_scaling) {
+        this._set_scaling(draw_scaling);
     }
 
-    draw_scene(ctx, game, delta, speed_divider, Y_position, scroll) {
+    draw_scene(display, delta, game, speed_divider, Y_position, scroll) {
 
         let tile_position = this._last_draw_position;
 
-        while (tile_position < game.SCREEN_SIZE[0]) {
+        while (tile_position < display.width) {
 
-            ctx.drawImage(this._sprite_sheet, 0, this._sprite_Y_location, ...this._size, 
+            display.ctx.drawImage(this._sprite_sheet, 0, this._sprite_Y_location, ...this._size, 
                 tile_position, Y_position, ...this._draw_size);
             
             tile_position += this._draw_size[0];
@@ -54,7 +55,7 @@ export default class Scene {
             this._speed = game.increased_speed / speed_divider;
 
             if (this._last_draw_position <= -this._draw_size[0]) {
-                this._last_draw_position += (this._draw_size[0] - this._speed - 1); // reset
+                this._last_draw_position += (this._draw_size[0] - this._speed); // reset
             } else {
                 this._last_draw_position -= this._speed * delta.delta_time_multiplier;
             }
