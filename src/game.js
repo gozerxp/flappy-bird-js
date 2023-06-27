@@ -87,6 +87,7 @@ export default class Game {
 
     set game_mode(game_mode) {
         this._game_mode = game_mode > 2 ? 0 : game_mode;
+        this._save_game_mode();
     }
 
     GAME_MODE_COLOR() {
@@ -181,7 +182,6 @@ export default class Game {
         if(check_ground || check_pipes) {
 
             scoreboard.save_high_score(this._game_mode);
-            this._save_game_mode();
             this.game_state = 2; // draw game over
             this.game_playable = false;
             this._game_over_timer = delta.previousTime;
