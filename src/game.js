@@ -164,7 +164,7 @@ export default class Game {
             txt = "Click to play";
         }
         
-        display.ctx.font = `bold ${32 * display.draw_scaling}px courier new`;
+        display.ctx.font = `bold ${28 * display.draw_scaling}px courier new`;
         display.ctx.fillStyle = "#4c3b46";
         display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), (550 * display.draw_scaling));
         
