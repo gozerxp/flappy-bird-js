@@ -13,20 +13,13 @@ export default class Game {
         // 1 = game playing
         // 2 = game over screen
         // 3 = ?
+        this._game_mode = this._load_game_mode();
+        // 0 - classic mode
+        // 1 - intermediate
+        // 2 - expert
+
         this._game_over_timer = 0;
         this._game_playable = true;
-
-        this.scoreboard = {
-            currentScore : 0,
-            bestScore : localStorage.getItem("high_score"),
-            attempts : 0
-        }
-
-        //if scoreboard is null then localStorage variable has not been saved.
-        //this variable will be saved on the first gameover screen.
-        if (!this.scoreboard.bestScore) {
-            this.scoreboard.bestScore = 0;   
-        }
         
         this._logo_sprite = new Image();
         this._logo_sprite.src = "assets/fb-logo.png";
@@ -39,45 +32,21 @@ export default class Game {
     }
 
     level_up(pipe) {
-        
-        if (pipe.get_total_pipes <= 5) {
-            return 0;
-        } else if (pipe.get_total_pipes > 5 && pipe.get_total_pipes < 10) {
-            return Math.round(Math.random() * 1);	
-        
-        } else if (pipe.get_total_pipes >= 10) {
-            return Math.round(Math.random() * 2);
-        } 
-    }
 
-    draw_scoreboard(display) {
-
-        let txt_size = 60;
-        let Y_position = (txt_size * 2) * display.draw_scaling;
-        let txt = this.scoreboard.currentScore;
-
-        if (this.game_state > 0) { //only draw current score during gameplay.
-            display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
-            display.ctx.strokeStyle = "#553847";
-            display.ctx.lineWidth = 6 * display.draw_scaling;
-            display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-            display.ctx.fillStyle = "#fefefe";
-            display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-        }
-
-        let padding = 25;
-        txt_size = 15 * display.draw_scaling;
-        Y_position = (padding * 1.25) * display.draw_scaling;
-
-        display.ctx.font = `${txt_size}px 'Press Start 2P'`;
-        display.ctx.fillStyle = "#553847";
-
-        txt = `Best: ${this.scoreboard.bestScore}`;
-        display.ctx.fillText(txt, padding, Y_position);
-
-        txt = `Attempts: ${this.scoreboard.attempts}`;
-        display.ctx.fillText(txt, display.width - display.ctx.measureText(txt).width - padding, Y_position);
-        
+        switch (this._game_mode) {
+            case 0: //classic mode - green pipes only
+                return 0;
+            case 1: //intermediate - blue pipes show up at 10+
+                return pipe.get_total_pipes >= 10 ? Math.round(Math.random() * 1) : 0;
+            case 2: //expert mode
+                if (pipe.get_total_pipes > 5 && pipe.get_total_pipes < 10) {
+                    return Math.round(Math.random() * 1);
+                } else if (pipe.get_total_pipes >= 10) {
+                    return Math.round(Math.random() * 2);
+                } else {
+                    return 0;
+                }
+        }       
     }
 
     get gravity() {
@@ -112,6 +81,34 @@ export default class Game {
         this._game_playable = game_playable;
     }
 
+    get game_mode() {
+        return this._game_mode;
+    }
+
+    set game_mode(game_mode) {
+        this._game_mode = game_mode > 2 ? 0 : game_mode;
+    }
+
+    GAME_MODE_COLOR() {
+
+        let color = "#4c3b46";
+
+        switch (this._game_mode) {
+            case 0:
+                color = "lime";
+                break;
+            case 1:
+                color = "blue";
+                break;
+            case 2:
+                color = "red";
+                break;
+            default:
+        }
+
+        return color;
+    }
+
     draw_start_screen(display, __touch_device__, _VERSION_) {
 
         let logoScaling = [600, 160];
@@ -122,7 +119,7 @@ export default class Game {
 
         // drawing logo
         display.ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
-            (display.width / 2) - (logoScaling[0] / 2), (150 * display.draw_scaling), ...logoScaling);
+            (display.width / 2) - (logoScaling[0] / 2), (140 * display.draw_scaling), ...logoScaling);
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         
@@ -176,13 +173,15 @@ export default class Game {
 
     }
 
-    game_logic(player, pipes, delta) {
+    game_logic(player, pipes, delta, scoreboard) {
 
         let check_ground = this._check_ground_collision(player); 
-        let check_pipes = pipes.check_pipe_logic(player, this); 
+        let check_pipes = pipes.check_pipe_logic(player, scoreboard); 
 
         if(check_ground || check_pipes) {
-            localStorage.setItem("high_score", this.scoreboard.bestScore);
+
+            scoreboard.save_high_score(this._game_mode);
+            this._save_game_mode();
             this.game_state = 2; // draw game over
             this.game_playable = false;
             this._game_over_timer = delta.previousTime;
@@ -190,22 +189,30 @@ export default class Game {
         }
     }
 
+    _save_game_mode() {
+        localStorage.setItem("game_mode", this._game_mode);
+    }
+
+    _load_game_mode() {
+
+        let game_mode = localStorage.getItem("game_mode");
+        //if game mode is null then localStorage variable has not been saved.
+        //this variable will be saved on the first gameover screen.
+        if (!game_mode) {
+            game_mode = 0;   
+        }
+
+        return Number(game_mode);
+
+    }
+
     _check_ground_collision(player) {
         return player.getflyHeight + player.getSize[1] >= this.ground_collision;
     }
 
-    increase_score() {
-        this.scoreboard.currentScore++;
-        this.scoreboard.bestScore = Math.max(this.scoreboard.bestScore, this.scoreboard.currentScore)
-    }
-
     reset_game() {
 
-        this.scoreboard.currentScore = 0;
-        this.scoreboard.attempts++;
-
         this._increased_speed = this._speed;
-
         this._game_state = 1;
     }
 }

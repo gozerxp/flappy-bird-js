@@ -68,7 +68,8 @@ export default class Pipes {
         this._pipe_gap = [0, 0];
         this._minimum_gap = [0, 0];
 
-        this._default_pipe_gap = [350, 220];//[270, 220]; //default gap
+        this._classic_pipe_gap = [220, 220];
+        this._default_pipe_gap = [350, 220];
         this._default_minimum_gap = [150, 100]; //minimum gap constrants 
 
         this._set_scaling(display);
@@ -117,6 +118,25 @@ export default class Pipes {
         return ( this._sprites.pipes.draw_size[1] + (Math.random() * ((game.ground_collision / 2) - this._sprites.pipes.draw_size[1]))); 
     }
 
+    _set_pipe_gap(display, game) {
+
+        switch (game.game_mode) {
+            case 0:
+                return this._classic_pipe_gap[0] * display.draw_scaling;
+            case 1:
+                if (this._total_pipes >= 5) {
+                    return Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+                } else {
+                    return this._classic_pipe_gap[0] * display.draw_scaling;
+                }
+            case 2:
+                return Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+            default:
+        }
+
+        
+    }
+
     get get_total_pipes() {
         return this._total_pipes;
     }
@@ -143,7 +163,7 @@ export default class Pipes {
             
             temp.y = this._pipe_height(game);
             temp.type_index = game.level_up(this);
-            temp.gap_x = Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+            temp.gap_x = this._set_pipe_gap(display, game); 
             temp.gap_y = this._pipe_gap[1];
             temp.up_or_down = this._up_or_down(temp, game);
             
@@ -349,7 +369,7 @@ export default class Pipes {
     
     }
 
-    check_pipe_logic(player, game) {
+    check_pipe_logic(player, scoreboard) {
 
         let game_over = false;
 
@@ -380,7 +400,7 @@ export default class Pipes {
             } else if (pipe.scored === false && (pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition) { 
             // check to see if pipe moves past theshold for the first time.
                 pipe.scored = true; // flag so we don't count the same pipe more than once
-                game.increase_score();                
+                scoreboard.increase_score();                
             }
         });
 
