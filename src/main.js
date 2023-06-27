@@ -22,9 +22,9 @@ const background = new _Scene(display, "background");
 const ground = new _Scene(display, "ground");
 
 const player = new _Player(display);
-const pipes = new _Pipes(game, display);
+const pipes = new _Pipes(display);
 
-resize_assets();
+scale_assets();
 
 window.requestAnimationFrame(run_game);
 
@@ -72,24 +72,26 @@ function run_game(currentTime) {
     window.requestAnimationFrame(run_game);
 }
 
-function resize_assets() {
+function scale_assets() {
 	display.resize_canvas();
 	game.set_scaling(display);
 	background.set_scaling = display.draw_scaling;
-	ground.set_scaling = display.draw_scaling;	
+	ground.set_scaling = display.draw_scaling;
+	player.set_scaling = display;
+	pipes.set_scaling = display;
 }
 
 const user_input = () => {
 
 	if (game.game_playable) {
 		
-		player.jump(delta.delta_time_multiplier);
+		player.jump(display.draw_scaling);
 
 		if (game.game_state !== 1) {
 		
 			game.reset_game();
-			pipes.reset(game);
-			player.reset_position(display.height);
+			pipes.reset(display, game);
+			player.reset_position(display);
 			
 		}
 	}
@@ -123,5 +125,5 @@ window.addEventListener('wheel', e => {
 }, { passive: false });
 
 window.onresize = function(e) {
-	resize_assets();
+	scale_assets();
 }

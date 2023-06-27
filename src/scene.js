@@ -52,7 +52,7 @@ export default class Scene {
         }
         
         if (scroll) {
-            this._speed = game.increased_speed / speed_divider;
+            this._speed = (game.increased_speed * display.draw_scaling) / speed_divider;
 
             if (this._last_draw_position <= -this._draw_size[0]) {
                 this._last_draw_position += (this._draw_size[0] - this._speed); // reset

@@ -29,10 +29,6 @@ export default class Display {
         this._ctx.canvas.height = this._DISPLAY_SIZE[1];
     }
 
-    check_resize() {
-        return this._DISPLAY_SIZE[0] !== window.innerWidth || this._DISPLAY_SIZE[1] !== window.innerHeight;
-    }
-
     get draw_scaling() {
         return this._draw_scaling;
     }

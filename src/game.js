@@ -115,7 +115,7 @@ export default class Game {
 
         // drawing logo
         display.ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
-            (display.width / 2) - ((600 / 2) * logoScaling), (100 * this.draw_scaling), (600 * logoScaling), (160 * logoScaling));
+            (display.width / 2) - ((600 / 2) * logoScaling), (100 * display.draw_scaling), (600 * logoScaling), (160 * logoScaling));
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         
@@ -132,9 +132,9 @@ export default class Game {
         let Y_position = display.height / 3;
         let txt = "Game Over";
 
-        display.ctx.font = `${txt_size * this._draw_scaling}px 'Press Start 2P'`;
+        display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
         display.ctx.strokeStyle = "#553847";
-        display.ctx.lineWidth = 6 * this._draw_scaling;
+        display.ctx.lineWidth = 6 * display.draw_scaling;
         display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
         display.ctx.fillStyle = "#fefefe";
         display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
@@ -159,12 +159,12 @@ export default class Game {
             txt = "Click to play";
         }
         
-        display.ctx.font = "bold 45px courier new";
+        display.ctx.font = `bold ${32 * display.draw_scaling}px courier new`;
         display.ctx.fillStyle = "#4c3b46";
-        display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), (550 * this.draw_scaling));
+        display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), (550 * display.draw_scaling));
         
         txt = `Version: ${_VERSION_}`;
-        display.ctx.font = "bold 24px courier new";
+        display.ctx.font = `bold ${18 * display.draw_scaling}px courier new`;
         display.ctx.fillText(txt, 10, this.ground_collision - 12)
 
     }
