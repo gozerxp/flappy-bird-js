@@ -18,8 +18,12 @@ export default class Game {
 
         this.scoreboard = {
             currentScore : 0,
-            bestScore : 0,
+            bestScore : localStorage.getItem("high_score"),
             attempts : 0
+        }
+
+        if (!this.scoreboard.bestScore) {
+            this.scoreboard.bestScore = 0;   
         }
         
         this._logo_sprite = new Image();
@@ -59,9 +63,9 @@ export default class Game {
             display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
         }
 
-        let padding = 15;
-        txt_size = 15;
-        Y_position = padding * 1.75;
+        let padding = 25;
+        txt_size = 15 * display.draw_scaling;
+        Y_position = (padding * 1.25) * display.draw_scaling;
 
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = "#553847";
@@ -190,6 +194,7 @@ export default class Game {
     increase_score() {
         this.scoreboard.currentScore++;
         this.scoreboard.bestScore = Math.max(this.scoreboard.bestScore, this.scoreboard.currentScore)
+        localStorage.setItem("high_score", this.scoreboard.bestScore);
     }
 
     reset_game() {
