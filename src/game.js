@@ -22,6 +22,8 @@ export default class Game {
             attempts : 0
         }
 
+        //if scoreboard is null then localStorage variable has not been saved.
+        //this variable will be saved on the first gameover screen.
         if (!this.scoreboard.bestScore) {
             this.scoreboard.bestScore = 0;   
         }
@@ -120,7 +122,7 @@ export default class Game {
 
         // drawing logo
         display.ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
-            (display.width / 2) - (logoScaling[0] / 2), (160 * display.draw_scaling), ...logoScaling);
+            (display.width / 2) - (logoScaling[0] / 2), (150 * display.draw_scaling), ...logoScaling);
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         
@@ -180,6 +182,7 @@ export default class Game {
         let check_pipes = pipes.check_pipe_logic(player, this); 
 
         if(check_ground || check_pipes) {
+            localStorage.setItem("high_score", this.scoreboard.bestScore);
             this.game_state = 2; // draw game over
             this.game_playable = false;
             this._game_over_timer = delta.previousTime;
@@ -194,7 +197,6 @@ export default class Game {
     increase_score() {
         this.scoreboard.currentScore++;
         this.scoreboard.bestScore = Math.max(this.scoreboard.bestScore, this.scoreboard.currentScore)
-        localStorage.setItem("high_score", this.scoreboard.bestScore);
     }
 
     reset_game() {
