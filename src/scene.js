@@ -29,13 +29,13 @@ export default class Scene {
         }
     }
 
-    _set_scaling(draw_scaling) {
-        this._draw_size[0] = Math.floor(this._size[0] * draw_scaling);
-        this._draw_size[1] = Math.floor(this._size[1] * draw_scaling);
+    _set_scaling(display) {
+        this._draw_size[0] = Math.floor(this._size[0] * display.draw_scaling);
+        this._draw_size[1] = Math.floor(this._size[1] * display.draw_scaling);
     }
 
-    set set_scaling(draw_scaling) {
-        this._set_scaling(draw_scaling);
+    set set_scaling(display) {
+        this._set_scaling(display);
     }
 
     draw_scene(display, delta, game, speed_divider, Y_position, scroll) {

@@ -26,7 +26,7 @@ export default class Game {
         this._logo_sprite.src = "assets/fb-logo.png";
     }
 
-    set_scaling(display) {
+    set set_scaling(display) {
 
         this.ground_collision = display.height - 150 * (display.draw_scaling / 1.5);
 
@@ -116,7 +116,7 @@ export default class Game {
 
         // drawing logo
         display.ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
-            (display.width / 2) - (logoScaling[0] / 2), (160 * display.draw_scaling), logoScaling[0], logoScaling[1]);
+            (display.width / 2) - (logoScaling[0] / 2), (160 * display.draw_scaling), ...logoScaling);
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         

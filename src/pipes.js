@@ -85,17 +85,17 @@ export default class Pipes {
 
     _set_scaling(display) {
 
-        this._sprites.pipes.draw_size[0] = this._sprites.pipes.pipe_size[0] * display.draw_scaling;
-        this._sprites.pipes.draw_size[1] = this._sprites.pipes.pipe_size[1] * display.draw_scaling;
+        this._sprites.pipes.draw_size[0] = Math.floor(this._sprites.pipes.pipe_size[0] * display.draw_scaling);
+        this._sprites.pipes.draw_size[1] = Math.floor(this._sprites.pipes.pipe_size[1] * display.draw_scaling);
 
-        this._sprites.cannon_ball.draw_size[0] = this._sprites.cannon_ball.size[0] * display.draw_scaling;
-        this._sprites.cannon_ball.draw_size[1] = this._sprites.cannon_ball.size[1] * display.draw_scaling;
+        this._sprites.cannon_ball.draw_size[0] = Math.floor(this._sprites.cannon_ball.size[0] * display.draw_scaling);
+        this._sprites.cannon_ball.draw_size[1] = Math.floor(this._sprites.cannon_ball.size[1] * display.draw_scaling);
 
-        this._pipe_gap[0] = this._default_pipe_gap[0] * display.draw_scaling;
-        this._pipe_gap[1] = this._default_pipe_gap[1] * display.draw_scaling;
+        this._pipe_gap[0] = Math.floor(this._default_pipe_gap[0] * display.draw_scaling);
+        this._pipe_gap[1] = Math.floor(this._default_pipe_gap[1] * display.draw_scaling);
 
-        this._minimum_gap[0] = this._default_minimum_gap[0] * display.draw_scaling;
-        this._minimum_gap[1] = this._default_minimum_gap[1] * display.draw_scaling;
+        this._minimum_gap[0] = Math.floor(this._default_minimum_gap[0] * display.draw_scaling);
+        this._minimum_gap[1] = Math.floor(this._default_minimum_gap[1] * display.draw_scaling);
 
         this._start_position = display.width + this._pipe_gap[0] + this._sprites.pipes.draw_size[0];
 
@@ -263,9 +263,9 @@ export default class Pipes {
     _draw_cannonball(display, pipe, delta) {
 
         if (pipe.up_or_down) { //top pipe
-            pipe.cannon_Y += (this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier;
+            pipe.cannon_Y +=  Math.floor((this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier);
         } else {
-            pipe.cannon_Y -= (this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier;
+            pipe.cannon_Y -= Math.floor((this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier);
         }
     
         let x = pipe.x + (this._sprites.pipes.draw_size[0] / 2) - (this._sprites.cannon_ball.draw_size[0] / 2);
@@ -295,7 +295,7 @@ export default class Pipes {
 									
         // pipe moving
         if (game.game_state === 1) {
-            pipe.x -= (game.increased_speed * display.draw_scaling) * delta.delta_time_multiplier;
+            pipe.x -= Math.floor((game.increased_speed * display.draw_scaling) * delta.delta_time_multiplier);
         }
 
         let pipe_components = {

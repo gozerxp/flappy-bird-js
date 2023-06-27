@@ -74,9 +74,9 @@ function run_game(currentTime) {
 
 function scale_assets() {
 	display.resize_canvas();
-	game.set_scaling(display);
-	background.set_scaling = display.draw_scaling;
-	ground.set_scaling = display.draw_scaling;
+	game.set_scaling = display;
+	background.set_scaling = display;
+	ground.set_scaling = display;
 	player.set_scaling = display;
 	pipes.set_scaling = display;
 }
