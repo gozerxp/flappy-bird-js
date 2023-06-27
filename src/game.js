@@ -108,14 +108,15 @@ export default class Game {
 
     draw_start_screen(display, __touch_device__, _VERSION_) {
 
-        let logoScaling = 1;
-        if(this._logo_sprite.width >= display.width) { 
-            logoScaling = 0.75; 
+        let logoScaling = [600, 160];
+        if(this._logo_sprite.width >= display.width * 0.8) { 
+            logoScaling[0] = display.width * 0.8;
+            logoScaling[1] *= logoScaling[0] / 600;
         }
 
         // drawing logo
         display.ctx.drawImage(this._logo_sprite, 0, 0, 600, 160,
-            (display.width / 2) - ((600 / 2) * logoScaling), (100 * display.draw_scaling), (600 * logoScaling), (160 * logoScaling));
+            (display.width / 2) - (logoScaling[0] / 2), (160 * display.draw_scaling), logoScaling[0], logoScaling[1]);
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         

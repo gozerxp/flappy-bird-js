@@ -80,7 +80,7 @@ export default class Player {
 
     reset_position(display) {
         this._angle = 0;
-        this._flight = this._jump;
+        this._flight = this._jump * display.draw_scaling;
         this._flyHeight = (display.height / 2) - (this._sprite.draw_size[1] / 2);
     }
 
@@ -105,7 +105,7 @@ export default class Player {
             
             case 2: // game over fall
                 if (this._flyHeight < game.ground_collision - this._sprite.draw_size[1]) {
-                    this._flight += game.gravity * delta.delta_time_multiplier;
+                    this._flight += (game.gravity * display.draw_scaling) * delta.delta_time_multiplier;
                     this._flyHeight = this._flyHeight + this._flight;
                     this._angle -= 10 * delta.delta_time_multiplier;
                 } else {

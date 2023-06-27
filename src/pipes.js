@@ -151,7 +151,7 @@ export default class Pipes {
     
             this._total_pipes++;
 
-            //console.log(`total pipes: ${this._total_pipes} | pipes array length ${new_pipes.length}`);
+            console.log(`total pipes: ${this._total_pipes} | pipes array length ${new_pipes.length}`);
             
             return new_pipes;
         } 
