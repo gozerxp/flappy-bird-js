@@ -25,7 +25,7 @@ const ground = new _Scene(display, "ground");
 const player = new _Player(display);
 const pipes = new _Pipes(display);
 const score = new _Scoreboard(game.game_mode);
-const game_mode_button = new _Button(100, game.ground_collision, 75, 75);
+const game_mode_button = new _Button();
 
 scale_assets();
 
