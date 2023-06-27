@@ -16,12 +16,9 @@ const __touch_device__ = window.ontouchstart !== undefined;
 
 const delta = new _Delta_Time();
 const display = new _Display();
-
 const game = new _Game(display);
-
 const background = new _Scene(display, "background");
 const ground = new _Scene(display, "ground");
-
 const player = new _Player(display);
 const pipes = new _Pipes(display);
 const score = new _Scoreboard(game.game_mode);
