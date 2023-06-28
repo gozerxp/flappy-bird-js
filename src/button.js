@@ -18,7 +18,6 @@ export default class Button {
     }
 
     draw_button(display, game) {
-
 		display.ctx.fillStyle = game.GAME_MODE_COLOR();
 		display.ctx.fillRect(this._loc.x_pos, this._loc.y_pos, this._size.width, this._size.height);
     }
