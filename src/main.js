@@ -1,12 +1,13 @@
 // Flappy Bird Clone JS
 // Written by Dan Andersen
 
-const _VERSION_ = "1.0.6";
+const _VERSION_ = "1.1.0";
 
 import _Delta_Time from './delta.js';
 import _Display from './display.js';
 import _Game from './game.js';
 import _Player from './player.js';
+import _UFO from './ufo.js';
 import _Scene from './scene.js';
 import _Pipes from './pipes.js';
 import _Scoreboard from './scoreboard.js';
@@ -20,6 +21,7 @@ const game = new _Game(display);
 const background = new _Scene(display, "background");
 const ground = new _Scene(display, "ground");
 const player = new _Player(display);
+const ufo = new _UFO();
 const pipes = new _Pipes(display);
 const score = new _Scoreboard(game.game_mode);
 const game_mode_button = new _Button();
@@ -106,16 +108,12 @@ const user_input = (cursor_X, cursor_Y) => {
 		player.jump(display.draw_scaling);
 
 		if (game.game_state !== 1) {
-		
 			game.reset_game();
 			score.reset_score();
 			pipes.reset(display, game);
-			player.reset_position(display);
-			
+			player.reset_position(display);	
 		}
 	}
-
-
 }
 
 //user inputs
@@ -123,6 +121,7 @@ if (__touch_device__) {
 	document.body.ontouchstart = (e) => {
 		user_input(e.pageX, e.pageY);
 	}
+
 } else {
 	
 	document.body.onmousedown = (e) => {
