@@ -1,7 +1,7 @@
 // Flappy Bird Clone JS
 // Written by Dan Andersen
 
-const _VERSION_ = "1.1.0";
+const _VERSION_ = "1.0.7a";
 
 import _Delta_Time from './delta.js';
 import _Display from './display.js';
