@@ -57,8 +57,8 @@ export default class Player {
             return 0;
         }
 
-        let increment = 10 * delta.delta_time_multiplier;
-        let max_angle = 45;
+        let increment = 12.5 * delta.delta_time_multiplier;
+        let max_angle = 50;
         
         if (new_height > previous_height) { //player is falling
             
@@ -157,11 +157,11 @@ export default class Player {
         return this._x_adjustment;
     }
 
-    jump(draw_scaling) {
+    jump(display, delta) {
 
         if (this._flyHeight > -this._sprite.draw_size[1]) { // makes sure player doesnt fly off the screen
 
-            this._flight = this._jump * draw_scaling;
+            this._flight = (this._jump * display.draw_scaling) * delta.delta_time_multiplier;
             this._jump_fx.play();
 
         }

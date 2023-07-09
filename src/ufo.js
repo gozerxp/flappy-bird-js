@@ -15,7 +15,7 @@ export default class UFO {
         this._warning_sign_size = [50,50];
         this._current_position = [0, 0];
 
-        this._spawn_interval = 10;
+        this._spawn_interval = 5;
         this._last_spawn = 0;
         this._warning_interval = 1;
         this._warning_timer = 0;
@@ -36,7 +36,7 @@ export default class UFO {
     set resize(display) {
         this._draw_size[0] = this._size[0] * display.draw_scaling;
         this._draw_size[1] = this._size[1] * display.draw_scaling;
-        this._start_position = display.width * 2;
+        this._start_position = display.width + this._draw_size[0];
         if (!this._active) { this._current_position[0] = this._start_position; }
     }
 
@@ -55,21 +55,20 @@ export default class UFO {
             
         if ((this._current_position[0] + (this._draw_size[0] * this._draw_scaling)) < 0) {
             this._active = false;
-        } else {
-            this._current_position[0] -= this._fly_speed * delta.delta_time_multiplier;	
+        } else {	
 
-            if (game.game_state === 1 && this._current_position[0] > (display.width + this._draw_size[0])) {
-        
+            if (game.game_state === 1 && (delta.previousTime - this._warning_timer < (this._warning_interval * 1000))) {
                 // show warning arrow when ufo is off screen
                 display.ctx.drawImage(this._ufo_warning_sprite, 1, 0, ...this._warning_sign_size, 
                     display.width - ((this._warning_sign_size[0] * display.draw_scaling) * 1.25), this._current_position[1] + (this._warning_sign_size[1] / 2), 
                     this._warning_sign_size[0] * display.draw_scaling, this._warning_sign_size[1] * display.draw_scaling);
-            }  
-            
-            // draw ufo
-            display.ctx.drawImage(this._ufo_sprite, 1, 0, ...this._size, 
-                ...this._current_position,
-                this._draw_size [0] * this._draw_scaling, this._draw_size [1] * this._draw_scaling);
+            }  else {
+                this._current_position[0] -= this._fly_speed * delta.delta_time_multiplier;
+                // draw ufo
+                display.ctx.drawImage(this._ufo_sprite, 1, 0, ...this._size, 
+                    ...this._current_position,
+                    this._draw_size [0] * this._draw_scaling, this._draw_size [1] * this._draw_scaling);
+            }
         }
         
     }
@@ -90,6 +89,7 @@ export default class UFO {
             this._current_position[1] = this._ufo_elevation(game);
 
             this._last_spawn = delta.previousTime; // interval tracking
+            this._warning_timer = delta.previousTime;
 
         }
 

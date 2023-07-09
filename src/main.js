@@ -44,7 +44,7 @@ function run_game(currentTime) {
 		 	case 0: 
 			
 			// start screen
-				background.draw_scene(display, delta, game, 4, 0, true);
+				background.draw_scene(display, delta, game, 3, 0, true);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
 				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
@@ -56,7 +56,7 @@ function run_game(currentTime) {
 			case 1: 
 			
 			//live game
-				background.draw_scene(display, delta, game, 4, 0, true);
+				background.draw_scene(display, delta, game, 3, 0, true);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
 				player.draw_player(display, game, delta);
@@ -68,7 +68,7 @@ function run_game(currentTime) {
 			case 2: 
 			
 			//game over screen/animation
-				background.draw_scene(display, delta, game, 4, 0, false);
+				background.draw_scene(display, delta, game, 3, 0, false);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
 				game.draw_game_over(display, delta, __touch_device__, _VERSION_);
@@ -109,7 +109,7 @@ const user_input = (cursor_X, cursor_Y) => {
 
 	if (game.game_playable) {
 	
-		player.jump(display.draw_scaling);
+		player.jump(display, delta);
 
 		if (game.game_state !== 1) {
 			game.reset_game();
