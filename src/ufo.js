@@ -13,9 +13,12 @@ export default class UFO {
         this._fly_speed = 0;
 
         this._warning_sign_size = [50,50];
+        this._current_position = [0, 0];
+
         this._spawn_interval = 10;
         this._last_spawn = 0;
-        this._current_position = [0, 0];
+        this._warning_interval = 1;
+        this._warning_timer = 0;
         
         this.resize = display;
 
