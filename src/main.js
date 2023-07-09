@@ -46,6 +46,7 @@ function run_game(currentTime) {
 			// start screen
 				background.draw_scene(display, delta, game, 3, 0, true);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				score.draw_splash_scoreboard(display, game)
 				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
@@ -59,6 +60,7 @@ function run_game(currentTime) {
 				background.draw_scene(display, delta, game, 3, 0, true);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				score.draw_live_scoreboard(display);
 				player.draw_player(display, game, delta);
 				ufo.draw_ufo(display, delta, game);
 				game.game_logic(player, pipes, ufo, delta, score);
@@ -71,7 +73,7 @@ function run_game(currentTime) {
 				background.draw_scene(display, delta, game, 3, 0, false);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
-				game.draw_game_over(display, delta, __touch_device__, _VERSION_);
+				game.draw_game_over(display, delta, score, __touch_device__, _VERSION_);
 				player.draw_player(display, game, delta);
 				ufo.draw_ufo(display, delta, game);
 				game_mode_button.draw_button(display, game);
@@ -80,9 +82,6 @@ function run_game(currentTime) {
 
 			default:
 		}
-
-		score.draw_scoreboard(display, game);
-
     }
 
     window.requestAnimationFrame(run_game);
@@ -96,7 +95,12 @@ function scale_assets() {
 	player.set_scaling = display;
 	pipes.set_scaling = display;
 	ufo.resize = display;
-	game_mode_button.resize_button(25, game.ground_collision - 125, 75, 75);
+
+	let button_padding = 15;
+
+	let button_size = display.height - game.ground_collision - (button_padding * 2);
+	let button_location = [button_padding, game.ground_collision + button_padding];
+	game_mode_button.resize_button(...button_location, button_size, button_size);
 }
 
 const user_input = (cursor_X, cursor_Y) => {

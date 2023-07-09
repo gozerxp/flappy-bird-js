@@ -48,9 +48,8 @@ export default class UFO {
 
     draw_ufo(display, delta, game) {
 
-        if (game.game_mode !== 2) { return; }
-        
         if (!this._active) {
+            if (game.game_mode !== 2) { return; }
             this._spawn_ufo(display, game, delta); 
             return;
         }

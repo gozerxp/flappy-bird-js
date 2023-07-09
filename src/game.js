@@ -19,7 +19,7 @@ export default class Game {
         // 2 - expert
 
         this._game_over_timer = 0;
-        this._game_over_timeout = 5; //after 5 seconds go back to start screen
+        this._game_over_timeout = 10; //after 10 seconds go back to start screen
         this._game_playable = true;
         
         this._logo_sprite = new Image();
@@ -134,7 +134,7 @@ export default class Game {
         
     }
 
-    draw_game_over(display, delta, __touch_device__, _VERSION_) {
+    draw_game_over(display, delta, score, __touch_device__, _VERSION_) {
 
         
         display.ctx.globalAlpha = 0.6;
@@ -147,6 +147,10 @@ export default class Game {
         let txt = "Game Over";
 
         display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
+
+        score.draw_gameover_scoreboard(display, display.ctx.measureText(txt).width, 250);
+
+        display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
         display.ctx.strokeStyle = "#553847";
         display.ctx.lineWidth = 6 * display.draw_scaling;
         display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
@@ -154,6 +158,7 @@ export default class Game {
         display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
 
         if (this.game_playable) {
+
             this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
 
             //reset to start screen after 5 seconds.

@@ -44,7 +44,7 @@ export default class Player {
 
     _player_adjustment(display) {
         if (display.portrait_mode) {	
-            this._x_adjustment = display.width / 5;
+            this._x_adjustment = display.width / 10;
         } else {    
             this._x_adjustment = this._center_position; 
         }

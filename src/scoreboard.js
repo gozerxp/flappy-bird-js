@@ -43,35 +43,65 @@ export default class Scoreboard {
         return this._current_score;
     }
 
-    draw_scoreboard(display, game) {
-
-        let txt_size = 60;
-        let Y_position = (txt_size * display.draw_scaling) * 2;
-        let txt = this._current_score;
-
-        if (game.game_state > 0) { //only draw current score during gameplay.
-            display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
-            display.ctx.strokeStyle = "#553847";
-            display.ctx.lineWidth = 6 * display.draw_scaling;
-            display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-            display.ctx.fillStyle = "#fefefe";
-            display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-        }
+    draw_splash_scoreboard(display, game) {
 
         let padding = 25;
-        txt_size = 15 * display.draw_scaling;
-        Y_position = (padding * 1.25) * display.draw_scaling;
+        let txt_size = 15 * display.draw_scaling;
+        let Y_position = (padding * 1.25) * display.draw_scaling;
 
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = game.GAME_MODE_COLOR();//"#553847";
 
-        txt = `Best: ${this._high_score}`;
+        let txt = `Best: ${this._high_score}`;
         display.ctx.fillText(txt, padding, Y_position);
 
         display.ctx.fillStyle = "#553847";
         txt = `Attempts: ${this._attempts}`;
         display.ctx.fillText(txt, display.width - display.ctx.measureText(txt).width - padding, Y_position);
         
+    }
+
+    draw_live_scoreboard(display) {
+
+        let txt_size = 60;
+        let Y_position = (txt_size * display.draw_scaling) * 1.75;
+        let txt = this._current_score;
+
+        display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
+        display.ctx.strokeStyle = "#553847";
+        display.ctx.lineWidth = 6 * display.draw_scaling;
+        display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
+        display.ctx.fillStyle = "#fefefe";
+        display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
+
+    }
+
+    draw_gameover_scoreboard(display, width, height) {
+
+            
+
+            display.ctx.globalAlpha = 0.5;
+            display.ctx.strokeStyle = "#4c3b46";
+            display.ctx.fillStyle = "#4c3b46";
+            display.ctx.beginPath();
+            display.ctx.roundRect((display.width / 2) - (width / 2), 
+                (display.height / 2) - (height / 2), width, height, 25);
+            //display.ctx.stroke();
+            display.ctx.fill();
+            display.ctx.globalAlpha = 1.0;
+
+            let padding = 25;
+            let txt_size = 15 * display.draw_scaling;
+            let Y_position = (padding * 1.25) * display.draw_scaling;
+    
+            display.ctx.font = `${txt_size}px 'Press Start 2P'`;
+            display.ctx.fillStyle = "#fefefe";
+    
+            let txt = `Best: ${this._high_score}`;
+            display.ctx.fillText(txt, padding, Y_position);
+    
+            txt = `Attempts: ${this._attempts}`;
+            display.ctx.fillText(txt, display.width - display.ctx.measureText(txt).width - padding, Y_position);
     }
 
 }
