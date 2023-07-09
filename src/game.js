@@ -23,7 +23,7 @@ export default class Game {
         this._game_playable = true;
         
         this._logo_sprite = new Image();
-        this._logo_sprite.src = "assets/fb-logo.png";
+        this._logo_sprite.src = "assets/sprites/fb-logo.png";
     }
 
     set set_scaling(display) {
