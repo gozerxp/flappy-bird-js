@@ -6,6 +6,9 @@ export default class Scoreboard {
         this._attempts = 0;
 
         this.load_high_score(game_mode);
+
+        this._score_fx = new Audio('assets/audio/score.ogg');
+        this._score_fx.load();
     }
 
     save_high_score(game_mode) {
@@ -31,6 +34,9 @@ export default class Scoreboard {
     increase_score() {
         this._current_score++;
         this._high_score = Math.max(this._high_score, this._current_score)
+
+        this._score_fx.pause();
+        this._score_fx.play();
     }
 
     get get_current_score() {

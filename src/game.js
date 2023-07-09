@@ -24,6 +24,9 @@ export default class Game {
         
         this._logo_sprite = new Image();
         this._logo_sprite.src = "assets/sprites/fb-logo.png";
+
+        this._dead_fx = new Audio('assets/audio/dead.ogg');
+        this._dead_fx.load();
     }
 
     set set_scaling(display) {
@@ -192,6 +195,7 @@ export default class Game {
             this.game_state = 2; // draw game over
             this.game_playable = false;
             this._game_over_timer = delta.previousTime;
+            this._dead_fx.play();
 
         }
     }

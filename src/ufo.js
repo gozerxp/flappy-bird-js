@@ -17,7 +17,7 @@ export default class UFO {
 
         this._spawn_interval = 10;
         this._last_spawn = 0;
-        this._warning_interval = 1;
+        this._warning_interval = 1.5;
         this._warning_timer = 0;
         
         this.resize = display;
