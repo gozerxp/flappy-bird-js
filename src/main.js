@@ -46,9 +46,9 @@ function run_game(currentTime) {
 			// start screen
 				background.draw_scene(display, delta, game, 3, 0, true);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
-				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				game_mode_button.draw_button(display, game);
 				
 		 		break;
