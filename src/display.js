@@ -1,4 +1,5 @@
 const background_height = 768;
+const minimum_display_height = 100;
 
 export default class Display {
 
@@ -17,7 +18,7 @@ export default class Display {
         this._DISPLAY_SIZE = [window.innerWidth, background_height];
 
         if (window.innerHeight !== this._DISPLAY_SIZE[1]) {
-            this._DISPLAY_SIZE[1] = Math.max(window.innerHeight, 640);
+            this._DISPLAY_SIZE[1] = Math.max(window.innerHeight, minimum_display_height);
             this._draw_scaling = this._DISPLAY_SIZE[1] / background_height;
         }
 

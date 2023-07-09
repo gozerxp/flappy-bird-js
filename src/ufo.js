@@ -47,6 +47,8 @@ export default class UFO {
     }
 
     draw_ufo(display, delta, game) {
+
+        if (game.game_mode !== 2) { return; }
         
         if (!this._active) {
             this._spawn_ufo(display, game, delta); 
@@ -79,19 +81,25 @@ export default class UFO {
 
         if (delta.previousTime - this._last_spawn >= (this._spawn_interval * 1000)) {
        
-            this._fly_speed = (game.increased_speed * display.draw_scaling) * 3.25;
-
-            this._active = true;
-        
-            this._sound_fx.play();
-
-            this._current_position[0] = this._start_position;
-            this._current_position[1] = this._ufo_elevation(game);
-
-            this._last_spawn = delta.previousTime; // interval tracking
-            this._warning_timer = delta.previousTime;
+            this.spawn_ufo(display, game, delta);
 
         }
+
+    }
+
+    spawn_ufo(display, game, delta) {
+
+        this._fly_speed = (game.increased_speed * display.draw_scaling) * 3.25;
+  
+        this._sound_fx.play();
+
+        this._current_position[0] = this._start_position;
+        this._current_position[1] = this._ufo_elevation(game);
+
+        this._last_spawn = delta.previousTime; // interval tracking
+        this._warning_timer = delta.previousTime; //start timer for warning sign
+
+        this._active = true;
 
     }
 

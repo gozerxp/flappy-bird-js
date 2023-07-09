@@ -133,6 +133,7 @@ export default class Game {
 
     draw_game_over(display, delta, __touch_device__, _VERSION_) {
 
+        
         display.ctx.globalAlpha = 0.6;
         display.ctx.fillStyle = "gray";
         display.ctx.fillRect(0, 0, display.width, display.height);
