@@ -19,6 +19,7 @@ export default class Game {
         // 2 - expert
 
         this._game_over_timer = 0;
+        this._game_over_timeout = 5; //after 5 seconds go back to start screen
         this._game_playable = true;
         
         this._logo_sprite = new Image();
@@ -27,7 +28,7 @@ export default class Game {
 
     set set_scaling(display) {
 
-        this.ground_collision = display.height - 150 * (display.draw_scaling / 1.5);
+        this._ground_collision = display.height - 150 * (display.draw_scaling / 1.5);
 
     }
 
@@ -90,6 +91,10 @@ export default class Game {
         this._save_game_mode();
     }
 
+    get ground_collision() {
+        return this._ground_collision;
+    }
+
     GAME_MODE_COLOR() {
 
         let color = "#4c3b46";
@@ -148,7 +153,7 @@ export default class Game {
             this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
 
             //reset to start screen after 5 seconds.
-            if (delta.previousTime - this._game_over_timer >= (5 * 1000)) {
+            if (delta.previousTime - this._game_over_timer >= (this._game_over_timeout * 1000)) {
                 this.game_state = 0;
             } 
         }
@@ -170,16 +175,17 @@ export default class Game {
         
         txt = `Version: ${_VERSION_}`;
         display.ctx.font = `bold ${18 * display.draw_scaling}px courier new`;
-        display.ctx.fillText(txt, 10, this.ground_collision - 12)
+        display.ctx.fillText(txt, 10, this._ground_collision - 12)
 
     }
 
-    game_logic(player, pipes, delta, scoreboard) {
+    game_logic(player, pipes, ufo, delta, scoreboard) {
 
         let check_ground = this._check_ground_collision(player); 
         let check_pipes = pipes.check_pipe_logic(player, scoreboard); 
+        let check_ufo = ufo.check_collision(player);
 
-        if(check_ground || check_pipes) {
+        if(check_ground || check_pipes || check_ufo) {
 
             scoreboard.save_high_score(this._game_mode);
             this.game_state = 2; // draw game over
@@ -207,7 +213,7 @@ export default class Game {
     }
 
     _check_ground_collision(player) {
-        return player.getflyHeight + player.getSize[1] >= this.ground_collision;
+        return player.getflyHeight + player.getSize[1] >= this._ground_collision;
     }
 
     reset_game() {

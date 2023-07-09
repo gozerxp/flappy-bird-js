@@ -242,7 +242,7 @@ export default class Pipes {
     
                 // movable pipes - pipe index 1 - blue pipe
                 if (game.game_state === 1) {
-                    if (pipe.x < (display.width + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
+                    if (pipe.x < (player.getPosition + (this._pipe_gap[0] * 2)) && !pipe.scored) { //if (pipe.x < (display.width + this._sprites.pipes.draw_size[0]) && !pipe.scored) {
                         if (pipe.up_or_down) { //if true, move blue pipes upward
                             pipe.y -= (1 * display.draw_scaling) * delta.delta_time_multiplier;
                         } else { 

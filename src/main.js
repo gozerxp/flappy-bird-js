@@ -21,7 +21,7 @@ const game = new _Game(display);
 const background = new _Scene(display, "background");
 const ground = new _Scene(display, "ground");
 const player = new _Player(display);
-const ufo = new _UFO();
+const ufo = new _UFO(display);
 const pipes = new _Pipes(display);
 const score = new _Scoreboard(game.game_mode);
 const game_mode_button = new _Button();
@@ -45,9 +45,10 @@ function run_game(currentTime) {
 			
 			// start screen
 				background.draw_scene(display, delta, game, 4, 0, true);
-				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
+				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				game_mode_button.draw_button(display, game);
 				
 		 		break;
@@ -59,7 +60,8 @@ function run_game(currentTime) {
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
 				player.draw_player(display, game, delta);
-				game.game_logic(player, pipes, delta, score);
+				ufo.draw_ufo(display, delta, game);
+				game.game_logic(player, pipes, ufo, delta, score);
 				
 				break;
 
@@ -71,6 +73,7 @@ function run_game(currentTime) {
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
 				game.draw_game_over(display, delta, __touch_device__, _VERSION_);
 				player.draw_player(display, game, delta);
+				ufo.draw_ufo(display, delta, game);
 				game_mode_button.draw_button(display, game);
 				
 				break;
@@ -92,6 +95,7 @@ function scale_assets() {
 	ground.set_scaling = display;
 	player.set_scaling = display;
 	pipes.set_scaling = display;
+	ufo.resize = display;
 	game_mode_button.resize_button(25, game.ground_collision - 125, 75, 75);
 }
 
@@ -111,7 +115,8 @@ const user_input = (cursor_X, cursor_Y) => {
 			game.reset_game();
 			score.reset_score();
 			pipes.reset(display, game);
-			player.reset_position(display);	
+			player.reset_position(display);
+			ufo.reset(delta);	
 		}
 	}
 }

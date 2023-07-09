@@ -33,6 +33,10 @@ export default class Scoreboard {
         this._high_score = Math.max(this._high_score, this._current_score)
     }
 
+    get get_current_score() {
+        return this._current_score;
+    }
+
     draw_scoreboard(display, game) {
 
         let txt_size = 60;
