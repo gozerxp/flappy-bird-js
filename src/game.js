@@ -13,7 +13,8 @@ export default class Game {
         // 1 = game playing
         // 2 = game over screen
         // 3 = ?
-        this._game_mode = this._load_game_mode();
+        this._next_game_mode = this._load_game_mode();
+        this._game_mode = this._next_game_mode;
         // 0 - classic mode
         // 1 - intermediate
         // 2 - expert
@@ -88,23 +89,26 @@ export default class Game {
     get game_mode() {
         return this._game_mode;
     }
+    
+    get next_game_mode() {
+        return this._next_game_mode;
+    }
 
-    set game_mode(game_mode) {
-        this._game_mode = game_mode > 2 ? 0 : game_mode;
-        this._save_game_mode();
+    set next_game_mode(game_mode) {
+        this._next_game_mode = game_mode > 2 ? 0 : game_mode;
     }
 
     get ground_collision() {
         return this._ground_collision;
     }
 
-    GAME_MODE_COLOR(hover) {
+    GAME_MODE_COLOR(hover, index) {
 
-        switch (this._game_mode) {
+        switch (index) {
             case 0:
                 return hover ? "lime" : "green";
             case 1:
-                return hover ? "blue" : "navy";
+                return hover ? "dodgerblue" : "blue";
             case 2:
                 return hover ? "red" : "maroon";
             default:
@@ -136,7 +140,7 @@ export default class Game {
         display.ctx.fillRect(0, 0, display.width, display.height);
         display.ctx.globalAlpha = 1.0;
 
-       score.draw_gameover_scoreboard(display);
+       score.draw_gameover_scoreboard(display, this);
 
         if (this.game_playable) {
 
@@ -209,6 +213,8 @@ export default class Game {
 
     reset_game() {
 
+        this._game_mode = this._next_game_mode;
+        this._save_game_mode();
         this._increased_speed = this._speed;
         this._game_state = 1;
     }

@@ -19,7 +19,7 @@ export default class Button {
 
     draw_button(display, game, __touch_device__) {
 
-        display.ctx.fillStyle = game.GAME_MODE_COLOR(this._mouse_hover || __touch_device__);
+        display.ctx.fillStyle = game.GAME_MODE_COLOR(this._mouse_hover || __touch_device__, game.next_game_mode);
         display.ctx.beginPath();
         display.ctx.roundRect(this._loc.x_pos, this._loc.y_pos, this._size.width, this._size.height, 50);
         display.ctx.fill();
@@ -29,7 +29,7 @@ export default class Button {
 
         let txt = "";
 
-        switch (game.game_mode) {
+        switch (game.next_game_mode) {
             case 0:
                 txt = "Classic";
                 break;

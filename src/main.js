@@ -60,7 +60,7 @@ function run_game(currentTime) {
 				background.draw_scene(display, delta, game, 3, 0, true);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
-				score.draw_live_scoreboard(display);
+				score.draw_live_scoreboard(display, game);
 				player.draw_player(display, game, delta);
 				ufo.draw_ufo(display, delta, game);
 				game.game_logic(player, pipes, ufo, delta, score);
@@ -105,8 +105,8 @@ function scale_assets() {
 const user_input = (cursor_X, cursor_Y) => {
 
 	if (game.game_state !== 1 && game_mode_button.check_mouse_hover(cursor_X, cursor_Y)) {
-		game.game_mode++;
-		score.load_high_score(game.game_mode);
+		game.next_game_mode++;
+		score.load_high_score(game.next_game_mode);
 		return;
 	}
 
