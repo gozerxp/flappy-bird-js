@@ -27,21 +27,8 @@ export default class Button {
         display.ctx.strokeStyle = "#4c3b46";
         display.ctx.stroke();
 
-        let txt = "";
-
-        switch (game.next_game_mode) {
-            case 0:
-                txt = "Classic";
-                break;
-            case 1:
-                txt = "Hard";
-                break;
-            case 2:
-                txt = "Expert";
-                break;
-            default:
-        }
-        
+        let txt = game.GAME_MODE_TEXT(game.next_game_mode);
+      
         let font_size = 22 * display.draw_scaling;
         display.ctx.font = `${font_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = "#4c3b46";

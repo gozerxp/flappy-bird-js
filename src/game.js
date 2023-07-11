@@ -116,6 +116,19 @@ export default class Game {
         }
     }
 
+    GAME_MODE_TEXT(index) {
+        switch (index) {
+            case 0:
+                return "Classic";
+            case 1:
+                return "Hard";
+            case 2:
+                return "Expert";
+            default:
+                return;
+        }
+    }
+
     draw_start_screen(display, __touch_device__, _VERSION_) {
 
         let logoScaling = [600, 160];

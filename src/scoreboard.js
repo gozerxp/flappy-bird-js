@@ -93,7 +93,14 @@ export default class Scoreboard {
     draw_gameover_scoreboard(display, game) {
     
             let txt_size = 50 * display.draw_scaling;
-            let txt = "Game Over";
+            let txt = "";
+
+            if (this._new_highscore) {
+                txt = "High Score";
+            } else {
+                txt = "Game Over";
+            }
+
             let padding = 50 * display.draw_scaling;
             display.ctx.font = `${txt_size}px 'Press Start 2P'`;
 
@@ -102,7 +109,8 @@ export default class Scoreboard {
                 display.ctx.font = `${txt_size}px 'Press Start 2P'`;
             }
 
-            let window_size = [350 * display.draw_scaling, 185 * display.draw_scaling];
+            let window_size = [350 * display.draw_scaling, 230 * display.draw_scaling];
+
             if (window_size[0] > display.width) {
                 window_size[0] = display.width *.85;
             }
@@ -124,8 +132,13 @@ export default class Scoreboard {
             //draw gameover text
             let Y_position = window_position[1] - padding / 2;
 
-            display.ctx.strokeStyle = "#553847";
-            display.ctx.lineWidth = 6 * display.draw_scaling;
+            if (this._new_highscore) {
+                display.ctx.strokeStyle = game.GAME_MODE_COLOR(true, game.game_mode);
+            } else {
+                display.ctx.strokeStyle = "#553847";
+            }
+
+            display.ctx.lineWidth = 5 * display.draw_scaling;
             display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
             display.ctx.fillStyle = "#fefefe";
             display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
@@ -141,6 +154,7 @@ export default class Scoreboard {
                 `Score: ${this._current_score}`,
                 `Best: ${this._display_high_score}`,
                 `Attempts: ${this._attempts}`
+                //`Mode: ${game.GAME_MODE_TEXT(game.game_mode)}`
             ];
 
             label.forEach((item, index) => {
@@ -151,8 +165,13 @@ export default class Scoreboard {
                     display.ctx.fillStyle = "#fefefe";
                 }
                 display.ctx.fillText(item, window_position[0] + padding, window_position[1] + (padding * (index + 1)))
-            }
-            );
+            });
+
+            txt = "Mode: ";
+            display.ctx.fillText(txt, window_position[0] + padding, window_position[1] + (padding * 4));
+            display.ctx.fillStyle = game.GAME_MODE_COLOR(true, game.game_mode)
+            display.ctx.fillText(game.GAME_MODE_TEXT(game.game_mode), window_position[0] + padding + display.ctx.measureText(txt).width, 
+                    window_position[1] + (padding * 4));
        }
 
 }
