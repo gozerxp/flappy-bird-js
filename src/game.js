@@ -123,7 +123,7 @@ export default class Game {
             case 1:
                 return "Hard";
             case 2:
-                return "Expert";
+                return "Master";
             default:
                 return;
         }

@@ -50,7 +50,7 @@ function run_game(currentTime) {
 				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
-				game_mode_button.draw_button(display, game, __touch_device__);
+				game_mode_button.draw_game_mode_button(display, game, __touch_device__);
 				
 		 		break;
 
@@ -76,7 +76,7 @@ function run_game(currentTime) {
 				game.draw_game_over(display, delta, score, __touch_device__, _VERSION_);
 				player.draw_player(display, game, delta);
 				ufo.draw_ufo(display, delta, game);
-				game_mode_button.draw_button(display, game, __touch_device__);
+				game_mode_button.draw_game_mode_button(display, game, __touch_device__);
 				
 				break;
 

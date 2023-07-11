@@ -17,7 +17,7 @@ export default class Button {
         }
     }
 
-    draw_button(display, game, __touch_device__) {
+    draw_game_mode_button(display, game, __touch_device__) {
 
         display.ctx.fillStyle = game.GAME_MODE_COLOR(this._mouse_hover || __touch_device__, game.next_game_mode);
         display.ctx.beginPath();

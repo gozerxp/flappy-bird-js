@@ -111,8 +111,8 @@ export default class Scoreboard {
 
             let window_size = [350 * display.draw_scaling, 230 * display.draw_scaling];
 
-            if (window_size[0] > display.width) {
-                window_size[0] = display.width *.85;
+            if (window_size[0] > display.width * 0.85) {
+                window_size[0] = display.width * 0.85;
             }
             let window_position = [(display.width / 2) - (window_size[0] / 2),
                                         (display.height / 2) - (window_size[1] / 2)];
@@ -138,7 +138,7 @@ export default class Scoreboard {
                 display.ctx.strokeStyle = "#553847";
             }
 
-            display.ctx.lineWidth = 5 * display.draw_scaling;
+            display.ctx.lineWidth = 6 * display.draw_scaling;
             display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
             display.ctx.fillStyle = "#fefefe";
             display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
