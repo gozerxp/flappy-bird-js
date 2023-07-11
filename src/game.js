@@ -131,10 +131,11 @@ export default class Game {
 
     draw_start_screen(display, __touch_device__, _VERSION_) {
 
-        let logoScaling = [600, 160];
-        if(this._logo_sprite.width >= display.width * 0.8) { 
+        let logoScaling = [(600 * 0.8) * display.draw_scaling, (160 * 0.8) * display.draw_scaling];
+
+        if(logoScaling[0] >= display.width * 0.8) {
             logoScaling[0] = display.width * 0.8;
-            logoScaling[1] *= logoScaling[0] / 600;
+            logoScaling[1] *= (logoScaling[0] / ((600 * 0.8) * display.draw_scaling));
         }
 
         // drawing logo
