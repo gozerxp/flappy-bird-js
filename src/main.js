@@ -1,7 +1,7 @@
 // Flappy Bird Clone JS
 // Written by Dan Andersen
 
-const _VERSION_ = "1.0.8";
+const _VERSION_ = "1.0.9a";
 
 import _Delta_Time from './delta.js';
 import _Display from './display.js';
@@ -50,7 +50,7 @@ function run_game(currentTime) {
 				game.draw_start_screen(display, __touch_device__, _VERSION_);
 				ufo.draw_ufo(display, delta, game);
 				player.draw_player(display, game, delta);
-				game_mode_button.draw_button(display, game);
+				game_mode_button.draw_button(display, game, __touch_device__);
 				
 		 		break;
 
@@ -76,7 +76,7 @@ function run_game(currentTime) {
 				game.draw_game_over(display, delta, score, __touch_device__, _VERSION_);
 				player.draw_player(display, game, delta);
 				ufo.draw_ufo(display, delta, game);
-				game_mode_button.draw_button(display, game);
+				game_mode_button.draw_button(display, game, __touch_device__);
 				
 				break;
 
@@ -96,10 +96,9 @@ function scale_assets() {
 	pipes.set_scaling = display;
 	ufo.resize = display;
 
-	let button_padding = 15;
-
-	let button_size = display.height - game.ground_collision - (button_padding * 2);
-	let button_location = [button_padding, game.ground_collision + button_padding];
+	let padding = 20 * display.draw_scaling;
+	let button_size = (display.height - game.ground_collision) / 2;
+	let button_location = [padding, game.ground_collision + ((display.height - game.ground_collision) / 2 - (button_size) / 2)];
 	game_mode_button.resize_button(...button_location, button_size, button_size);
 }
 

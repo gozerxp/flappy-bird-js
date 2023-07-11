@@ -43,7 +43,7 @@ export default class UFO {
     reset(delta) {
         this._active = false;
         this._current_position[0] = this._start_position; 
-        this._last_spawn = delta.previousTime;
+        this._last_spawn = delta.previousTime - (this._spawn_interval * 1000);
     }
 
     draw_ufo(display, delta, game) {

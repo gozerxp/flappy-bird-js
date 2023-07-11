@@ -98,24 +98,18 @@ export default class Game {
         return this._ground_collision;
     }
 
-    GAME_MODE_COLOR() {
-
-        let color = "#4c3b46";
+    GAME_MODE_COLOR(hover) {
 
         switch (this._game_mode) {
             case 0:
-                color = "lime";
-                break;
+                return hover ? "lime" : "green";
             case 1:
-                color = "blue";
-                break;
+                return hover ? "blue" : "navy";
             case 2:
-                color = "red";
-                break;
+                return hover ? "red" : "maroon";
             default:
+                return;
         }
-
-        return color;
     }
 
     draw_start_screen(display, __touch_device__, _VERSION_) {
@@ -142,20 +136,7 @@ export default class Game {
         display.ctx.fillRect(0, 0, display.width, display.height);
         display.ctx.globalAlpha = 1.0;
 
-        let txt_size = 40;
-        let Y_position = display.height / 3;
-        let txt = "Game Over";
-
-        display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
-
-        score.draw_gameover_scoreboard(display, display.ctx.measureText(txt).width, 250);
-
-        display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
-        display.ctx.strokeStyle = "#553847";
-        display.ctx.lineWidth = 6 * display.draw_scaling;
-        display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-        display.ctx.fillStyle = "#fefefe";
-        display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
+       score.draw_gameover_scoreboard(display);
 
         if (this.game_playable) {
 
