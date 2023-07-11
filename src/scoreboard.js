@@ -52,9 +52,9 @@ export default class Scoreboard {
 
     draw_splash_scoreboard(display, game) {
 
-        let padding = 25;
+        let padding = 15;
         let txt_size = 18 * display.draw_scaling;
-        let Y_position = (padding * 1.3) * display.draw_scaling;
+        let Y_position = (padding * 2) * display.draw_scaling;
 
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = game.GAME_MODE_COLOR(true, game.next_game_mode);//"#553847";
@@ -123,7 +123,7 @@ export default class Scoreboard {
             display.ctx.fillStyle = "#4c3b46";
             display.ctx.lineWidth = 10;
             display.ctx.beginPath();
-            display.ctx.roundRect(...window_position, ...window_size, 25);
+            display.ctx.roundRect(...window_position, ...window_size, 25 * display.draw_scaling);
             
             //display.ctx.stroke();
             display.ctx.fill();
