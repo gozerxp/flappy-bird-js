@@ -57,13 +57,19 @@ export default class UFO {
         if ((this._current_position[0] + (this._draw_size[0] * this._draw_scaling)) < 0) {
             this._active = false;
         } else {	
-
-            if (game.game_state === 1 && (delta.previousTime - this._warning_timer < (this._warning_interval * 1000))) {
+            // prevent ufo from flying in until intitial waiting period has expired
+            if (delta.previousTime - this._warning_timer < (this._warning_interval * 1000)) {
+                
+                //during waiting period, if the game is live then draw ufo warning indicator
+                if(game.game_state === 1) {
                 // show warning arrow when ufo is off screen
                 display.ctx.drawImage(this._ufo_warning_sprite, 1, 0, ...this._warning_sign_size, 
                     display.width - ((this._warning_sign_size[0] * display.draw_scaling) * 1.25), this._current_position[1] + (this._warning_sign_size[1] / 2), 
                     this._warning_sign_size[0] * display.draw_scaling, this._warning_sign_size[1] * display.draw_scaling);
-            }  else {
+                }
+
+            }  else { //initial warning timer has expired, draw ufo
+                
                 this._current_position[0] -= this._fly_speed * delta.delta_time_multiplier;
                 // draw ufo
                 display.ctx.drawImage(this._ufo_sprite, 1, 0, ...this._size, 
