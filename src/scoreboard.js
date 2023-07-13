@@ -124,7 +124,6 @@ export default class Scoreboard {
             display.ctx.lineWidth = 10;
             display.ctx.beginPath();
             display.ctx.roundRect(...window_position, ...window_size, 25 * display.draw_scaling);
-            
             //display.ctx.stroke();
             display.ctx.fill();
             display.ctx.globalAlpha = 1.0;
@@ -136,11 +135,12 @@ export default class Scoreboard {
                 display.ctx.strokeStyle = game.GAME_MODE_COLOR(true, game.game_mode);
             } else {
                 display.ctx.strokeStyle = "#553847";
+                
             }
 
+            display.ctx.fillStyle = "#fefefe";
             display.ctx.lineWidth = 6 * display.draw_scaling;
             display.ctx.strokeText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
-            display.ctx.fillStyle = "#fefefe";
             display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), Y_position);
 
             //drawing each stat
@@ -154,7 +154,6 @@ export default class Scoreboard {
                 `Score: ${this._current_score}`,
                 `Best: ${this._display_high_score}`,
                 `Attempts: ${this._attempts}`
-                //`Mode: ${game.GAME_MODE_TEXT(game.game_mode)}`
             ];
 
             label.forEach((item, index) => {

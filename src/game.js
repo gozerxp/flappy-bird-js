@@ -12,7 +12,7 @@ export default class Game {
         // 0 = start screen
         // 1 = game playing
         // 2 = game over screen
-        // 3 = ?
+        // 3 = info screen
         this._next_game_mode = this._load_game_mode();
         this._game_mode = this._next_game_mode;
         // 0 - classic mode
@@ -144,6 +144,32 @@ export default class Game {
 
         this._draw_tap_2_play_txt(display, __touch_device__, _VERSION_);
         
+    }
+
+    draw_info_screen(display, _VERSION_) {
+        
+        let window_size = [700 * display.draw_scaling, 550 * display.draw_scaling];
+
+        if (window_size[0] > display.width * 0.9) {
+            window_size[0] = display.width * 0.9;
+        }
+        let window_position = [(display.width / 2) - (window_size[0] / 2),
+                                    (this.ground_collision / 2) - (window_size[1] / 2)];
+
+        display.ctx.globalAlpha = 0.5;
+        //display.ctx.strokeStyle = "#4c3b46";
+        display.ctx.fillStyle = "#4c3b46";
+        display.ctx.lineWidth = 10;
+        display.ctx.beginPath();
+        display.ctx.roundRect(...window_position, ...window_size, 25 * display.draw_scaling);
+        display.ctx.fill();
+        display.ctx.globalAlpha = 1.0;
+
+        //////
+
+        fetch("./info.json");
+        .then(
+
     }
 
     draw_game_over(display, delta, score, __touch_device__, _VERSION_) {
