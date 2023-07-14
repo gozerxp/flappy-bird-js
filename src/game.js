@@ -29,6 +29,7 @@ export default class Game {
 
         this._dead_fx = new Audio('assets/audio/dead.ogg');
         this._dead_fx.load();
+
     }
 
     set set_scaling(display) {
@@ -52,6 +53,7 @@ export default class Game {
     }
 
     GAME_MODE_TEXT(index) {
+
         switch (index) {
             case 0:
                 return "Classic";
@@ -83,60 +85,89 @@ export default class Game {
     }
 
     get gravity() {
+
         return this._gravity;
+
     }
 
     get speed() {
+
         return this._speed;
+
     }
 
     get increased_speed() {
+
         return this._increased_speed;
+
     }
 
     set increase_speed(speed) {
+
         this._increased_speed = speed;
+
     }
 
     get game_state() {
+
         return this._game_state;
+
     }
 
     set game_state(game_state) {
+
         this._game_state = game_state;
+
     }
 
     get game_playable() {
+
         return this._game_playable;
+
     }
 
     set game_playable(game_playable) {
+
         this._game_playable = game_playable;
+
     }
 
     get game_mode() {
+
         return this._game_mode;
+
     }
     
     get next_game_mode() {
+
         return this._next_game_mode;
+
     }
 
     set next_game_mode(game_mode) {
+
         this._next_game_mode = game_mode > 2 ? 0 : game_mode;
+
     }
 
     get ground_collision() {
+
         return this._ground_collision;
+
     }
 
     _draw_tap_2_play_txt(display, __touch_device__, _VERSION_) {
 
         let txt = "";
+
         if (__touch_device__) { 
+
             txt = "Tap to play";
+
         } else { 
+
             txt = "Click to play";
+
         }
         
         display.ctx.font = `bold ${28 * display.draw_scaling}px courier new`;
@@ -158,6 +189,7 @@ export default class Game {
         if(check_ground || check_pipes || check_ufo) {
 
             scoreboard.save_high_score(this._game_mode);
+
             this.game_state = 2; // draw game over
             this.game_playable = false;
             this._game_over_timer = delta.previousTime;
@@ -178,7 +210,9 @@ export default class Game {
         //if game mode is null then localStorage variable has not been saved.
         //this variable will be saved on the first gameover screen.
         if (!game_mode) {
+
             game_mode = 0;   
+
         }
 
         return Number(game_mode);
@@ -197,6 +231,7 @@ export default class Game {
         this._save_game_mode();
         this._increased_speed = this._speed;
         this._game_state = 1;
+
     }
 
     draw_start_screen(display, __touch_device__, _VERSION_) {
@@ -204,8 +239,10 @@ export default class Game {
         let logoScaling = [(600 * 0.8) * display.draw_scaling, (160 * 0.8) * display.draw_scaling];
 
         if(logoScaling[0] >= display.width * 0.8) {
+
             logoScaling[0] = display.width * 0.8;
             logoScaling[1] *= (logoScaling[0] / ((600 * 0.8) * display.draw_scaling));
+
         }
 
         // drawing logo
@@ -221,8 +258,10 @@ export default class Game {
         let window_size = [700 * display.draw_scaling, 550 * display.draw_scaling];
 
         if (window_size[0] > display.width * 0.9) {
+
             window_size[0] = display.width * 0.9;
         }
+
         let window_position = [(display.width / 2) - (window_size[0] / 2),
                                     (this.ground_collision / 2) - (window_size[1] / 2)];
 
@@ -254,7 +293,9 @@ export default class Game {
 
             //reset to start screen after 5 seconds.
             if (delta.previousTime - this._game_over_timer >= (this._game_over_timeout * 1000)) {
+
                 this.game_state = 0;
+                
             } 
         }
 

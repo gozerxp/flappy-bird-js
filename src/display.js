@@ -21,6 +21,7 @@ export default class Display {
 
             this._DISPLAY_SIZE[1] = Math.max(window.innerHeight, minimum_display_height);
             this._draw_scaling = this._DISPLAY_SIZE[1] / background_height;
+
         }
 
         this._portrait_mode = this._DISPLAY_SIZE[0] < this._DISPLAY_SIZE[1];
@@ -29,6 +30,7 @@ export default class Display {
 
         this._ctx.canvas.width = this._DISPLAY_SIZE[0];
         this._ctx.canvas.height = this._DISPLAY_SIZE[1];
+        
     }
 
     get draw_scaling() {
@@ -64,7 +66,7 @@ export default class Display {
     get portrait_mode() {
 
         return this._portrait_mode;
-        
+
     }
 
 }
