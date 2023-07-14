@@ -1,5 +1,5 @@
 const background_height = 768;
-const minimum_display_height = 100;
+const minimum_display_height = 400;
 
 export default class Display {
 
