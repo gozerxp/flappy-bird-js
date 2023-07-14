@@ -22,14 +22,21 @@ export default class Scene {
             case "background":
 
                 this._size = [430, 768]; //background
-                this._sprite_Y_location = 0;
+                this._sprite_location = [0, 0]; //coordinates for finding sprite on spritesheet.
 
                 break;
 
             case "ground":
 
                 this._size = [550, 150]; //ground
-                this._sprite_Y_location = 768;
+                this._sprite_location = [0, 768];
+                
+                break;
+
+            case "cloud":
+
+                // this._size = [0 ,0]; 
+                // this._sprite_location = [0, 0];
                 
                 break;
             
@@ -56,7 +63,7 @@ export default class Scene {
 
         while (tile_position < display.width) {
 
-            display.ctx.drawImage(this._sprite_sheet, 0, this._sprite_Y_location, ...this._size, 
+            display.ctx.drawImage(this._sprite_sheet, ...this._sprite_location, ...this._size, 
                 tile_position, Y_position, ...this._draw_size);
             
             tile_position += this._draw_size[0];
