@@ -34,16 +34,24 @@ export default class UFO {
     }
 
     set resize(display) {
+
         this._draw_size[0] = this._size[0] * display.draw_scaling;
         this._draw_size[1] = this._size[1] * display.draw_scaling;
         this._start_position = display.width + this._draw_size[0];
-        if (!this._active) { this._current_position[0] = this._start_position; }
+
+        if (!this._active) { 
+
+            this._current_position[0] = this._start_position; 
+
+        }
     }
 
     reset(delta) {
+
         this._active = false;
         this._current_position[0] = this._start_position; 
         this._last_spawn = delta.previousTime - (this._spawn_interval * 1000);
+
     }
 
     draw_ufo(display, delta, game) {
@@ -55,8 +63,11 @@ export default class UFO {
         }
             
         if ((this._current_position[0] + (this._draw_size[0] * this._draw_scaling)) < 0) {
+
             this._active = false;
-        } else {	
+
+        } else {
+
             // prevent ufo from flying in until intitial waiting period has expired
             if (delta.previousTime - this._warning_timer < (this._warning_interval * 1000)) {
                 
@@ -109,7 +120,9 @@ export default class UFO {
     }
 
     _ufo_elevation(game) {
+
         return Math.random() * (game.ground_collision - this._draw_size[1]);
+
     }
 
 
@@ -121,11 +134,13 @@ export default class UFO {
         	(player.getflyHeight + player.getSize[1] >= this._current_position[1]) && 
         	(player.getflyHeight <= this._current_position [1] + (this._draw_size[1] * this._draw_scaling))	
         ) {
+
         	return 1;
 
         }
         
         return 0;
+        
     }
 
     // function random_UFO_size() { 

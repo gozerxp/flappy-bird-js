@@ -105,32 +105,48 @@ export default class Pipes {
     }
 
     set set_scaling(display) {
+
         this._set_scaling(display);
+
     }
 
     reset(display, game) {
+
         this._total_pipes = 0;
         this._pipes_array = [];
         this._pipes_array = this._spawn_pipe(this._pipes_array, display, game);
+
     }
 
     _pipe_height(game) { 
+
         return ( this._sprites.pipes.draw_size[1] + (Math.random() * ((game.ground_collision / 2) - this._sprites.pipes.draw_size[1]))); 
+
     }
 
     _set_pipe_gap(display, game) {
 
         switch (game.game_mode) {
+
             case 0:
+            
                 return this._classic_pipe_gap[0] * display.draw_scaling;
+            
             case 1:
+
                 if (this._total_pipes >= 5) {
+
                     return Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+
                 } else {
+
                     return this._classic_pipe_gap[0] * display.draw_scaling;
+
                 }
             case 2:
+
                 return Math.max(this._minimum_gap[0], Math.random() * this._pipe_gap[0]);
+
             default:
         }
 
@@ -138,7 +154,9 @@ export default class Pipes {
     }
 
     get get_total_pipes() {
+
         return this._total_pipes;
+
     }
 
     _spawn_pipe(pipes_array, display, game) {
@@ -182,18 +200,31 @@ export default class Pipes {
     _up_or_down(temp, game) {
 
         switch (temp.type_index) {
+
             case 1: //check where blue pipe's starting position, if its less than 1/3 of ground collission then move down
+                
                 if (temp.y >= game.ground_collision / 3) {
+
                     return true;
+                
                 } else { //otherwise move up
+
                     return false;
+
                 }
+
                 break;
+
             case 2: //randomize red pipe
+
                 return Boolean(Math.round(Math.random()));
+
                 break;
+
             default:
+
                 return false;
+
         }
         
     }
@@ -207,6 +238,7 @@ export default class Pipes {
             new_pipes.shift();
 
             return new_pipes;
+
         }
 
         return pipes_array;
@@ -218,6 +250,7 @@ export default class Pipes {
         this._pipes_array.forEach(pipe => this._draw_pipe(display, pipe, player, game, delta));
         this._pipes_array = this._shift_pipes(this._pipes_array);
         this._pipes_array = this._spawn_pipe(this._pipes_array, display, game);
+
     }
 
     _load_pipe_components(pipe_components, display, pipe, player, game, delta) {
@@ -242,11 +275,17 @@ export default class Pipes {
     
                 // movable pipes - pipe index 1 - blue pipe
                 if (game.game_state === 1) {
+
                     if (pipe.x < (player.getPosition + (this._pipe_gap[0] * 2)) && !pipe.scored) {
+
                         if (pipe.up_or_down) { //if true, move blue pipes upward
+
                             pipe.y -= (1 * display.draw_scaling) * delta.delta_time_multiplier;
+
                         } else { 
+
                             pipe.y += (1 * display.draw_scaling) * delta.delta_time_multiplier; 
+
                         }
                     }
                 }
@@ -261,11 +300,16 @@ export default class Pipes {
     
                 // check to see if cannon has been blasted
                 if (game.game_state === 1) {
+
                     if (pipe.blasted) { 
+
                         this._draw_cannonball(display, pipe, delta); 
+
                     } else {
+
                         //code for checking why cannon hasn't been blasted yet.
                         this._check_4_blastoff(pipe, player);
+
                     }
                 }
 
@@ -283,9 +327,13 @@ export default class Pipes {
     _draw_cannonball(display, pipe, delta) {
 
         if (pipe.up_or_down) { //top pipe
+
             pipe.cannon_Y +=  Math.floor((this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier);
+
         } else {
+
             pipe.cannon_Y -= Math.floor((this._sprites.cannon_ball.blast_speed * display.draw_scaling) * delta.delta_time_multiplier);
+
         }
     
         let x = pipe.x + (this._sprites.pipes.draw_size[0] / 2) - (this._sprites.cannon_ball.draw_size[0] / 2);
@@ -301,9 +349,13 @@ export default class Pipes {
         if (pipe.x - player.getPosition < (pipe.gap_x / 1.25)) {
 		
             if (pipe.up_or_down) {
+
                 pipe.cannon_Y = pipe.y - this._sprites.cannon_ball.draw_size[1]; // top pipe cannonball starting position
+
             } else {
+
                 pipe.cannon_Y = pipe.y + pipe.gap_y + this._sprites.cannon_ball.draw_size[1]; // bottom pipe cannonball starting position
+
             }
             
             pipe.blasted = true;
@@ -315,7 +367,9 @@ export default class Pipes {
 									
         // pipe moving
         if (game.game_state === 1) {
+
             pipe.x -= Math.floor((game.increased_speed * display.draw_scaling) * delta.delta_time_multiplier);
+
         }
 
         let pipe_components = {
@@ -335,6 +389,7 @@ export default class Pipes {
             // top_pipe
             display.ctx.drawImage(this._sprite_sheet, ...pipe_components.top_pipe, ...this._sprites.pipes.pipe_size, 
                 pipe.x, pipe.y - this._sprites.pipes.draw_size[1] - 1, ...this._sprites.pipes.draw_size);
+
         }
     
         if (!(pipe.type_index === 2 && pipe.up_or_down)) { // checking red pipe logic
@@ -346,6 +401,7 @@ export default class Pipes {
             // bottom_pipe
             display.ctx.drawImage(this._sprite_sheet, ...pipe_components.btm_pipe, ...this._sprites.pipes.pipe_size, 
                 pipe.x, pipe.y + this._pipe_gap[1] + 1, ...this._sprites.pipes.draw_size);
+
         }
    
     }
@@ -355,11 +411,17 @@ export default class Pipes {
         let x, z;
         
         while (stem_size > 0) {
+
             if (stem_size > this._sprites.pipes.max_stem_size) { 
+
                 x = this._sprites.pipes.max_stem_size;
+
             } else {
+
                 x = stem_size;
+
             }
+
             display.ctx.drawImage(this._sprite_sheet, ...stem_pipe, this._sprites.pipes.stem_size[0], x, 
                 pipe.x, y, this._sprites.pipes.draw_size[0], stem_size); 
     
@@ -400,7 +462,8 @@ export default class Pipes {
             } else if (pipe.scored === false && (pipe.x + this._sprites.pipes.draw_size[0]) < player.getPosition) { 
             // check to see if pipe moves past theshold for the first time.
                 pipe.scored = true; // flag so we don't count the same pipe more than once
-                scoreboard.increase_score();                
+                scoreboard.increase_score();       
+
             }
         });
 
@@ -419,9 +482,13 @@ export default class Pipes {
         let check_y2 = pipe.cannon_Y + this._sprites.cannon_ball.draw_size[1] > player.getflyHeight + player.getSize[1];
     
         if ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem)) {
+
             return true;
+
         } else {
+
             return false;
+            
         }
 
     }

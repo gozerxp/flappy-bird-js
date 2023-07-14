@@ -44,7 +44,6 @@ function run_game(currentTime) {
 
 		 	case 0: // start screen
 			
-			
 				background.draw_scene(display, delta, game, 3, 0, true);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
 				score.draw_splash_scoreboard(display, game);
@@ -58,7 +57,6 @@ function run_game(currentTime) {
 
 			case 1: //live game
 			
-			
 				background.draw_scene(display, delta, game, 3, 0, true);
 				pipes.draw_pipes(display, player, game, delta);
 				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
@@ -70,7 +68,6 @@ function run_game(currentTime) {
 				break;
 
 			case 2: //game over screen/animation
-			
 			
 				background.draw_scene(display, delta, game, 3, 0, false);
 				pipes.draw_pipes(display, player, game, delta);
@@ -102,6 +99,7 @@ function run_game(currentTime) {
 }
 
 function scale_assets() {
+
 	display.resize_canvas();
 	game.set_scaling = display;
 	background.set_scaling = display;
@@ -117,60 +115,80 @@ function scale_assets() {
 
 	button_location[0] = display.width - button_size - padding;
 	info_button.resize_button(...button_location, button_size, button_size);
+
 }
 
 const user_input = (cursor_X, cursor_Y) => {
 
 	if (game.game_state !== 1) {
+
 		if (game_mode_button.check_mouse_hover(cursor_X, cursor_Y)) {
+
 			game.next_game_mode++;
 			score.load_high_score(game.next_game_mode);
 			return;
+
 		}
 
 		if (game.game_state !== 3 && info_button.check_mouse_hover(cursor_X, cursor_Y)) {
+
 			game.game_state = 3;
 			return;
+
 		}
 	}
 
 	if (game.game_playable) {
 
 		if (game.game_state === 3) { // if info screen is showing, switch to start screen.
-			game.game_state = 0; return; 
+
+			game.game_state = 0; 
+			return;
+
 		}
 	
 		player.jump(display, delta);
 
 		if (game.game_state !== 1) {
+
 			game.reset_game();
 			score.reset_score();
 			pipes.reset(display, game);
 			player.reset_position(display);
-			ufo.reset(delta);	
+			ufo.reset(delta);
+
 		}
 	}
 }
 
 //user inputs
 if (__touch_device__) {
+
 	document.body.ontouchstart = (e) => {
+
 		user_input(e.pageX, e.pageY);
+
 	}
 
 } else {
 	
 	document.body.onmousedown = (e) => {
+
 		user_input(e.clientX, e.clientY);
+
 	}
 		
 	document.body.onkeydown = (e) => {
+
 		if (e.key === " ") {
+
 			user_input(null, null);
+
 		}
 	}
 
 	document.body.onmousemove = (e) => {
+
 		game_mode_button.check_mouse_hover(e.clientX, e.clientY);
 		info_button.check_mouse_hover(e.clientX, e.clientY);
 
@@ -179,11 +197,16 @@ if (__touch_device__) {
 
 // disables browser zooming
 window.addEventListener('wheel', e => {
+
   if (e.ctrlKey) {
+
     e.preventDefault();
   }
+
 }, { passive: false });
 
 window.onresize = function(e) {
+
 	scale_assets();
+	
 }

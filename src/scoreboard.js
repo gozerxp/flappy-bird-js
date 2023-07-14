@@ -12,10 +12,13 @@ export default class Scoreboard {
 
         this._score_fx = new Audio('assets/audio/score.ogg');
         this._score_fx.load();
+
     }
 
     save_high_score(game_mode) {
+
         localStorage.setItem(`high_score_${game_mode}`, this._high_score);
+
     }
 
     load_high_score(game_mode) {
@@ -24,19 +27,24 @@ export default class Scoreboard {
         //if scoreboard is null then localStorage variable has not been saved.
         //this variable will be saved on the first gameover screen.
         if (!this._high_score) {
-            this._high_score = 0;   
+
+            this._high_score = 0;
+
         }
 
     }
 
     reset_score() {
+
         this._current_score = 0;
         this._attempts++;
         this._display_high_score = this._high_score;
         this._new_highscore = false;
+
     }
 
     increase_score() {
+
         this._current_score++;
         this._high_score = Math.max(this._high_score, this._current_score)
         this._new_highscore = this._high_score > this._display_high_score;
@@ -44,10 +52,13 @@ export default class Scoreboard {
 
         this._score_fx.pause();
         this._score_fx.play();
+
     }
 
     get get_current_score() {
+
         return this._current_score;
+
     }
 
     draw_splash_scoreboard(display, game) {
@@ -75,10 +86,15 @@ export default class Scoreboard {
         let txt = this._current_score;
 
         display.ctx.font = `${txt_size * display.draw_scaling}px 'Press Start 2P'`;
+
         if (this._new_highscore) {
+
             display.ctx.strokeStyle = game.GAME_MODE_COLOR(true, game.game_mode);
+
         } else {
+
              display.ctx.strokeStyle = "#553847";
+
         }
 
         display.ctx.lineWidth = 6 * display.draw_scaling;
@@ -96,24 +112,33 @@ export default class Scoreboard {
             let txt = "";
 
             if (this._new_highscore) {
+
                 txt = "High Score";
+
             } else {
+
                 txt = "Game Over";
+
             }
 
             let padding = 50 * display.draw_scaling;
             display.ctx.font = `${txt_size}px 'Press Start 2P'`;
 
             while(display.ctx.measureText(txt).width > display.width * 0.85) {
+
                 txt_size--;
                 display.ctx.font = `${txt_size}px 'Press Start 2P'`;
+
             }
 
             let window_size = [350 * display.draw_scaling, 230 * display.draw_scaling];
 
             if (window_size[0] > display.width * 0.85) {
+
                 window_size[0] = display.width * 0.85;
+
             }
+
             let window_position = [(display.width / 2) - (window_size[0] / 2),
                                         (display.height / 2) - (window_size[1] / 2)];
 
@@ -132,8 +157,11 @@ export default class Scoreboard {
             let Y_position = window_position[1] - padding / 2;
 
             if (this._new_highscore) {
+
                 display.ctx.strokeStyle = game.GAME_MODE_COLOR(true, game.game_mode);
+
             } else {
+
                 display.ctx.strokeStyle = "#553847";
                 
             }
@@ -157,13 +185,19 @@ export default class Scoreboard {
             ];
 
             label.forEach((item, index) => {
+
                 if (index === 1 && this._new_highscore) {
+
                     display.ctx.fillStyle = game.GAME_MODE_COLOR(true, game.game_mode);
                     item = "*New " + item + "*";
+
                 } else {
+
                     display.ctx.fillStyle = "#fefefe";
+                    
                 }
                 display.ctx.fillText(item, window_position[0] + padding, window_position[1] + (padding * (index + 1)))
+
             });
 
             txt = "Mode: ";
