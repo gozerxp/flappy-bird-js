@@ -314,7 +314,7 @@ export default class Game {
         display.ctx.fillText(_info_json.title, title_x, y, max_width);
         y += padding * 2;
 
-        txt_size = 18 * display.draw_scaling;
+        txt_size = 16 * display.draw_scaling;
         display.ctx.font = `${txt_size}px 'courier new'`;
 
         _info_json.text.forEach((item) => {
@@ -336,7 +336,7 @@ export default class Game {
         // if text width is already under max width then draw and exit
         if (display.ctx.measureText(text).width <= max_width || words.length === 1) { 
 
-            display.ctx.fillText(text, x, y_pos);
+            display.ctx.fillText(text, x, y_pos, max_width);
             return y_pos + padding;
 
         }
