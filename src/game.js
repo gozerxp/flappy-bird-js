@@ -279,7 +279,7 @@ export default class Game {
 
     draw_info_screen(display, _VERSION_) {
         
-        let window_size = [700 * display.draw_scaling, 510 * display.draw_scaling];
+        let window_size = [550 * display.draw_scaling, 510 * display.draw_scaling];
 
         if (window_size[0] > display.width * 0.9) {
 

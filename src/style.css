@@ -5,4 +5,5 @@ body {
   font-family: 'Press Start 2P', cursive;
   user-select: none;
   background-color: black;
+  overflow: hidden;
 }
