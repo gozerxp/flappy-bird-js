@@ -57,7 +57,7 @@ export default class UFO {
     draw_ufo(display, delta, game) {
 
         if (!this._active) {
-            if (game.game_mode !== 2) { return; }
+            if (game.game_mode !== 2 && game.game_state === 1) { return; }
             this._spawn_ufo(display, game, delta); 
             return;
         }
@@ -73,10 +73,11 @@ export default class UFO {
                 
                 //during waiting period, if the game is live then draw ufo warning indicator
                 if(game.game_state === 1) {
-                // show warning arrow when ufo is off screen
-                display.ctx.drawImage(this._ufo_warning_sprite, 1, 0, ...this._warning_sign_size, 
-                    display.width - ((this._warning_sign_size[0] * display.draw_scaling) * 1.25), this._current_position[1] + (this._warning_sign_size[1] / 2), 
-                    this._warning_sign_size[0] * display.draw_scaling, this._warning_sign_size[1] * display.draw_scaling);
+                    // show warning arrow when ufo is off screen
+                    display.ctx.drawImage(this._ufo_warning_sprite, 1, 0, ...this._warning_sign_size, 
+                        display.width - ((this._warning_sign_size[0] * display.draw_scaling) * 1.25), 
+                        this._current_position[1] + (this._warning_sign_size[1] / 2), 
+                        this._warning_sign_size[0] * display.draw_scaling, this._warning_sign_size[1] * display.draw_scaling);
                 }
 
             }  else { //initial warning timer has expired, draw ufo

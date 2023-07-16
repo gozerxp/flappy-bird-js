@@ -196,6 +196,7 @@ export default class Scoreboard {
                     display.ctx.fillStyle = "#fefefe";
                     
                 }
+                
                 display.ctx.fillText(item, window_position[0] + padding, window_position[1] + (padding * (index + 1)))
 
             });

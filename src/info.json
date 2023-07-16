@@ -1,3 +1,13 @@
 {
-    "title" : "Thanks for playing!"
+    "title" : "Thanks for playing!",
+    "text" : [
+        "Flappy Bird Clone was written in JavaScript by Dan Andersen.",
+        "",
+        "Source code is available at http://www.github.com/gozerxp",
+        "",
+        "For more games from Gozerxp Studios visit http://www.gozerxp.com/",
+        "",
+        "Special thanks to .GEARS Software for original concept.",
+        "http://www.dotgears.com/"
+    ]
 }

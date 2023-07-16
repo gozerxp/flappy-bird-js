@@ -1,4 +1,4 @@
-
+let _info_json = '';
 
 export default class Game {
 
@@ -30,7 +30,31 @@ export default class Game {
         this._dead_fx = new Audio('assets/audio/dead.ogg');
         this._dead_fx.load();
 
+        //load data for info_screen
+        this._load_json('./src/info.json');
+       
     }
+
+    _load_json(url) {
+
+        // Creating Our XMLHttpRequest object
+        let xhr = new XMLHttpRequest();
+
+        xhr.open("GET", url, true);
+    
+        // function execute after request is successful
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                _info_json = JSON.parse(this.responseText);
+
+            }
+        }
+
+        xhr.send();
+    }
+
+
 
     set set_scaling(display) {
 
@@ -255,7 +279,7 @@ export default class Game {
 
     draw_info_screen(display, _VERSION_) {
         
-        let window_size = [700 * display.draw_scaling, 550 * display.draw_scaling];
+        let window_size = [700 * display.draw_scaling, 510 * display.draw_scaling];
 
         if (window_size[0] > display.width * 0.9) {
 
@@ -274,7 +298,75 @@ export default class Game {
         display.ctx.fill();
         display.ctx.globalAlpha = 1.0;
 
+        //console.log(_info_json);
+
         //////
+        let padding  = 25 * display.draw_scaling;
+        let x = window_position[0] + padding;
+        let max_width = window_size[0] - (padding * 2);
+        let y = window_position[1] + (padding * 2);
+
+        let txt_size = 26 * display.draw_scaling;
+        display.ctx.font = `${txt_size}px 'Press Start 2P'`;
+        display.ctx.fillStyle = "#fefefe";
+
+        let title_x = window_position[0] + (window_size[0] / 2) - (Math.min(display.ctx.measureText(_info_json.title).width, max_width) / 2);
+        display.ctx.fillText(_info_json.title, title_x, y, max_width);
+        y += padding * 2;
+
+        txt_size = 18 * display.draw_scaling;
+        display.ctx.font = `${txt_size}px 'courier new'`;
+
+        _info_json.text.forEach((item) => {
+
+            y = this._wrap_text(display, item, x, y, padding, max_width);
+
+        })
+        
+
+
+    }
+
+    _wrap_text(display, text, x, y, padding, max_width) {
+
+        let words = text.split(" ");
+        let line_text = "";
+        let y_pos = y;
+
+        // if text width is already under max width then draw and exit
+        if (display.ctx.measureText(text).width <= max_width || words.length === 1) { 
+
+            display.ctx.fillText(text, x, y_pos);
+            return y_pos + padding;
+
+        }
+
+        words.forEach((item, index) => {
+
+            let test_text = line_text + item + " ";
+            
+            if (display.ctx.measureText(test_text).width <= max_width) {
+                
+                line_text = test_text;
+ 
+            } else {
+
+                display.ctx.fillText(line_text, x, y_pos, max_width);
+                line_text = item + " ";
+                y_pos += padding;
+
+            }
+
+        });
+
+        if (line_text.length > 0) {
+
+            display.ctx.fillText(line_text, x, y_pos, max_width);
+            y_pos += padding;
+
+        }
+
+        return y_pos;
 
     }
 
