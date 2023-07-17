@@ -5,7 +5,7 @@ export default class UFO {
 
         this._active = false;
 
-        this._size = [248, 161];
+        this._size = [249, 161];
         this._draw_size = [0, 0];
 
         this._draw_scaling = 0.75;
