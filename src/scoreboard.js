@@ -63,19 +63,20 @@ export default class Scoreboard {
 
     draw_splash_scoreboard(display, game) {
 
-        let padding = 15;
+        let padding = 15 * display.draw_scaling;
         let txt_size = 18 * display.draw_scaling;
-        let Y_position = (padding * 2) * display.draw_scaling;
+        let Y_position = (padding * 2);
+        let max_width = (display.width / 2) - (padding * 2);
 
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = game.GAME_MODE_COLOR(true, game.next_game_mode);//"#553847";
 
         let txt = `Best: ${this._high_score}`;
-        display.ctx.fillText(txt, padding, Y_position);
+        display.ctx.fillText(txt, padding, Y_position, max_width);
 
         display.ctx.fillStyle = "#553847";
         txt = `Attempts: ${this._attempts}`;
-        display.ctx.fillText(txt, display.width - display.ctx.measureText(txt).width - padding, Y_position);
+        display.ctx.fillText(txt, display.width - Math.min(display.ctx.measureText(txt).width, max_width) - padding, Y_position, max_width);
         
     }
 

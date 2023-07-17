@@ -27,6 +27,9 @@ export default class Game {
         this._logo_sprite = new Image();
         this._logo_sprite.src = "assets/sprites/fb-logo.png";
 
+        this._gozerxp_sprite = new Image();
+        this._gozerxp_sprite.src = "assets/sprites/gozerxp.png";
+
         this._dead_fx = new Audio('assets/audio/dead.ogg');
         this._dead_fx.load();
 
@@ -180,7 +183,7 @@ export default class Game {
 
     }
 
-    _draw_tap_2_play_txt(display, __touch_device__, _VERSION_) {
+    _draw_tap_2_play_txt(display, __touch_device__) {
 
         let txt = "";
 
@@ -197,10 +200,16 @@ export default class Game {
         display.ctx.font = `bold ${28 * display.draw_scaling}px courier new`;
         display.ctx.fillStyle = "#4c3b46";
         display.ctx.fillText(txt, display.width / 2 - (display.ctx.measureText(txt).width / 2), (550 * display.draw_scaling));
-        
-        txt = `Version: ${_VERSION_}`;
+
+    }
+
+    _draw_version(display, _VERSION_) {
+
+        let txt = `Version: ${_VERSION_}`;
+
         display.ctx.font = `bold ${18 * display.draw_scaling}px courier new`;
-        display.ctx.fillText(txt, 10, this._ground_collision - 12)
+        display.ctx.fillStyle = "#4c3b46";
+        display.ctx.fillText(txt, 10 * display.draw_scaling, this._ground_collision - (12 * display.draw_scaling));
 
     }
 
@@ -278,8 +287,10 @@ export default class Game {
     }
 
     draw_info_screen(display, _VERSION_) {
+
+        this._draw_version(display, _VERSION_);
         
-        let window_size = [550 * display.draw_scaling, 510 * display.draw_scaling];
+        let window_size = [650 * display.draw_scaling, 550 * display.draw_scaling];
 
         if (window_size[0] > display.width * 0.9) {
 
@@ -296,9 +307,17 @@ export default class Game {
         display.ctx.beginPath();
         display.ctx.roundRect(...window_position, ...window_size, 25 * display.draw_scaling);
         display.ctx.fill();
-        display.ctx.globalAlpha = 1.0;
+        
+        let gozerxp_draw_size = 2.75;
 
-        //console.log(_info_json);
+        display.ctx.drawImage(this._gozerxp_sprite, 
+            0, 0, 702, 893,
+            window_position[0] + (window_size[0] / 2) - (((this._gozerxp_sprite.width / gozerxp_draw_size) * display.draw_scaling) / 2), 
+            window_position[1] + (window_size[1]) - ((this._gozerxp_sprite.height / gozerxp_draw_size) * display.draw_scaling),
+            (this._gozerxp_sprite.width / gozerxp_draw_size) * display.draw_scaling,
+            (this._gozerxp_sprite.height / gozerxp_draw_size) * display.draw_scaling
+            );
+
 
         //////
         let padding  = 25 * display.draw_scaling;
@@ -309,6 +328,13 @@ export default class Game {
         let txt_size = 26 * display.draw_scaling;
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = "#fefefe";
+
+        let text = "Gozerxp Studios"
+        display.ctx.fillText(text, 
+            window_position[0] + (window_size[0] / 2) - (Math.min(display.ctx.measureText(text).width, max_width) / 2), 
+            window_position[1] + window_size[1] - (padding / 2), max_width);
+        
+        display.ctx.globalAlpha = 1.0;
 
         let title_x = window_position[0] + (window_size[0] / 2) - (Math.min(display.ctx.measureText(_info_json.title).width, max_width) / 2);
         display.ctx.fillText(_info_json.title, title_x, y, max_width);
