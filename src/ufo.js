@@ -144,15 +144,4 @@ export default class UFO {
         
     }
 
-    // function random_UFO_size() { 
-        
-    // 	let RandomSize = game.ufo.scale_min + Math.random();
-    // 	while (RandomSize > game.ufo.scale_max) { // loop that ensures random size stays within min and max constrants
-    // 		let Size_Constrant = RandomSize - game.ufo.scale_max;
-    // 		RandomSize = game.ufo.scale_min + Size_Constrant;
-    // 	}
-    // 	return RandomSize;
-    // }
-
-
 }
