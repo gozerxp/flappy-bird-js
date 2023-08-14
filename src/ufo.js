@@ -129,18 +129,12 @@ export default class UFO {
 
     check_collision(player) {
         
-        if  (
+        return  (
         	(this._current_position[0] <= player.getPosition + player.getSize[0]) && 
         	(this._current_position [0] + (this._draw_size[0] * this._draw_scaling) >= player.getPosition) &&
         	(player.getflyHeight + player.getSize[1] >= this._current_position[1]) && 
         	(player.getflyHeight <= this._current_position [1] + (this._draw_size[1] * this._draw_scaling))	
-        ) {
-
-        	return 1;
-
-        }
-        
-        return 0;
+        );
         
     }
 

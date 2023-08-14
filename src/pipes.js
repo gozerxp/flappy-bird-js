@@ -481,15 +481,7 @@ export default class Pipes {
         let check_y1 = pipe.cannon_Y < player.getflyHeight;
         let check_y2 = pipe.cannon_Y + this._sprites.cannon_ball.draw_size[1] > player.getflyHeight + player.getSize[1];
     
-        if ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem)) {
-
-            return true;
-
-        } else {
-
-            return false;
-            
-        }
+        return ([check_x1, check_x2, check_y1, check_y2].every((elem) => elem));
 
     }
 
