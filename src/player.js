@@ -69,7 +69,7 @@ export default class Player {
         }
 
         let increment = 12.5 * delta.delta_time_multiplier;
-        let max_angle = 50;
+        let max_angle = 60;
         
         if (new_height > previous_height) { //player is falling
             
