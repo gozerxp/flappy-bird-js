@@ -219,7 +219,7 @@ export default class Game {
         let check_pipes = pipes.check_pipe_logic(player, scoreboard); 
         let check_ufo = ufo.check_collision(player);
 
-        if(check_ground || check_pipes || check_ufo) {
+        if (check_ground || check_pipes || check_ufo) {
 
             scoreboard.save_high_score(this._game_mode);
 
@@ -271,7 +271,7 @@ export default class Game {
 
         let logoScaling = [(600 * 0.8) * display.draw_scaling, (160 * 0.8) * display.draw_scaling];
 
-        if(logoScaling[0] >= display.width * 0.8) {
+        if (logoScaling[0] >= display.width * 0.8) {
 
             logoScaling[0] = display.width * 0.8;
             logoScaling[1] *= (logoScaling[0] / ((600 * 0.8) * display.draw_scaling));
