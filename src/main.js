@@ -40,62 +40,68 @@ function run_game(currentTime) {
 
         delta.previousTime = currentTime;
 
-      	switch (game.game_state) {                           
-
-		 	case 0: // start screen
-			
-				background.draw_scene(display, delta, game, 3, 0, true);
-				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
-				score.draw_splash_scoreboard(display, game);
-				game.draw_start_screen(display, __touch_device__, _VERSION_);
-				ufo.draw_ufo(display, delta, game);
-				player.draw_player(display, game, delta);
-				game_mode_button.draw_game_mode_button(display, game, __touch_device__);
-				info_button.draw_info_button(display, __touch_device__);
-				
-		 		break;
-
-			case 1: //live game
-			
-				background.draw_scene(display, delta, game, 3, 0, true);
-				pipes.draw_pipes(display, player, game, delta);
-				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
-				score.draw_live_scoreboard(display, game);
-				player.draw_player(display, game, delta);
-				ufo.draw_ufo(display, delta, game);
-				game.game_logic(player, pipes, ufo, delta, score);
-				
-				break;
-
-			case 2: //game over screen/animation
-			
-				background.draw_scene(display, delta, game, 3, 0, false);
-				pipes.draw_pipes(display, player, game, delta);
-				ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
-				game.draw_game_over(display, delta, score, __touch_device__, _VERSION_);
-				player.draw_player(display, game, delta);
-				ufo.draw_ufo(display, delta, game);
-				game_mode_button.draw_game_mode_button(display, game, __touch_device__);
-				info_button.draw_info_button(display, __touch_device__);
-				
-				break;
-			
-			case 3: //info screen
-
-				background.draw_scene(display, delta, game, 3, 0, true);
-				ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
-				score.draw_splash_scoreboard(display, game);
-				ufo.draw_ufo(display, delta, game);
-				game.draw_info_screen(display, _VERSION_);
-				game_mode_button.draw_game_mode_button(display, game, __touch_device__);
-
-				break;
-
-			default:
-		}
-    }
+		render_game_state(game.game_state);
+	
+	}
 
     window.requestAnimationFrame(run_game);
+}
+
+function render_game_state(game_state) {
+
+	switch (game_state) {                           
+
+		case 0: // start screen
+	   
+		   background.draw_scene(display, delta, game, 3, 0, true);
+		   ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+		   score.draw_splash_scoreboard(display, game);
+		   game.draw_start_screen(display, __touch_device__, _VERSION_);
+		   ufo.draw_ufo(display, delta, game);
+		   player.draw_player(display, game, delta);
+		   game_mode_button.draw_game_mode_button(display, game, __touch_device__);
+		   info_button.draw_info_button(display, __touch_device__);
+		   
+			break;
+
+	   case 1: //live game
+	   
+		   background.draw_scene(display, delta, game, 3, 0, true);
+		   pipes.draw_pipes(display, player, game, delta);
+		   ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+		   score.draw_live_scoreboard(display, game);
+		   player.draw_player(display, game, delta);
+		   ufo.draw_ufo(display, delta, game);
+		   game.game_logic(player, pipes, ufo, delta, score);
+		   
+		   break;
+
+	   case 2: //game over screen/animation
+	   
+		   background.draw_scene(display, delta, game, 3, 0, false);
+		   pipes.draw_pipes(display, player, game, delta);
+		   ground.draw_scene(display, delta, game, 1, game.ground_collision, false);
+		   game.draw_game_over(display, delta, score, __touch_device__, _VERSION_);
+		   player.draw_player(display, game, delta);
+		   ufo.draw_ufo(display, delta, game);
+		   game_mode_button.draw_game_mode_button(display, game, __touch_device__);
+		   info_button.draw_info_button(display, __touch_device__);
+		   
+		   break;
+	   
+	   case 3: //info screen
+
+		   background.draw_scene(display, delta, game, 3, 0, true);
+		   ground.draw_scene(display, delta, game, 1, game.ground_collision, true);
+		   score.draw_splash_scoreboard(display, game);
+		   ufo.draw_ufo(display, delta, game);
+		   game.draw_info_screen(display, _VERSION_);
+		   game_mode_button.draw_game_mode_button(display, game, __touch_device__);
+
+		   break;
+
+	   default:
+   }
 }
 
 function scale_assets() {
