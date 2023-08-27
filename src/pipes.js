@@ -77,9 +77,9 @@ export default class Pipes {
         this._total_pipes = 0;
 
         this._sprite_sheet = new Image();
-        this._sprite_sheet.src = "assets/sprites/flappy-bird-set.png";
+        this._sprite_sheet.src = './res/sprites/flappy-bird-set.png';
 
-        this._blast_fx = new Audio('assets/audio/blast.ogg');
+        this._blast_fx = new Audio('./res/audio/blast.ogg');
         this._blast_fx.load();
 
     }

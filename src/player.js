@@ -21,9 +21,9 @@ export default class Player {
         this._flight = 0;
 
         this._sprite_sheet = new Image();
-        this._sprite_sheet.src = "assets/sprites/flappy-bird-set.png";
+        this._sprite_sheet.src = './res/sprites/flappy-bird-set.png';
 
-        this._jump_fx = new Audio('assets/audio/bloop.ogg');
+        this._jump_fx = new Audio('./res/audio/bloop.ogg');
         this._jump_fx.load();
 
         this._set_scaling(display);

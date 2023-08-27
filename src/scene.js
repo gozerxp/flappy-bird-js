@@ -11,7 +11,7 @@ export default class Scene {
 		this._last_draw_position = 0;
 
         this._sprite_sheet = new Image();
-        this._sprite_sheet.src = "assets/sprites/flappy-bird-set.png";
+        this._sprite_sheet.src = './res/sprites/flappy-bird-set.png';
 
     }
 

@@ -10,7 +10,7 @@ export default class Scoreboard {
         this._display_high_score = this._high_score;
         this._new_highscore = false;
 
-        this._score_fx = new Audio('assets/audio/score.ogg');
+        this._score_fx = new Audio('./res/audio/score.ogg');
         this._score_fx.load();
 
     }

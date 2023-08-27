@@ -25,12 +25,12 @@ export default class Game {
         this._game_playable = true;
         
         this._logo_sprite = new Image();
-        this._logo_sprite.src = "assets/sprites/fb-logo.png";
+        this._logo_sprite.src = "./res/sprites/fb-logo.png";
 
         this._gozerxp_sprite = new Image();
-        this._gozerxp_sprite.src = "assets/sprites/gozerxp.png";
+        this._gozerxp_sprite.src = "./res/sprites/gozerxp.png";
 
-        this._dead_fx = new Audio('assets/audio/dead.ogg');
+        this._dead_fx = new Audio('./res/audio/dead.ogg');
         this._dead_fx.load();
 
         //load data for info_screen

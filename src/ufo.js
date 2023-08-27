@@ -23,12 +23,12 @@ export default class UFO {
         this.resize = display;
 
         this._ufo_sprite = new Image();
-        this._ufo_sprite.src = "assets/sprites/airplane.png";
+        this._ufo_sprite.src = './res/sprites/airplane.png';
         
         this._ufo_warning_sprite = new Image();
-        this._ufo_warning_sprite.src = "assets/sprites/warning_arrow.png";
+        this._ufo_warning_sprite.src = './res/sprites/warning_arrow.png';
     
-        this._sound_fx = new Audio('assets/audio/airplane.ogg');
+        this._sound_fx = new Audio('./res/audio/airplane.ogg');
         this._sound_fx.load();
        
     }
