@@ -188,11 +188,11 @@ export default class Player {
         
     }
 
-    jump(display, delta) {
+    jump(display) {
 
         if (this._flyHeight > -this._sprite.draw_size[1]) { // makes sure player doesnt fly off the screen
 
-            this._flight = (this._jump * display.draw_scaling);// * delta.delta_time_multiplier;
+            this._flight = (this._jump * display.draw_scaling);
             this._jump_fx.play();
 
         }

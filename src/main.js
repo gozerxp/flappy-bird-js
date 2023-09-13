@@ -153,7 +153,7 @@ const user_input = (cursor_X, cursor_Y) => {
 
 		}
 	
-		player.jump(display, delta);
+		player.jump(display);
 
 		if (game.game_state !== 1) {
 
