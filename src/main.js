@@ -1,5 +1,6 @@
 // Flappy Bird Clone JS
 // Written by Dan Andersen
+// 2023 Gozerxp Software
 
 const _VERSION_ = "1.1.0";
 

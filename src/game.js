@@ -329,7 +329,7 @@ export default class Game {
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = "#fefefe";
 
-        let text = "Gozerxp Studios"
+        let text = "Gozerxp Software"
         display.ctx.fillText(text, 
             window_position[0] + (window_size[0] / 2) - (Math.min(display.ctx.measureText(text).width, max_width) / 2), 
             window_position[1] + window_size[1] - (padding / 2), max_width);
