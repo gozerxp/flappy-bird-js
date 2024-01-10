@@ -325,7 +325,7 @@ export default class Game {
         let max_width = window_size[0] - (padding * 2);
         let y = window_position[1] + (padding * 2);
 
-        let txt_size = 26 * display.draw_scaling;
+        let txt_size = 24 * display.draw_scaling;
         display.ctx.font = `${txt_size}px 'Press Start 2P'`;
         display.ctx.fillStyle = "#fefefe";
 
@@ -338,7 +338,7 @@ export default class Game {
 
         let title_x = window_position[0] + (window_size[0] / 2) - (Math.min(display.ctx.measureText(_info_json.title).width, max_width) / 2);
         display.ctx.fillText(_info_json.title, title_x, y, max_width);
-        y += padding * 2;
+        y += padding * 1.35;
 
         txt_size = 16 * display.draw_scaling;
         display.ctx.font = `${txt_size}px 'courier new'`;
@@ -347,10 +347,7 @@ export default class Game {
 
             y = this._wrap_text(display, item, x, y, padding, max_width);
 
-        })
-        
-
-
+        });
     }
 
     _wrap_text(display, text, x, y, padding, max_width) {
